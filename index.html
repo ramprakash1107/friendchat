@@ -2,135 +2,95 @@
 <html lang="hi">
 <head>
 <meta charset="UTF-8">
+<title>Happy Holi Wishes</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Holi Wishes</title>
 
 <style>
 body{
-  margin:0;
-  font-family: 'Segoe UI', sans-serif;
-  background: linear-gradient(270deg,#ff0080,#ffcc00,#00c3ff,#8aff00);
-  background-size: 800% 800%;
-  animation: bg 10s ease infinite;
-  text-align:center;
-  color:white;
-  overflow-x:hidden;
-}
-@keyframes bg{
-  0%{background-position:0% 50%}
-  50%{background-position:100% 50%}
-  100%{background-position:0% 50%}
+    margin:0;
+    font-family: Arial, sans-serif;
+    text-align:center;
+    background: linear-gradient(135deg,#ff0080,#ff8c00,#ffe600,#00e0ff);
+    color:white;
+    min-height:100vh;
 }
 .container{
-  padding:30px 15px;
+    padding:20px;
 }
 h1{
-  font-size:36px;
-  text-shadow:2px 2px 6px black;
+    font-size:2.5em;
+    margin-top:20px;
+    text-shadow:2px 2px 5px black;
 }
 .name{
-  font-size:28px;
-  margin:15px 0;
-  color:#fff700;
+    font-size:1.5em;
+    margin:15px 0;
+    color:#fff700;
+    font-weight:bold;
+}
+.box{
+    background:rgba(0,0,0,0.4);
+    padding:20px;
+    border-radius:15px;
+    margin:20px auto;
+    max-width:400px;
 }
 input{
-  padding:12px;
-  width:80%;
-  max-width:300px;
-  border:none;
-  border-radius:10px;
-  font-size:16px;
+    padding:10px;
+    width:80%;
+    border-radius:8px;
+    border:none;
+    font-size:16px;
 }
 button{
-  margin-top:15px;
-  padding:12px 25px;
-  font-size:16px;
-  border:none;
-  border-radius:25px;
-  background:#fff;
-  color:#ff0080;
-  font-weight:bold;
-  cursor:pointer;
+    margin-top:10px;
+    padding:10px 20px;
+    font-size:16px;
+    border:none;
+    border-radius:8px;
+    background:#00ff88;
+    cursor:pointer;
 }
-.share{
-  margin-top:20px;
-}
-.share a{
-  display:inline-block;
-  margin:8px;
-  padding:10px 18px;
-  background:#25D366;
-  color:white;
-  border-radius:20px;
-  text-decoration:none;
-  font-weight:bold;
-}
-.color{
-  position:fixed;
-  top:-20px;
-  width:12px;
-  height:12px;
-  border-radius:50%;
-  animation: fall linear infinite;
-}
-@keyframes fall{
-  to{transform:translateY(110vh)}
+.footer{
+    margin-top:30px;
+    font-size:14px;
+    opacity:0.9;
 }
 </style>
 </head>
 
 <body>
-
 <div class="container">
-  <h1>🌸 Happy Holi 🌸</h1>
-  <div class="name" id="showName"></div>
+    <h1>🌸 Happy Holi 🌸</h1>
 
-  <p>Apna naam likhiye 👇</p>
-  <input type="text" id="nameInput" placeholder="Yahan naam likhiye">
-  <br>
-  <button onclick="generate()">Generate Wish</button>
+    <div class="box">
+        <div id="wishText"></div>
 
-  <div class="share" id="shareBox" style="display:none;">
-    <a id="wa" target="_blank">WhatsApp Share</a>
-    <a href="#" onclick="copyLink()">Copy Link</a>
-  </div>
+        <input type="text" id="nameInput" placeholder="Apna naam likhiye">
+        <br>
+        <button onclick="generate()">Wish Banao</button>
+    </div>
+
+    <div class="footer">
+        Rangon ke is tyohar ki hardik shubhkamnaye 🎉
+    </div>
 </div>
 
 <script>
-const params = new URLSearchParams(window.location.search);
-const name = params.get("name");
+const urlParams = new URLSearchParams(window.location.search);
+const name = urlParams.get("name");
+
 if(name){
-  document.getElementById("showName").innerText =
-  "🎉 " + name + " ki taraf se Happy Holi 🎉";
-  document.getElementById("shareBox").style.display="block";
+    document.getElementById("wishText").innerHTML =
+    "<div class='name'>" + name + " ki taraf se<br>Happy Holi 🎨🌈</div>";
 }
 
 function generate(){
-  const n = document.getElementById("nameInput").value.trim();
-  if(!n){ alert("Naam likhiye"); return; }
-  window.location.href = window.location.pathname + "?name=" + encodeURIComponent(n);
-}
-
-document.getElementById("wa").href =
-"https://wa.me/?text=" + encodeURIComponent(
-"🌸 Happy Holi 🌸\nDekho Holi Wishes Website 👇\n" + window.location.href
-);
-
-function copyLink(){
-  navigator.clipboard.writeText(window.location.href);
-  alert("Link copy ho gaya 👍");
-}
-
-// color rain
-for(let i=0;i<80;i++){
-  let c=document.createElement("div");
-  c.className="color";
-  c.style.left=Math.random()*100+"%";
-  c.style.background=`hsl(${Math.random()*360},100%,50%)`;
-  c.style.animationDuration=(3+Math.random()*5)+"s";
-  document.body.appendChild(c);
+    const n = document.getElementById("nameInput").value;
+    if(n){
+        window.location.href = "?name=" + encodeURIComponent(n);
+    }
 }
 </script>
-
 </body>
 </html>
