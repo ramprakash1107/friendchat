@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Happy Holi Mega</title>
+<title>Happy Holi – Ramprakash</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Hind:wght@400;600;700&display=swap" rel="stylesheet">
 
@@ -16,35 +16,37 @@ min-height:100vh;
 overflow-x:hidden;
 color:#fff;
 text-align:center;
-background:linear-gradient(270deg,#ff005d,#ffea00,#00e5ff,#7cff00,#ff005d);
-background-size:1000% 1000%;
-animation:bgMove 10s ease infinite;
+background:linear-gradient(270deg,#ff004c,#ffeb3b,#00e5ff,#7cff00,#ff004c);
+background-size:1200% 1200%;
+animation:bgAI 12s ease infinite;
 }
-@keyframes bgMove{
+@keyframes bgAI{
 0%{background-position:0%}
 50%{background-position:100%}
 100%{background-position:0%}
 }
 
+/* Main Card */
 .container{
 max-width:360px;
-margin:70px auto 150px;
+margin:70px auto 160px;
 padding:22px;
-border-radius:28px;
+border-radius:30px;
 background:rgba(0,0,0,0.35);
-backdrop-filter:blur(10px);
-box-shadow:0 0 40px rgba(0,0,0,0.6);
+backdrop-filter:blur(12px);
+box-shadow:0 0 45px rgba(0,0,0,0.7);
 }
 
+/* Name */
 #fromName{
 font-size:32px;
 font-weight:700;
-text-shadow:0 0 20px #fff,0 0 40px #ff0;
-animation:pulse 2s infinite alternate;
+text-shadow:0 0 20px #fff,0 0 45px #ff0;
+animation:glowAI 2s infinite alternate;
 }
-@keyframes pulse{
+@keyframes glowAI{
 from{transform:scale(1)}
-to{transform:scale(1.05)}
+to{transform:scale(1.06)}
 }
 
 h1{
@@ -53,16 +55,18 @@ font-size:30px;
 text-shadow:0 0 20px #ff0,0 0 40px #f00;
 }
 
-#timer{margin:10px 0;font-size:15px}
+#timer{font-size:15px;margin:10px 0}
 
+/* Image */
 img{
 width:100%;
-border-radius:22px;
+border-radius:24px;
 box-shadow:0 0 25px rgba(0,0,0,0.6);
-transition:transform .4s;
+transition:.4s;
 }
-img:hover{transform:rotate(-1deg) scale(1.03)}
+img:hover{transform:rotate(-1deg) scale(1.04)}
 
+/* Input */
 input{
 width:90%;
 padding:12px;
@@ -73,6 +77,7 @@ font-size:15px;
 margin:12px 0;
 }
 
+/* Buttons */
 button{
 border:none;
 padding:12px 22px;
@@ -83,11 +88,12 @@ margin:6px;
 cursor:pointer;
 transition:.3s;
 }
-button:hover{transform:scale(1.08)}
+button:hover{transform:scale(1.1)}
 
 .whatsapp{background:#25D366;color:#fff}
 .dj{background:linear-gradient(45deg,#ff004c,#ffeb3b,#00ff9d);color:#000}
 
+/* Bottom Credit */
 .bottom{
 position:fixed;
 bottom:0;
@@ -97,6 +103,7 @@ background:#000;
 padding:10px;
 font-size:14px;
 }
+.bottom a{color:#ff4ecd;text-decoration:none;font-weight:600}
 
 /* Effects */
 .drop{
@@ -108,11 +115,10 @@ animation:fall linear infinite;
 @keyframes fall{
 to{transform:translateY(120vh) rotate(720deg);opacity:0}
 }
-
 .float{
 position:fixed;
 font-size:12px;
-opacity:.4;
+opacity:.45;
 animation:float 14s linear infinite;
 }
 @keyframes float{
@@ -129,12 +135,11 @@ to{transform:translateY(-10vh)}
 <div>की तरफ से होली की हार्दिक शुभकामनाएं</div>
 
 <h1>🎉 HAPPY HOLI 🎨</h1>
-
 <div id="timer"></div>
 
 <img src="https://i.postimg.cc/3xv9rQKp/holi-colors.jpg">
 
-<p id="quote">रंगों से भरो जीवन 🌈</p>
+<p id="aiQuote">AI कहता है: रंग खुशियां लाते हैं 🌈</p>
 
 <input id="nameInput" placeholder="अपना नाम लिखें">
 
@@ -143,16 +148,22 @@ to{transform:translateY(-10vh)}
 <button class="dj" id="djBtn" onclick="toggleDJ()">🔊 DJ PLAY</button>
 </div>
 
-<div class="bottom">Holi Mega Website 💥</div>
+<div class="bottom">
+Website created by <b>Ramprakash</b> |
+<a href="https://www.instagram.com/rp_gupta_07/" target="_blank">
+@rp_gupta_07
+</a>
+</div>
 
 <audio id="dj" loop>
 <source src="https://cdn.pixabay.com/audio/2022/03/15/audio_8e6f65d3b2.mp3">
 </audio>
 
 <script>
-// URL name
+// AI Name detect
 let p=new URLSearchParams(location.search);
-if(p.get("name"))fromName.innerText=decodeURIComponent(p.get("name"));
+let finalName=p.get("name");
+if(finalName)fromName.innerText=decodeURIComponent(finalName);
 
 // Timer
 let target=new Date("2026-03-04T00:00:00").getTime();
@@ -166,20 +177,20 @@ let S=Math.floor(d%60000/1000);
 timer.innerText=`⏳ ${D} दिन ${H} घं ${M} मि ${S} से`;
 },1000);
 
-// Quotes
+// AI Quotes
 const quotes=[
-"रंगों से भरो जीवन 🌈",
-"खुशियों की हो बौछार 🎊",
-"प्यार के रंग होली 🎨",
-"मस्ती और धमाल 💃"
+"AI कहता है: रंगों में खुशियां छुपी हैं 🌈",
+"AI कहता है: मुस्कान सबसे सुंदर रंग है 😊",
+"AI कहता है: प्यार की होली मनाओ ❤️",
+"AI कहता है: आज मस्ती जरूरी है 🎉"
 ];
 setInterval(()=>{
-quote.innerText=quotes[Math.floor(Math.random()*quotes.length)];
+aiQuote.innerText=quotes[Math.floor(Math.random()*quotes.length)];
 },3000);
 
 // Share
 function share(){
-let n=nameInput.value||"Aapka Dost";
+let n=nameInput.value||fromName.innerText;
 let l=location.origin+location.pathname+"?name="+encodeURIComponent(n);
 let m=`🎉 Happy Holi 🎨\n\n${n} की तरफ से होली की शुभकामनाएं 🌈\n\n${l}`;
 open("https://wa.me/?text="+encodeURIComponent(m));
@@ -204,7 +215,7 @@ play=false;
 
 // Effects
 const em=["🎨","🔴","🟡","🟢","🔵","🟣","🌈"];
-for(let i=0;i<25;i++){
+for(let i=0;i<30;i++){
 let e=document.createElement("div");
 e.className="drop";
 e.innerText=em[Math.floor(Math.random()*em.length)];
@@ -212,7 +223,7 @@ e.style.left=Math.random()*100+"vw";
 e.style.animationDuration=4+Math.random()*6+"s";
 document.body.appendChild(e);
 }
-for(let i=0;i<12;i++){
+for(let i=0;i<15;i++){
 let t=document.createElement("div");
 t.className="float";
 t.innerText="Happy Holi";
