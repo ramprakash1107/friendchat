@@ -2,81 +2,77 @@
 <html lang="hi">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Happy Holi Wishes</title>
-
-<!-- Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-KSGFTG4F9W"></script>
-<script>
-window.dataLayer=window.dataLayer||[];
-function gtag(){dataLayer.push(arguments);}
-gtag('js',new Date());
-gtag('config','G-KSGFTG4F9W');
-</script>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Happy Holi Mega</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Hind:wght@400;600;700&display=swap" rel="stylesheet">
 
 <style>
+*{box-sizing:border-box}
 body{
 margin:0;
 font-family:'Hind',sans-serif;
-background:linear-gradient(135deg,#ff005d,#ffea00,#00e5ff,#7cff00);
-background-size:400% 400%;
-animation:bg 8s infinite alternate;
+min-height:100vh;
+overflow-x:hidden;
 color:#fff;
 text-align:center;
-overflow-x:hidden;
-min-height:100vh;
+background:linear-gradient(270deg,#ff005d,#ffea00,#00e5ff,#7cff00,#ff005d);
+background-size:1000% 1000%;
+animation:bgMove 10s ease infinite;
 }
-@keyframes bg{
+@keyframes bgMove{
 0%{background-position:0%}
-100%{background-position:100%}
+50%{background-position:100%}
+100%{background-position:0%}
 }
 
-/* Container */
 .container{
 max-width:360px;
-margin:70px auto 140px;
-padding:20px;
-border-radius:25px;
-background:rgba(0,0,0,0.25);
-box-shadow:0 0 30px rgba(0,0,0,0.6);
+margin:70px auto 150px;
+padding:22px;
+border-radius:28px;
+background:rgba(0,0,0,0.35);
+backdrop-filter:blur(10px);
+box-shadow:0 0 40px rgba(0,0,0,0.6);
 }
 
-/* Name */
 #fromName{
 font-size:32px;
 font-weight:700;
-text-shadow:0 0 15px #fff;
+text-shadow:0 0 20px #fff,0 0 40px #ff0;
+animation:pulse 2s infinite alternate;
+}
+@keyframes pulse{
+from{transform:scale(1)}
+to{transform:scale(1.05)}
 }
 
-/* Head */
 h1{
-font-size:30px;
-text-shadow:0 0 20px #ff0;
 margin:10px 0;
+font-size:30px;
+text-shadow:0 0 20px #ff0,0 0 40px #f00;
 }
 
-/* Image */
+#timer{margin:10px 0;font-size:15px}
+
 img{
 width:100%;
-border-radius:20px;
-box-shadow:0 0 20px rgba(0,0,0,0.5);
-margin:10px 0;
+border-radius:22px;
+box-shadow:0 0 25px rgba(0,0,0,0.6);
+transition:transform .4s;
 }
+img:hover{transform:rotate(-1deg) scale(1.03)}
 
-/* Inputs */
 input{
 width:90%;
 padding:12px;
 border-radius:30px;
 border:none;
-font-size:15px;
 outline:none;
-margin-bottom:12px;
+font-size:15px;
+margin:12px 0;
 }
 
-/* Buttons */
 button{
 border:none;
 padding:12px 22px;
@@ -85,14 +81,13 @@ font-size:16px;
 font-weight:700;
 margin:6px;
 cursor:pointer;
+transition:.3s;
 }
+button:hover{transform:scale(1.08)}
 
-.whatsapp{background:#25D366;color:#fff;}
-.dj{background:linear-gradient(45deg,#ff004c,#ffeb3b,#00ff9d);color:#000;}
+.whatsapp{background:#25D366;color:#fff}
+.dj{background:linear-gradient(45deg,#ff004c,#ffeb3b,#00ff9d);color:#000}
 
-#timer{font-size:15px;margin:10px 0}
-
-/* Bottom */
 .bottom{
 position:fixed;
 bottom:0;
@@ -103,27 +98,26 @@ padding:10px;
 font-size:14px;
 }
 
-/* Falling Colors */
-.color{
+/* Effects */
+.drop{
 position:fixed;
 top:-40px;
 font-size:22px;
 animation:fall linear infinite;
 }
 @keyframes fall{
-to{transform:translateY(110vh) rotate(720deg);opacity:0;}
+to{transform:translateY(120vh) rotate(720deg);opacity:0}
 }
 
-/* Floating Text */
 .float{
 position:fixed;
 font-size:12px;
-color:rgba(255,255,255,0.4);
+opacity:.4;
 animation:float 14s linear infinite;
 }
 @keyframes float{
-from{transform:translateY(100vh);}
-to{transform:translateY(-10vh);}
+from{transform:translateY(100vh)}
+to{transform:translateY(-10vh)}
 }
 </style>
 </head>
@@ -131,7 +125,6 @@ to{transform:translateY(-10vh);}
 <body>
 
 <div class="container">
-
 <div id="fromName">रामप्रकाश</div>
 <div>की तरफ से होली की हार्दिक शुभकामनाएं</div>
 
@@ -141,57 +134,56 @@ to{transform:translateY(-10vh);}
 
 <img src="https://i.postimg.cc/3xv9rQKp/holi-colors.jpg">
 
-<div>
-रंगों की बौछार 🌈<br>
-खुशियों की बहार 🎊
-</div>
+<p id="quote">रंगों से भरो जीवन 🌈</p>
 
 <input id="nameInput" placeholder="अपना नाम लिखें">
 
 <button class="whatsapp" onclick="share()">WhatsApp Share</button>
-<button class="whatsapp" onclick="shareGroup()">Group Share</button>
-<button class="dj" id="djBtn" onclick="toggleDJ()">🔊 DJ Play</button>
-
+<button class="whatsapp" onclick="share()">Group Share</button>
+<button class="dj" id="djBtn" onclick="toggleDJ()">🔊 DJ PLAY</button>
 </div>
 
-<div class="bottom">
-Website by @rp_gupta_07
-</div>
+<div class="bottom">Holi Mega Website 💥</div>
 
-<!-- DJ Sound -->
 <audio id="dj" loop>
 <source src="https://cdn.pixabay.com/audio/2022/03/15/audio_8e6f65d3b2.mp3">
 </audio>
 
 <script>
-// URL Name
-const p=new URLSearchParams(location.search);
-if(p.get("name")){
-document.getElementById("fromName").innerText=decodeURIComponent(p.get("name"));
-}
+// URL name
+let p=new URLSearchParams(location.search);
+if(p.get("name"))fromName.innerText=decodeURIComponent(p.get("name"));
 
 // Timer
-const target=new Date("2026-03-04T00:00:00").getTime();
+let target=new Date("2026-03-04T00:00:00").getTime();
 setInterval(()=>{
 let d=target-Date.now();
 if(d<0)return;
-let day=Math.floor(d/86400000);
-let h=Math.floor(d%86400000/3600000);
-let m=Math.floor(d%3600000/60000);
-let s=Math.floor(d%60000/1000);
-timer.innerText=`⏳ ${day} दिन ${h} घं ${m} मि ${s} से`;
+let D=Math.floor(d/86400000);
+let H=Math.floor(d%86400000/3600000);
+let M=Math.floor(d%3600000/60000);
+let S=Math.floor(d%60000/1000);
+timer.innerText=`⏳ ${D} दिन ${H} घं ${M} मि ${S} से`;
 },1000);
+
+// Quotes
+const quotes=[
+"रंगों से भरो जीवन 🌈",
+"खुशियों की हो बौछार 🎊",
+"प्यार के रंग होली 🎨",
+"मस्ती और धमाल 💃"
+];
+setInterval(()=>{
+quote.innerText=quotes[Math.floor(Math.random()*quotes.length)];
+},3000);
 
 // Share
 function share(){
 let n=nameInput.value||"Aapka Dost";
 let l=location.origin+location.pathname+"?name="+encodeURIComponent(n);
-let msg=`🎉 Happy Holi 🎨\n\n${n} ki taraf se Holi ki shubhkamnaye 🌈\n\n${l}`;
-open("https://wa.me/?text="+encodeURIComponent(msg));
+let m=`🎉 Happy Holi 🎨\n\n${n} की तरफ से होली की शुभकामनाएं 🌈\n\n${l}`;
+open("https://wa.me/?text="+encodeURIComponent(m));
 }
-
-// Group Share
-function shareGroup(){ share(); }
 
 // DJ
 let play=false;
@@ -199,28 +191,28 @@ function toggleDJ(){
 let d=document.getElementById("dj");
 let b=document.getElementById("djBtn");
 if(!play){
-d.play();d.volume=0.9;
-b.innerText="⏸ DJ Stop";
-if(navigator.vibrate)navigator.vibrate([200,100,200]);
+d.play();d.volume=.9;
+b.innerText="⏸ DJ STOP";
+if(navigator.vibrate)navigator.vibrate([200,100,200,100,200]);
 play=true;
 }else{
 d.pause();
-b.innerText="🔊 DJ Play";
+b.innerText="🔊 DJ PLAY";
 play=false;
 }
 }
 
 // Effects
-const em=["🎨","🔴","🟡","🟢","🔵","🟣"];
-for(let i=0;i<20;i++){
+const em=["🎨","🔴","🟡","🟢","🔵","🟣","🌈"];
+for(let i=0;i<25;i++){
 let e=document.createElement("div");
-e.className="color";
+e.className="drop";
 e.innerText=em[Math.floor(Math.random()*em.length)];
 e.style.left=Math.random()*100+"vw";
-e.style.animationDuration=5+Math.random()*6+"s";
+e.style.animationDuration=4+Math.random()*6+"s";
 document.body.appendChild(e);
 }
-for(let i=0;i<10;i++){
+for(let i=0;i<12;i++){
 let t=document.createElement("div");
 t.className="float";
 t.innerText="Happy Holi";
