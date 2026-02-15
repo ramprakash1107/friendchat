@@ -1,228 +1,129 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Happy Holi – Ramprakash</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Hind:wght@400;600;700&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>3D Wallpaper</title>
 
 <style>
-*{box-sizing:border-box}
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
 body{
-margin:0;
-font-family:'Hind',sans-serif;
-min-height:100vh;
-overflow-x:hidden;
-color:#fff;
-text-align:center;
-background:linear-gradient(270deg,#ff004c,#ffeb3b,#00e5ff,#7cff00,#ff004c);
-background-size:1200% 1200%;
-animation:bgFlow 12s ease infinite;
-}
-@keyframes bgFlow{
-0%{background-position:0%}
-50%{background-position:100%}
-100%{background-position:0%}
+  height:100vh;
+  overflow:hidden;
+  background:radial-gradient(circle at top,#1a1a3d,#000);
+  font-family:Arial, sans-serif;
+  perspective:1000px;
 }
 
-.container{
-max-width:360px;
-margin:70px auto 160px;
-padding:24px;
-border-radius:32px;
-background:rgba(0,0,0,0.38);
-backdrop-filter:blur(14px);
-box-shadow:0 0 50px rgba(0,0,0,0.7);
+/* 3D container */
+.scene{
+  width:100%;
+  height:100%;
+  display:flex;
+  justify-content:center;
+  align-items:center;
 }
 
-#fromName{
-font-size:32px;
-font-weight:700;
-text-shadow:0 0 25px #fff,0 0 50px #ff0;
-animation:pulse 2s infinite alternate;
-}
-@keyframes pulse{
-from{transform:scale(1)}
-to{transform:scale(1.06)}
-}
-
-h1{
-margin:10px 0;
-font-size:30px;
-text-shadow:0 0 25px #ff0,0 0 45px #f00;
+/* Card */
+.card{
+  width:320px;
+  height:480px;
+  border-radius:20px;
+  background:linear-gradient(135deg,#ff00cc,#3333ff);
+  box-shadow:0 30px 80px rgba(0,0,0,0.6);
+  transform-style:preserve-3d;
+  transition:transform 0.1s linear;
+  position:relative;
 }
 
-#timer{font-size:15px;margin:10px 0}
-
-input{
-width:90%;
-padding:12px;
-border-radius:30px;
-border:none;
-outline:none;
-font-size:15px;
-margin:14px 0;
+/* Glow */
+.card::before{
+  content:'';
+  position:absolute;
+  inset:-2px;
+  border-radius:22px;
+  background:linear-gradient(45deg,#00f,#f0f,#0ff);
+  filter:blur(25px);
+  z-index:-1;
 }
 
-button{
-border:none;
-padding:12px 24px;
-border-radius:30px;
-font-size:16px;
-font-weight:700;
-margin:6px;
-cursor:pointer;
-transition:.3s;
-}
-button:hover{transform:scale(1.12)}
-
-.whatsapp{background:#25D366;color:#fff}
-.dj{background:linear-gradient(45deg,#ff004c,#ffeb3b,#00ff9d);color:#000}
-
-.bottom{
-position:fixed;
-bottom:0;
-left:0;
-width:100%;
-background:#000;
-padding:10px;
-font-size:14px;
-}
-.bottom a{
-color:#ff4ecd;
-text-decoration:none;
-font-weight:600;
+/* Text */
+.title{
+  position:absolute;
+  top:40%;
+  width:100%;
+  text-align:center;
+  font-size:28px;
+  color:#fff;
+  transform:translateZ(60px);
+  letter-spacing:2px;
 }
 
-/* Visual Effects */
-.drop{
-position:fixed;
-top:-40px;
-font-size:22px;
-animation:fall linear infinite;
-}
-@keyframes fall{
-to{transform:translateY(120vh) rotate(720deg);opacity:0}
+.sub{
+  position:absolute;
+  top:50%;
+  width:100%;
+  text-align:center;
+  font-size:14px;
+  color:#eee;
+  transform:translateZ(40px);
 }
 
-.float{
-position:fixed;
-font-size:12px;
-opacity:.45;
-animation:float 14s linear infinite;
+/* Particles */
+.particle{
+  position:absolute;
+  width:4px;
+  height:4px;
+  background:white;
+  border-radius:50%;
+  opacity:0.7;
+  animation:float 6s infinite linear;
 }
+
 @keyframes float{
-from{transform:translateY(100vh)}
-to{transform:translateY(-10vh)}
+  from{
+    transform:translateY(100vh);
+    opacity:0;
+  }
+  to{
+    transform:translateY(-100vh);
+    opacity:1;
+  }
 }
 </style>
 </head>
 
 <body>
 
-<div class="container">
-<div id="fromName">रामप्रकाश</div>
-<div>की तरफ से होली की हार्दिक शुभकामनाएं</div>
-
-<h1>🎉 HAPPY HOLI 🎨</h1>
-<div id="timer"></div>
-
-<p id="smartMsg">रंग, मस्ती और खुशियों का दिन 🌈</p>
-
-<input id="nameInput" placeholder="अपना नाम लिखें">
-
-<button class="whatsapp" onclick="share()">WhatsApp Share</button>
-<button class="whatsapp" onclick="share()">Group Share</button>
-<button class="dj" id="djBtn" onclick="toggleDJ()">🔊 DJ PLAY</button>
+<div class="scene">
+  <div class="card" id="card">
+    <div class="title">3D WALLPAPER</div>
+    <div class="sub">Built by You 💻🔥</div>
+  </div>
 </div>
-
-<div class="bottom">
-Website created by <b>Ramprakash</b> |
-<a href="https://www.instagram.com/rp_gupta_07/" target="_blank">
-@rp_gupta_07
-</a>
-</div>
-
-<audio id="dj" loop>
-<source src="https://cdn.pixabay.com/audio/2022/03/15/audio_8e6f65d3b2.mp3">
-</audio>
 
 <script>
-// Name Engine
-let p=new URLSearchParams(location.search);
-if(p.get("name")){
-fromName.innerText=decodeURIComponent(p.get("name"));
-localStorage.setItem("holiName",fromName.innerText);
-}else if(localStorage.getItem("holiName")){
-fromName.innerText=localStorage.getItem("holiName");
-}
+const card = document.getElementById("card");
 
-// Timer
-let target=new Date("2026-03-04T00:00:00").getTime();
-setInterval(()=>{
-let d=target-Date.now();
-if(d<0)return;
-let D=Math.floor(d/86400000);
-let H=Math.floor(d%86400000/3600000);
-let M=Math.floor(d%3600000/60000);
-let S=Math.floor(d%60000/1000);
-timer.innerText=`⏳ ${D} दिन ${H} घं ${M} मि ${S} से`;
-},1000);
+// Mouse / touch 3D effect
+document.addEventListener("mousemove", e=>{
+  let x = (window.innerWidth/2 - e.clientX)/20;
+  let y = (window.innerHeight/2 - e.clientY)/20;
+  card.style.transform = `rotateY(${x}deg) rotateX(${y}deg)`;
+});
 
-// Smart Messages
-const msgs=[
-"रंगों से भरो जीवन 🌈",
-"आज सिर्फ खुशियां 🎊",
-"होली है – मस्ती जरूरी 💃",
-"प्यार के रंग सबसे सुंदर ❤️"
-];
-setInterval(()=>{
-smartMsg.innerText=msgs[Math.floor(Math.random()*msgs.length)];
-},4000);
-
-// Share
-function share(){
-let n=nameInput.value||fromName.innerText;
-let l=location.origin+location.pathname+"?name="+encodeURIComponent(n);
-let m=`🎉 Happy Holi 🎨\n\n${n} की तरफ से होली की शुभकामनाएं 🌈\n\n${l}`;
-open("https://wa.me/?text="+encodeURIComponent(m));
-}
-
-// DJ System
-let play=false;
-function toggleDJ(){
-let d=document.getElementById("dj");
-let b=document.getElementById("djBtn");
-if(!play){
-d.play();d.volume=.9;
-b.innerText="⏸ DJ STOP";
-if(navigator.vibrate)navigator.vibrate([200,100,200,100,200]);
-play=true;
-}else{
-d.pause();
-b.innerText="🔊 DJ PLAY";
-play=false;
-}
-}
-
-// Effects Engine
-const em=["🎨","🔴","🟡","🟢","🔵","🟣","🌈"];
-for(let i=0;i<35;i++){
-let e=document.createElement("div");
-e.className="drop";
-e.innerText=em[Math.floor(Math.random()*em.length)];
-e.style.left=Math.random()*100+"vw";
-e.style.animationDuration=4+Math.random()*6+"s";
-document.body.appendChild(e);
-}
-for(let i=0;i<18;i++){
-let t=document.createElement("div");
-t.className="float";
-t.innerText="Happy Holi";
-t.style.left=Math.random()*100+"vw";
-t.style.animationDuration=10+Math.random()*10+"s";
-document.body.appendChild(t);
+// Particles create
+for(let i=0;i<40;i++){
+  let p=document.createElement("div");
+  p.className="particle";
+  p.style.left=Math.random()*100+"%";
+  p.style.animationDelay=Math.random()*6+"s";
+  p.style.animationDuration=4+Math.random()*6+"s";
+  document.body.appendChild(p);
 }
 </script>
 
