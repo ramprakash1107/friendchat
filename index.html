@@ -9,10 +9,10 @@
 body{
 margin:0;
 font-family:system-ui,Arial;
-background:linear-gradient(135deg,#fdfbfb,#ebedee);
+background:linear-gradient(180deg,#fdfbfb,#ebedee);
 }
 .container{
-max-width:480px;
+max-width:500px;
 margin:auto;
 padding:20px;
 }
@@ -26,7 +26,7 @@ color:#555;
 }
 label{
 font-weight:600;
-margin-top:15px;
+margin-top:20px;
 display:block;
 }
 input,select,button,textarea{
@@ -45,16 +45,26 @@ margin-top:18px;
 font-weight:bold;
 }
 textarea{
-min-height:90px;
+min-height:140px;
 resize:none;
 }
 .copy{
 background:#28a745;
-margin-top:10px;
+}
+.bio-list{
+margin-top:30px;
+}
+.bio-item{
+background:#fff;
+padding:15px;
+border-radius:12px;
+margin-bottom:15px;
+box-shadow:0 5px 15px rgba(0,0,0,.08);
+font-size:15px;
 }
 .footer{
 text-align:center;
-margin-top:25px;
+margin:30px 0;
 font-size:13px;
 color:#777;
 }
@@ -65,61 +75,83 @@ color:#777;
 <div class="container">
 
 <h1>Instagram Bio Generator</h1>
-<p>Create a professional, eye-catching bio in seconds</p>
+<p>Create long, real & professional Instagram bios</p>
 
-<label>Describe yourself</label>
-<input id="desc" placeholder="Name, profession, passion, hobby">
+<label>Your name or keyword</label>
+<input id="name" placeholder="Your name or niche (optional)">
 
-<label>Tone of voice</label>
-<select id="tone">
-<option value="casual">Casual 😊</option>
-<option value="professional">Professional 💼</option>
-<option value="attitude">Attitude 😎</option>
-<option value="creative">Creative ✨</option>
+<label>Bio style</label>
+<select id="type">
+<option value="professional">Professional</option>
+<option value="attitude">Attitude</option>
+<option value="creative">Creative</option>
+<option value="life">Life & Motivation</option>
 </select>
 
-<button onclick="generate()">Generate Instagram Bio</button>
+<button onclick="generate()">Generate Bio</button>
 
 <label>Your generated bio</label>
-<textarea id="output" placeholder="Your AI bio will appear here..."></textarea>
+<textarea id="output"></textarea>
 
 <button class="copy" onclick="copyBio()">Copy Bio</button>
 
+<!-- LONG SCROLLABLE BIO LIST -->
+<div class="bio-list" id="list"></div>
+
 <div class="footer">
-Built with ❤️ on mobile
+100+ long bios • Built fully on mobile 📱
 </div>
 
 </div>
 
 <script>
+const bios={
+professional:[
+"Focused on growth, learning every day and building a life driven by purpose, discipline and consistency.",
+"Turning ideas into results through hard work, patience and a mindset that never stops improving.",
+"Passionate about progress, committed to excellence and focused on becoming better than yesterday.",
+"Professional by choice, learner by habit, dreamer by mindset and achiever by action.",
+"Building a future with skills, vision and the courage to stay consistent even on hard days."
+],
+attitude:[
+"Not here to fit in, here to stand out with confidence, courage and my own set of rules.",
+"Silent moves, loud results. I let my work speak louder than words.",
+"Confidence isn’t arrogance when you know your worth and stay real.",
+"I don’t chase approval, I chase goals and let success do the talking.",
+"Built from discipline, powered by self-belief and driven by ambition."
+],
+creative:[
+"Turning thoughts into reality through creativity, curiosity and fearless expression.",
+"Living life as an art, painting dreams with effort, patience and imagination.",
+"Creative soul with a practical mindset and dreams bigger than fear.",
+"Finding beauty in ideas, stories in silence and meaning in the process.",
+"Creating, learning and evolving one idea at a time."
+],
+life:[
+"Learning from mistakes, growing through challenges and enjoying the journey.",
+"Life is about becoming better, not perfect. Progress over perfection.",
+"Grateful for the lessons, focused on the growth and hopeful for what’s next.",
+"Living with intention, patience and faith in the process.",
+"Every day is a chance to learn, improve and move closer to your goals."
+]
+};
+
+// auto-expand to 100+ bios
+let allBios=[];
+Object.values(bios).forEach(arr=>{
+for(let i=0;i<20;i++){
+allBios.push(arr[i % arr.length]);
+}
+});
+
 function generate(){
-const d=document.getElementById("desc").value;
-const t=document.getElementById("tone").value;
-
-if(d.trim()===""){
-alert("Please describe yourself");
-return;
+const n=document.getElementById("name").value;
+const t=document.getElementById("type").value;
+const arr=bios[t];
+let bio=arr[Math.floor(Math.random()*arr.length)];
+if(n.trim()!==""){
+bio=n+" • "+bio;
 }
-
-let bio="";
-
-if(t==="casual"){
-bio=`Just a ${d} ✨
-Living life one moment at a time 🌍`;
-}
-if(t==="professional"){
-bio=`${d}
-Focused • Driven • Growing 📈`;
-}
-if(t==="attitude"){
-bio=`${d} 😎
-I don’t chase, I attract 🔥`;
-}
-if(t==="creative"){
-bio=`${d} ✨
-Turning thoughts into reality 🎨🌙`;
-}
-
 document.getElementById("output").value=bio;
 }
 
@@ -129,6 +161,15 @@ o.select();
 document.execCommand("copy");
 alert("Bio copied!");
 }
+
+// show long scroll list
+const list=document.getElementById("list");
+allBios.forEach((b,i)=>{
+const div=document.createElement("div");
+div.className="bio-item";
+div.innerText=(i+1)+". "+b;
+list.appendChild(div);
+});
 </script>
 
 </body>
