@@ -3,127 +3,100 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>3D Wallpaper</title>
-
+<title>Instagram Bio Generator</title>
 <style>
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-}
 body{
-  height:100vh;
-  overflow:hidden;
-  background:radial-gradient(circle at top,#1a1a3d,#000);
-  font-family:Arial, sans-serif;
-  perspective:1000px;
+font-family: Arial;
+background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+color:#fff;
+text-align:center;
+padding:20px;
 }
-
-/* 3D container */
-.scene{
-  width:100%;
-  height:100%;
-  display:flex;
-  justify-content:center;
-  align-items:center;
+.box{
+max-width:420px;
+margin:auto;
+background:rgba(0,0,0,0.4);
+padding:20px;
+border-radius:15px;
 }
-
-/* Card */
-.card{
-  width:320px;
-  height:480px;
-  border-radius:20px;
-  background:linear-gradient(135deg,#ff00cc,#3333ff);
-  box-shadow:0 30px 80px rgba(0,0,0,0.6);
-  transform-style:preserve-3d;
-  transition:transform 0.1s linear;
-  position:relative;
+select,button{
+width:100%;
+padding:12px;
+margin:10px 0;
+border-radius:10px;
+border:none;
+font-size:16px;
 }
-
-/* Glow */
-.card::before{
-  content:'';
-  position:absolute;
-  inset:-2px;
-  border-radius:22px;
-  background:linear-gradient(45deg,#00f,#f0f,#0ff);
-  filter:blur(25px);
-  z-index:-1;
+button{
+background:#ff9800;
+color:#000;
+font-weight:bold;
 }
-
-/* Text */
-.title{
-  position:absolute;
-  top:40%;
-  width:100%;
-  text-align:center;
-  font-size:28px;
-  color:#fff;
-  transform:translateZ(60px);
-  letter-spacing:2px;
+#result{
+margin-top:15px;
+font-size:18px;
+min-height:60px;
 }
-
-.sub{
-  position:absolute;
-  top:50%;
-  width:100%;
-  text-align:center;
-  font-size:14px;
-  color:#eee;
-  transform:translateZ(40px);
-}
-
-/* Particles */
-.particle{
-  position:absolute;
-  width:4px;
-  height:4px;
-  background:white;
-  border-radius:50%;
-  opacity:0.7;
-  animation:float 6s infinite linear;
-}
-
-@keyframes float{
-  from{
-    transform:translateY(100vh);
-    opacity:0;
-  }
-  to{
-    transform:translateY(-100vh);
-    opacity:1;
-  }
+.copy{
+background:#4caf50;
 }
 </style>
 </head>
-
 <body>
 
-<div class="scene">
-  <div class="card" id="card">
-    <div class="title">3D WALLPAPER</div>
-    <div class="sub">Built by You 💻🔥</div>
-  </div>
+<div class="box">
+<h2>Instagram Bio Generator</h2>
+
+<select id="type">
+<option value="attitude">🔥 Attitude</option>
+<option value="love">❤️ Love</option>
+<option value="sad">🥀 Sad</option>
+<option value="pro">💼 Professional</option>
+</select>
+
+<button onclick="generate()">Generate Bio</button>
+
+<div id="result"></div>
+
+<button class="copy" onclick="copyBio()">Copy Bio</button>
 </div>
 
 <script>
-const card = document.getElementById("card");
+const bios={
+attitude:[
+"Born to express, not to impress 😎",
+"Silent but deadly 🔥",
+"Attitude on point 💯"
+],
+love:[
+"Spreading love ❤️",
+"Heart full of dreams 💫",
+"Love is my language 💕"
+],
+sad:[
+"Smiles hide stories 🥀",
+"Broken but breathing 💔",
+"Silence hurts the most 🌙"
+],
+pro:[
+"Digital creator 💼",
+"Focused on growth 📈",
+"Building my future 🚀"
+]
+};
 
-// Mouse / touch 3D effect
-document.addEventListener("mousemove", e=>{
-  let x = (window.innerWidth/2 - e.clientX)/20;
-  let y = (window.innerHeight/2 - e.clientY)/20;
-  card.style.transform = `rotateY(${x}deg) rotateX(${y}deg)`;
-});
+function generate(){
+const t=document.getElementById("type").value;
+const arr=bios[t];
+document.getElementById("result").innerText=
+arr[Math.floor(Math.random()*arr.length)];
+}
 
-// Particles create
-for(let i=0;i<40;i++){
-  let p=document.createElement("div");
-  p.className="particle";
-  p.style.left=Math.random()*100+"%";
-  p.style.animationDelay=Math.random()*6+"s";
-  p.style.animationDuration=4+Math.random()*6+"s";
-  document.body.appendChild(p);
+function copyBio(){
+navigator.clipboard.writeText(
+document.getElementById("result").innerText
+);
+alert("Bio Copied!");
 }
 </script>
 
