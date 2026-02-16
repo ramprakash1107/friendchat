@@ -25,7 +25,7 @@ body{
   100%{background-position:100% 50%}
 }
 
-/* Color drops */
+/* Color animation */
 .drop{
   position:fixed;
   top:-30px;
@@ -36,12 +36,12 @@ body{
   to{transform:translateY(110vh) rotate(360deg);opacity:0}
 }
 
-/* Page */
+/* Card */
 .page{
   max-width:380px;
   margin:80px auto 120px;
   padding:24px;
-  background:rgba(255,255,255,.2);
+  background:rgba(255,255,255,.22);
   backdrop-filter:blur(12px);
   border-radius:26px;
   box-shadow:0 0 35px rgba(0,0,0,.45);
@@ -70,6 +70,18 @@ h1{
   margin:16px 0;
 }
 
+/* Holi Image */
+.holi-art img{
+  width:100%;
+  max-height:320px;
+  object-fit:contain;
+  border-radius:22px;
+  background:#fff;
+  padding:10px;
+  margin:16px 0;
+  box-shadow:0 0 25px rgba(0,0,0,.35);
+}
+
 input{
   width:90%;
   padding:12px;
@@ -95,10 +107,9 @@ button{
 .music{background:#9c27b0;color:#fff}
 .back{background:#03a9f4;color:#fff}
 
-/* Hide */
 .hide{display:none}
 
-/* Bottom */
+/* Bottom bar */
 .bottom{
   position:fixed;
   bottom:0;
@@ -120,20 +131,25 @@ button{
 <!-- PAGE 1 -->
 <div class="page" id="page1">
   <div id="fromName">रामप्रकाश</div>
-  <div class="sub">की तरफ से होली की शुभकामनाएं</div>
+  <div class="sub">की तरफ से होली की हार्दिक शुभकामनाएं</div>
 
   <h1>🎉 Happy Holi 🎉</h1>
 
+  <!-- PHOTO -->
+  <div class="holi-art">
+    <img src="holi.jpeg" alt="Happy Holi">
+  </div>
+
   <div class="msg">
-    इस होली रंगों की तरह<br>
-    आपके जीवन में खुशियाँ भर जाएं 🌈
+    इस होली आपके जीवन में<br>
+    खुशियों और रंगों की भरमार हो 🌈
   </div>
 
   <input type="text" id="nameInput" placeholder="यहाँ अपना नाम लिखें">
 
   <button class="whatsapp" onclick="shareWhatsApp()">WhatsApp पर शेयर</button>
   <button class="next" onclick="openSecond()">Next Surprise 🎁</button>
-  <button class="music" onclick="toggleMusic()">🎵 Bhojpuri Holi Song</button>
+  <button class="music" onclick="toggleMusic()">🎵 Music ON / OFF</button>
 </div>
 
 <!-- PAGE 2 -->
@@ -144,7 +160,7 @@ button{
     गुलाल की खुशबू,<br>
     अपनों का प्यार,<br>
     मुबारक हो आपको<br>
-    खुशियों भरी होली का त्योहार 🎊
+    रंगों भरी होली का त्योहार 🎊
   </div>
 
   <button class="back" onclick="goBack()">⬅ Back</button>
@@ -156,56 +172,60 @@ button{
   <a href="https://www.instagram.com/rp_gupta_07/" target="_blank">@rp_gupta_07</a>
 </div>
 
-<!-- Bhojpuri Holi Music -->
-<audio id="music" loop>
-  <!-- Bhojpuri Holi instrumental / remix -->
-  <source src="https://cdn.pixabay.com/audio/2023/03/30/audio_8c52b9f0a6.mp3">
+<!-- YOUR OWN SONG -->
+<audio id="bgMusic" loop>
+  <source src="song.mp3" type="audio/mpeg">
 </audio>
 
 <script>
 /* Name from URL */
 const p=new URLSearchParams(location.search);
 const n=p.get("name");
-if(n) document.getElementById("fromName").innerText=decodeURIComponent(n);
+if(n){
+  document.getElementById("fromName").innerText=decodeURIComponent(n);
+}
 
 /* Page switch */
 function openSecond(){
- document.getElementById("page1").classList.add("hide");
- document.getElementById("page2").classList.remove("hide");
+  document.getElementById("page1").classList.add("hide");
+  document.getElementById("page2").classList.remove("hide");
 }
 function goBack(){
- document.getElementById("page2").classList.add("hide");
- document.getElementById("page1").classList.remove("hide");
+  document.getElementById("page2").classList.add("hide");
+  document.getElementById("page1").classList.remove("hide");
 }
 
-/* WhatsApp */
+/* WhatsApp Share */
 function shareWhatsApp(){
- const name=document.getElementById("nameInput").value.trim();
- if(!name){alert("नाम लिखिए");return;}
- const link=location.origin+location.pathname+"?name="+encodeURIComponent(name);
- const msg=`🎉 Happy Holi 🎉
+  const name=document.getElementById("nameInput").value.trim();
+  if(!name){
+    alert("कृपया नाम लिखें");
+    return;
+  }
+  const link=location.origin+location.pathname+"?name="+encodeURIComponent(name);
+  const msg=`🎉 Happy Holi 🎉
 ${name} की तरफ से
 ${link}`;
- window.open("https://wa.me/?text="+encodeURIComponent(msg));
+  window.open("https://wa.me/?text="+encodeURIComponent(msg));
 }
 
 /* Music */
 let play=false;
 function toggleMusic(){
- const m=document.getElementById("music");
- play=!play;
- play?m.play():m.pause();
+  const m=document.getElementById("bgMusic");
+  play=!play;
+  play ? m.play() : m.pause();
 }
 
 /* Color drops */
-const c=["🎨","🌸","🟡","🔴","🔵","💥"];
+const colors=["🎨","🌸","🔴","🟡","🔵","💥"];
 for(let i=0;i<30;i++){
- const d=document.createElement("div");
- d.className="drop";
- d.innerText=c[Math.floor(Math.random()*c.length)];
- d.style.left=Math.random()*100+"vw";
- d.style.animationDuration=5+Math.random()*6+"s";
- document.body.appendChild(d);
+  const d=document.createElement("div");
+  d.className="drop";
+  d.innerText=colors[Math.floor(Math.random()*colors.length)];
+  d.style.left=Math.random()*100+"vw";
+  d.style.animationDuration=5+Math.random()*6+"s";
+  document.body.appendChild(d);
 }
 </script>
 
