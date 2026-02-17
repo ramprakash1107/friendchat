@@ -3,108 +3,235 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Happy Holi – Tomer</title>
+
+<title>Happy Holi Wishes</title>
+
+<!-- Hindi Font -->
+<link href="https://fonts.googleapis.com/css2?family=Hind:wght@400;600;700&display=swap" rel="stylesheet">
 
 <style>
 body{
-    margin:0;
-    font-family: 'Poppins', sans-serif;
-    background: linear-gradient(135deg,#ff512f,#f09819);
-    color:#fff;
-    text-align:center;
+  margin:0;
+  font-family:'Hind', sans-serif;
+  background:linear-gradient(135deg,#ff0080,#ff8c00,#00c6ff);
+  color:#fff;
+  text-align:center;
+  min-height:100vh;
+  overflow-x:hidden;
 }
+
+/* Color drops */
+.color{
+  position:fixed;
+  top:-40px;
+  font-size:22px;
+  animation:fall linear infinite;
+}
+@keyframes fall{
+  to{
+    transform:translateY(110vh) rotate(360deg);
+    opacity:0;
+  }
+}
+
+/* Floating text */
+.floating{
+  position:fixed;
+  font-size:12px;
+  color:rgba(255,255,255,0.4);
+  animation:float 14s linear infinite;
+}
+@keyframes float{
+  from{transform:translateY(100vh);}
+  to{transform:translateY(-10vh);}
+}
+
+/* Top Insta */
+.top-insta{
+  position:fixed;
+  top:12px;
+  right:14px;
+  font-size:14px;
+}
+.top-insta a{
+  color:#fff;
+  text-decoration:none;
+  font-weight:600;
+}
+
+/* Card */
 .container{
-    padding:20px;
+  max-width:360px;
+  margin:70px auto 130px;
+  padding:20px;
+  border-radius:22px;
+  background:rgba(255,255,255,0.15);
+  box-shadow:0 0 25px rgba(0,0,0,0.4);
 }
-.card{
-    background: rgba(255,255,255,0.15);
-    border-radius:20px;
-    padding:25px;
-    margin-top:30px;
-    box-shadow:0 10px 30px rgba(0,0,0,0.3);
+
+#fromName{
+  font-size:30px;
+  font-weight:700;
+  text-shadow:0 0 15px #fff;
 }
+
+.sub{
+  font-size:17px;
+  margin:8px 0 12px;
+}
+
 h1{
-    font-size:32px;
-    margin-bottom:10px;
+  font-size:28px;
+  margin:10px 0;
+  text-shadow:0 0 14px yellow;
 }
-.name{
-    font-size:26px;
-    font-weight:bold;
-    color:#ffff66;
+
+img{
+  width:100%;
+  max-height:360px;
+  object-fit:cover;
+  border-radius:20px;
+  box-shadow:0 0 18px rgba(0,0,0,0.45);
 }
-.wish{
-    font-size:18px;
-    line-height:1.6;
-    margin-top:15px;
+
+.msg{
+  font-size:15px;
+  margin:15px 0;
 }
-.colors{
-    font-size:40px;
-    margin:20px 0;
+
+input{
+  width:90%;
+  padding:11px;
+  border-radius:22px;
+  border:none;
+  outline:none;
+  margin-bottom:12px;
+  font-size:15px;
 }
-.footer{
-    margin-top:30px;
-    font-size:14px;
-    opacity:0.8;
-}
+
 button{
-    margin-top:20px;
-    padding:10px 20px;
-    font-size:16px;
-    border:none;
-    border-radius:10px;
-    background:#00ffcc;
-    color:#000;
-    font-weight:bold;
-    cursor:pointer;
+  border:none;
+  padding:11px 20px;
+  border-radius:22px;
+  font-size:16px;
+  cursor:pointer;
 }
-button:active{
-    transform:scale(0.95);
+
+.whatsapp{
+  background:#25D366;
+  color:#fff;
+  margin-bottom:10px;
+}
+
+/* Bottom bar */
+.bottom{
+  position:fixed;
+  bottom:0;
+  left:0;
+  width:100%;
+  background:#000;
+  padding:10px;
+  font-size:15px;
+}
+.bottom a{
+  color:#ffcc00;
+  text-decoration:none;
+  font-weight:600;
 }
 </style>
 </head>
 
 <body>
 
+<!-- Top Instagram -->
+<div class="top-insta">
+  <a href="intent://instagram.com/_u/rp_gupta_07#Intent;package=com.instagram.android;scheme=https;end;"
+     onclick="fallbackInsta(event)">
+    @rp_gupta_07
+  </a>
+</div>
+
 <div class="container">
-    <div class="card">
-        <h1>🎨 Happy Holi 🎨</h1>
 
-        <div class="colors">🌈 🔴 🟡 🔵 🟢 🌸</div>
+  <div id="fromName">Tomer</div>
+  <div class="sub">की तरफ से होली की हार्दिक शुभकामनाएं</div>
 
-        <div class="wish">
-            Rango ka ye tyohar laaye<br>
-            aapki zindagi me khushiyan hazaar 💖<br>
-            Har rang ho pyar ka,<br>
-            har din ho khushhaal ✨
-        </div>
+  <h1>🎨 Happy Holi 🎨</h1>
+  <div>रंगों का त्योहार</div>
 
-        <div class="wish">
-            Aapko aur aapke parivaar ko<br>
-            <b>Holi ki hardik shubhkamnayein</b> 🌸
-        </div>
+  <img src="https://i.postimg.cc/7Y8Pp1p6/holi-colors.jpg">
 
-        <div class="name">
-            – Tomer
-        </div>
+  <div class="msg">
+    इस होली आपके जीवन में<br>
+    खुशियों के रंग भर जाएँ 🌈<br>
+    प्यार, शांति और सफलता मिले ✨
+  </div>
 
-        <button onclick="copyWish()">Copy Wish</button>
-    </div>
+  <input type="text" id="nameInput" placeholder="यहाँ अपना नाम लिखें">
 
-    <div class="footer">
-        Made with ❤️ for Holi
-    </div>
+  <button class="whatsapp" onclick="shareWhatsApp()">
+    WhatsApp पर शेयर करें
+  </button>
+
+</div>
+
+<!-- Bottom credit -->
+<div class="bottom">
+  Website Designed by
+  <a href="intent://instagram.com/_u/rp_gupta_07#Intent;package=com.instagram.android;scheme=https;end;"
+     onclick="fallbackInsta(event)">
+    @rp_gupta_07
+  </a>
 </div>
 
 <script>
-function copyWish(){
-    const text = `Happy Holi 🌈
+// Instagram fallback
+function fallbackInsta(e){
+  setTimeout(()=>{
+    window.location.href="https://www.instagram.com/rp_gupta_07/";
+  },600);
+}
 
-Rango ka ye tyohar laaye aapki zindagi me khushiyan hazaar.
-Holi ki hardik shubhkamnayein 🌸
+// URL Name
+const params = new URLSearchParams(window.location.search);
+const name = params.get("name");
+if(name){
+  document.getElementById("fromName").innerText = decodeURIComponent(name);
+}
 
-– Tomer`;
-    navigator.clipboard.writeText(text);
-    alert("Holi wish copied ✅");
+// WhatsApp share
+function shareWhatsApp(){
+  const n=document.getElementById("nameInput").value.trim();
+  if(!n){
+    alert("कृपया अपना नाम लिखें");
+    return;
+  }
+  const link=window.location.origin+window.location.pathname+"?name="+encodeURIComponent(n);
+  const msg=`🎨 Happy Holi 🎨
+${n} की तरफ से होली की शुभकामनाएं 🌈
+${link}`;
+  window.open("https://wa.me/?text="+encodeURIComponent(msg));
+}
+
+// Color drops
+const colors=["🎨","🌸","💛","💙","❤️","💚"];
+for(let i=0;i<18;i++){
+  const c=document.createElement("div");
+  c.className="color";
+  c.innerText=colors[Math.floor(Math.random()*colors.length)];
+  c.style.left=Math.random()*100+"vw";
+  c.style.animationDuration=5+Math.random()*5+"s";
+  document.body.appendChild(c);
+}
+
+// Floating text
+for(let i=0;i<10;i++){
+  const t=document.createElement("div");
+  t.className="floating";
+  t.innerText="Happy Holi";
+  t.style.left=Math.random()*100+"vw";
+  t.style.animationDuration=10+Math.random()*10+"s";
+  document.body.appendChild(t);
 }
 </script>
 
