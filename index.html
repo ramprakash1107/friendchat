@@ -2,71 +2,107 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Instagram Profile Analyzer</title>
+<title>Instagram Bio Generator</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
 body{
-  font-family:Arial;
-  background:#111;
-  color:#fff;
-  text-align:center;
+  margin:0;
+  font-family:Arial, sans-serif;
+  background:#f2f2f2;
 }
-input{
+.box{
+  max-width:420px;
+  margin:30px auto;
+  background:#fff;
+  padding:20px;
+  border-radius:12px;
+  box-shadow:0 0 15px rgba(0,0,0,0.1);
+}
+h2{text-align:center;}
+select,button{
+  width:100%;
   padding:12px;
-  width:260px;
-  border-radius:6px;
-  border:none;
+  margin-top:10px;
+  border-radius:8px;
+  border:1px solid #ccc;
+  font-size:16px;
 }
 button{
-  padding:12px 20px;
-  margin-left:5px;
-  border:none;
-  border-radius:6px;
   background:#e1306c;
   color:#fff;
+  border:none;
   cursor:pointer;
 }
-iframe{
-  margin-top:20px;
-  border:none;
-}
-.note{
-  font-size:13px;
-  color:#ccc;
+#bio{
   margin-top:15px;
+  padding:15px;
+  background:#f9f9f9;
+  border-radius:8px;
+  white-space:pre-line;
+  font-size:16px;
+}
+.copy{
+  background:#000;
+  margin-top:8px;
 }
 </style>
 </head>
 
 <body>
+<div class="box">
+<h2>Instagram Bio Generator</h2>
 
-<h2>Instagram Profile Checker</h2>
+<select id="type">
+  <option value="hindi">Hindi Bio</option>
+  <option value="english">English Bio</option>
+  <option value="ai">AI Style Bio</option>
+</select>
 
-<input id="user" placeholder="Instagram username">
-<button onclick="load()">Check</button>
+<button onclick="generate()">Generate Bio</button>
 
-<div id="embed"></div>
+<div id="bio">👇 Generate your bio</div>
 
-<div class="note">
-⚠ Instagram does not allow public access to followers data.<br>
-Profile preview is shown using official embed only.
+<button class="copy" onclick="copyBio()">Copy Bio</button>
 </div>
 
 <script>
-function load(){
-  let u = document.getElementById("user").value.trim();
-  if(u===""){
-    alert("Enter username");
-    return;
-  }
+const hindi = [
+"😈 Name :- Kisko Malum\n❤️ Lover :- Meri Maa\n🙏 Mahakal Ka Bhakt\n💪 Gym Freak\n😎 Attitude Depends On You",
+"😎 Simple Boy\n🎧 Music Lover\n🏏 Cricket My Fav\n🔥 Badmash Boy",
+"👑 Apni Rani Ka Raja\n💪 Fitness Lover\n🙏 Mahakal Bhakt\n🎂 Wish Me On {date}"
+];
 
-  document.getElementById("embed").innerHTML = `
-  <iframe src="https://www.instagram.com/${u}/embed"
-  width="320" height="440"></iframe>
-  `;
+const english = [
+"😎 Simple Boy\n💪 Gym Addict\n🎧 Music Lover\n🔥 Attitude Depends On You",
+"👑 King of My World\n❤️ Mom + Dad\n🏏 Cricket Lover\n🎂 Wish Me On {date}",
+"😈 Bad Boy\n💯 Single\n😎 No Need Bio"
+];
+
+const ai = [
+"😎 Built different\n💪 Gym in my blood\n🎧 Music heals\n🔥 Silent but dangerous",
+"👑 Living my own rules\n❤️ Family first\n💪 Fitness mode on",
+"😈 Not perfect but real\n😎 Attitude with class\n🔥 Focused mindset"
+];
+
+function generate(){
+  let t = document.getElementById("type").value;
+  let list = t==="hindi"?hindi : t==="english"?english : ai;
+
+  let bio = list[Math.floor(Math.random()*list.length)];
+  let date = Math.floor(Math.random()*28)+1 + " " +
+             ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
+             [Math.floor(Math.random()*12)];
+
+  bio = bio.replace("{date}",date);
+  document.getElementById("bio").innerText = bio;
+}
+
+function copyBio(){
+  let text = document.getElementById("bio").innerText;
+  navigator.clipboard.writeText(text);
+  alert("Bio Copied!");
 }
 </script>
-
 </body>
 </html>
