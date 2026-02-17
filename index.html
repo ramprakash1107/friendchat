@@ -2,10 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport"
-content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Private Friend Chat</title>
-
 <style>
 :root{ --vh:1vh; }
 *{ box-sizing:border-box; }
@@ -217,10 +215,26 @@ const msgInput = document.getElementById("msg");
 let user="", room="", chatRef, typingRef, userRef;
 
 /* ENTER CHAT */
-enterBtn.addEventListener("click", ()=>{
+enterBtn.addEventListener("click", async ()=>{
   user = usernameInput.value.trim();
   room = roomInput.value.trim();
   if(!user||!room){ alert("Name aur Room code likho"); return; }
+
+  // CLEAR OLD CHAT
+  chatDiv.innerHTML = "";
+  typingDiv.textContent = "";
+
+  // CHECK USERNAME UNIQUE
+  const userRefCheck = ref(db,`rooms/${room}/users/${user}`);
+  let exists = false;
+  await onValue(userRefCheck, snap=>{
+    if(snap.exists()) exists = true;
+  }, { onlyOnce:true });
+
+  if(exists){
+    alert("Ye username is room me already exist karta hai! Alag name try karo.");
+    return;
+  }
 
   loginBox.style.display="none";
   chatScreen.style.display="flex";
@@ -255,12 +269,10 @@ enterBtn.addEventListener("click", ()=>{
     div.innerHTML = (m.user===user ? m.text : "<b>"+m.user+"</b><br>"+m.text);
     chatDiv.appendChild(div);
 
-    // Seen
     if(m.user!==user){
       update(ref(db,`rooms/${room}/messages/${snap.key}`),{seen:true});
     }
 
-    // Sent/Seen label for own messages
     if(m.user===user){
       const seenDiv = document.createElement("div");
       seenDiv.className="seen";
