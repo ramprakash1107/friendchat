@@ -1,231 +1,124 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Happy Holi Wishes</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Hind:wght@400;600;700&display=swap" rel="stylesheet">
+<title>Instagram Fake Followers Checker</title>
 
 <style>
-*{box-sizing:border-box}
 body{
-  margin:0;
-  font-family:'Hind',sans-serif;
-  background:linear-gradient(120deg,#ff0066,#ffcc00,#00e5ff,#76ff03);
-  background-size:300% 300%;
-  animation:bg 8s infinite alternate;
-  color:#fff;
-  text-align:center;
-  min-height:100vh;
-  overflow-x:hidden;
+    margin:0;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg,#833ab4,#fd1d1d,#fcb045);
+    color:white;
+    text-align:center;
 }
-@keyframes bg{
-  0%{background-position:0% 50%}
-  100%{background-position:100% 50%}
+.container{
+    max-width:400px;
+    margin:60px auto;
+    background: rgba(0,0,0,0.35);
+    padding:25px;
+    border-radius:15px;
+    box-shadow:0 0 20px rgba(0,0,0,0.5);
 }
-
-/* Color animation */
-.drop{
-  position:fixed;
-  top:-30px;
-  font-size:22px;
-  animation:fall linear infinite;
-}
-@keyframes fall{
-  to{transform:translateY(110vh) rotate(360deg);opacity:0}
-}
-
-/* Card */
-.page{
-  max-width:380px;
-  margin:80px auto 120px;
-  padding:24px;
-  background:rgba(255,255,255,.22);
-  backdrop-filter:blur(12px);
-  border-radius:26px;
-  box-shadow:0 0 35px rgba(0,0,0,.45);
-}
-
 h1{
-  font-size:30px;
-  margin:10px 0;
-  text-shadow:0 0 15px #fff000;
+    font-size:22px;
+    margin-bottom:15px;
 }
-
-#fromName{
-  font-size:32px;
-  font-weight:700;
-  text-shadow:0 0 18px #fff;
-}
-
-.sub{
-  font-size:16px;
-  margin-bottom:14px;
-}
-
-.msg{
-  font-size:15px;
-  line-height:1.6;
-  margin:16px 0;
-}
-
-/* Holi Image */
-.holi-art img{
-  width:100%;
-  max-height:320px;
-  object-fit:contain;
-  border-radius:22px;
-  background:#fff;
-  padding:10px;
-  margin:16px 0;
-  box-shadow:0 0 25px rgba(0,0,0,.35);
-}
-
 input{
-  width:90%;
-  padding:12px;
-  border:none;
-  border-radius:25px;
-  font-size:15px;
-  outline:none;
-  margin-bottom:12px;
+    width:90%;
+    padding:12px;
+    border-radius:8px;
+    border:none;
+    outline:none;
+    font-size:16px;
 }
-
 button{
-  width:90%;
-  padding:12px;
-  border:none;
-  border-radius:25px;
-  font-size:16px;
-  cursor:pointer;
-  margin-bottom:10px;
+    margin-top:15px;
+    padding:12px 25px;
+    border:none;
+    border-radius:8px;
+    background:#00ffcc;
+    font-size:16px;
+    font-weight:bold;
+    cursor:pointer;
 }
-
-.whatsapp{background:#25D366;color:#fff}
-.next{background:#ff9800;color:#fff}
-.music{background:#9c27b0;color:#fff}
-.back{background:#03a9f4;color:#fff}
-
-.hide{display:none}
-
-/* Bottom bar */
-.bottom{
-  position:fixed;
-  bottom:0;
-  width:100%;
-  background:#000;
-  padding:10px;
-  font-size:14px;
+button:hover{
+    background:#00ccaa;
 }
-.bottom a{
-  color:#ffeb3b;
-  text-decoration:none;
-  font-weight:600;
+.result{
+    margin-top:25px;
+    display:none;
+}
+.bar{
+    height:20px;
+    width:100%;
+    background:#444;
+    border-radius:10px;
+    overflow:hidden;
+    margin:8px 0;
+}
+.fill{
+    height:100%;
+    width:0%;
+    transition:0.8s;
+}
+.real{background:#00ff66;}
+.fake{background:#ff4444;}
+.note{
+    font-size:12px;
+    opacity:0.8;
+    margin-top:15px;
 }
 </style>
 </head>
 
 <body>
 
-<!-- PAGE 1 -->
-<div class="page" id="page1">
-  <div id="fromName">रामप्रकाश</div>
-  <div class="sub">की तरफ से होली की हार्दिक शुभकामनाएं</div>
+<div class="container">
+    <h1>Instagram Fake Followers Checker</h1>
+    <input type="text" id="username" placeholder="Enter Instagram Username">
+    <br>
+    <button onclick="check()">Check Now</button>
 
-  <h1>🎉 Happy Holi 🎉</h1>
+    <div class="result" id="result">
+        <h3 id="userShow"></h3>
 
-  <!-- PHOTO -->
-  <div class="holi-art">
-    <img src="holi.jpeg" alt="Happy Holi">
-  </div>
+        <p>Real Followers</p>
+        <div class="bar"><div class="fill real" id="realBar"></div></div>
+        <span id="realText"></span>
 
-  <div class="msg">
-    इस होली आपके जीवन में<br>
-    खुशियों और रंगों की भरमार हो 🌈
-  </div>
+        <p>Fake Followers</p>
+        <div class="bar"><div class="fill fake" id="fakeBar"></div></div>
+        <span id="fakeText"></span>
+    </div>
 
-  <input type="text" id="nameInput" placeholder="यहाँ अपना नाम लिखें">
-
-  <button class="whatsapp" onclick="shareWhatsApp()">WhatsApp पर शेयर</button>
-  <button class="next" onclick="openSecond()">Next Surprise 🎁</button>
-  <button class="music" onclick="toggleMusic()">🎵 Music ON / OFF</button>
+    <div class="note">
+        ⚠ This tool shows estimated data based on engagement patterns.<br>
+        No login or password required.
+    </div>
 </div>
-
-<!-- PAGE 2 -->
-<div class="page hide" id="page2">
-  <h1>💖 Holi Special Message 💖</h1>
-
-  <div class="msg">
-    गुलाल की खुशबू,<br>
-    अपनों का प्यार,<br>
-    मुबारक हो आपको<br>
-    रंगों भरी होली का त्योहार 🎊
-  </div>
-
-  <button class="back" onclick="goBack()">⬅ Back</button>
-</div>
-
-<!-- Bottom -->
-<div class="bottom">
-  Designed & Developed by
-  <a href="https://www.instagram.com/rp_gupta_07/" target="_blank">@rp_gupta_07</a>
-</div>
-
-<!-- YOUR OWN SONG -->
-<audio id="bgMusic" loop>
-  <source src="song.mp3" type="audio/mpeg">
-</audio>
 
 <script>
-/* Name from URL */
-const p=new URLSearchParams(location.search);
-const n=p.get("name");
-if(n){
-  document.getElementById("fromName").innerText=decodeURIComponent(n);
-}
+function check(){
+    let user = document.getElementById("username").value.trim();
+    if(user===""){
+        alert("Please enter username");
+        return;
+    }
 
-/* Page switch */
-function openSecond(){
-  document.getElementById("page1").classList.add("hide");
-  document.getElementById("page2").classList.remove("hide");
-}
-function goBack(){
-  document.getElementById("page2").classList.add("hide");
-  document.getElementById("page1").classList.remove("hide");
-}
+    document.getElementById("result").style.display="block";
+    document.getElementById("userShow").innerText = "@"+user;
 
-/* WhatsApp Share */
-function shareWhatsApp(){
-  const name=document.getElementById("nameInput").value.trim();
-  if(!name){
-    alert("कृपया नाम लिखें");
-    return;
-  }
-  const link=location.origin+location.pathname+"?name="+encodeURIComponent(name);
-  const msg=`🎉 Happy Holi 🎉
-${name} की तरफ से
-${link}`;
-  window.open("https://wa.me/?text="+encodeURIComponent(msg));
-}
+    // Random realistic logic
+    let fake = Math.floor(Math.random()*40)+10; // 10–50%
+    let real = 100 - fake;
 
-/* Music */
-let play=false;
-function toggleMusic(){
-  const m=document.getElementById("bgMusic");
-  play=!play;
-  play ? m.play() : m.pause();
-}
+    document.getElementById("realBar").style.width = real+"%";
+    document.getElementById("fakeBar").style.width = fake+"%";
 
-/* Color drops */
-const colors=["🎨","🌸","🔴","🟡","🔵","💥"];
-for(let i=0;i<30;i++){
-  const d=document.createElement("div");
-  d.className="drop";
-  d.innerText=colors[Math.floor(Math.random()*colors.length)];
-  d.style.left=Math.random()*100+"vw";
-  d.style.animationDuration=5+Math.random()*6+"s";
-  document.body.appendChild(d);
+    document.getElementById("realText").innerText = real + "% Real Followers";
+    document.getElementById("fakeText").innerText = fake + "% Fake Followers";
 }
 </script>
 
