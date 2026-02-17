@@ -2,107 +2,136 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Instagram Bio Generator</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>30,000+ Instagram Bios</title>
 
 <style>
 body{
-  margin:0;
-  font-family:Arial, sans-serif;
-  background:#f2f2f2;
+    margin:0;
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+    color:#fff;
 }
-.box{
-  max-width:420px;
-  margin:30px auto;
-  background:#fff;
-  padding:20px;
-  border-radius:12px;
-  box-shadow:0 0 15px rgba(0,0,0,0.1);
+header{
+    position:sticky;
+    top:0;
+    background:#000;
+    padding:15px;
+    text-align:center;
+    font-size:22px;
+    font-weight:600;
+    z-index:10;
 }
-h2{text-align:center;}
-select,button{
-  width:100%;
-  padding:12px;
-  margin-top:10px;
-  border-radius:8px;
-  border:1px solid #ccc;
-  font-size:16px;
+#container{
+    padding:15px;
 }
-button{
-  background:#e1306c;
-  color:#fff;
-  border:none;
-  cursor:pointer;
-}
-#bio{
-  margin-top:15px;
-  padding:15px;
-  background:#f9f9f9;
-  border-radius:8px;
-  white-space:pre-line;
-  font-size:16px;
+.bio{
+    background:rgba(255,255,255,0.08);
+    border-radius:12px;
+    padding:15px;
+    margin-bottom:12px;
+    box-shadow:0 0 10px rgba(0,0,0,0.3);
 }
 .copy{
-  background:#000;
-  margin-top:8px;
+    margin-top:10px;
+    background:#00ffcc;
+    border:none;
+    padding:8px 15px;
+    border-radius:8px;
+    font-weight:600;
+    cursor:pointer;
+}
+.copy:active{
+    transform:scale(0.95);
+}
+.footer{
+    text-align:center;
+    padding:20px;
+    font-size:14px;
+    opacity:0.7;
 }
 </style>
 </head>
 
 <body>
-<div class="box">
-<h2>Instagram Bio Generator</h2>
 
-<select id="type">
-  <option value="hindi">Hindi Bio</option>
-  <option value="english">English Bio</option>
-  <option value="ai">AI Style Bio</option>
-</select>
+<header>🔥 30,000+ Instagram Bios 🔥</header>
 
-<button onclick="generate()">Generate Bio</button>
+<div id="container"></div>
 
-<div id="bio">👇 Generate your bio</div>
-
-<button class="copy" onclick="copyBio()">Copy Bio</button>
+<div class="footer">
+    Scroll more to load unlimited bios 👇
 </div>
 
 <script>
-const hindi = [
-"😈 Name :- Kisko Malum\n❤️ Lover :- Meri Maa\n🙏 Mahakal Ka Bhakt\n💪 Gym Freak\n😎 Attitude Depends On You",
-"😎 Simple Boy\n🎧 Music Lover\n🏏 Cricket My Fav\n🔥 Badmash Boy",
-"👑 Apni Rani Ka Raja\n💪 Fitness Lover\n🙏 Mahakal Bhakt\n🎂 Wish Me On {date}"
+const emojis = ["🔥","😎","💫","👑","🖤","✨","💀","💸","🚀","🌍","🎧","📸","⚡"];
+const lines1 = [
+"Living life on my own rules",
+"Born to express not to impress",
+"Silent moves, loud results",
+"Dream big, hustle harder",
+"Creating my own sunshine",
+"Not perfect but limited edition",
+"Focus on goals, not people",
+"Confidence is my attitude"
+];
+const lines2 = [
+"Music | Travel | Freedom",
+"Work hard in silence",
+"Mindset matters more than money",
+"Simple boy with royal dreams",
+"Heart full of dreams",
+"Self made, self paid",
+"Eyes on future goals"
+];
+const lines3 = [
+"DM for collaboration",
+"Be real or stay away",
+"Success loading…",
+"Trust vibes not words",
+"Stay loyal stay strong",
+"Peace over everything"
 ];
 
-const english = [
-"😎 Simple Boy\n💪 Gym Addict\n🎧 Music Lover\n🔥 Attitude Depends On You",
-"👑 King of My World\n❤️ Mom + Dad\n🏏 Cricket Lover\n🎂 Wish Me On {date}",
-"😈 Bad Boy\n💯 Single\n😎 No Need Bio"
-];
+let count = 0;
+const maxBios = 30000;
+const container = document.getElementById("container");
 
-const ai = [
-"😎 Built different\n💪 Gym in my blood\n🎧 Music heals\n🔥 Silent but dangerous",
-"👑 Living my own rules\n❤️ Family first\n💪 Fitness mode on",
-"😈 Not perfect but real\n😎 Attitude with class\n🔥 Focused mindset"
-];
-
-function generate(){
-  let t = document.getElementById("type").value;
-  let list = t==="hindi"?hindi : t==="english"?english : ai;
-
-  let bio = list[Math.floor(Math.random()*list.length)];
-  let date = Math.floor(Math.random()*28)+1 + " " +
-             ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
-             [Math.floor(Math.random()*12)];
-
-  bio = bio.replace("{date}",date);
-  document.getElementById("bio").innerText = bio;
+function random(arr){
+    return arr[Math.floor(Math.random()*arr.length)];
 }
 
-function copyBio(){
-  let text = document.getElementById("bio").innerText;
-  navigator.clipboard.writeText(text);
-  alert("Bio Copied!");
+function generateBio(){
+    return `${random(emojis)} ${random(lines1)}\n${random(lines2)}\n${random(emojis)} ${random(lines3)}`;
 }
+
+function loadBios(batch=50){
+    for(let i=0;i<batch && count<maxBios;i++){
+        count++;
+        const div = document.createElement("div");
+        div.className = "bio";
+        const text = generateBio();
+        div.innerHTML = `
+            <pre>${text}</pre>
+            <button class="copy">Copy Bio</button>
+        `;
+        div.querySelector(".copy").onclick = ()=>{
+            navigator.clipboard.writeText(text);
+            div.querySelector(".copy").innerText="Copied ✅";
+            setTimeout(()=>div.querySelector(".copy").innerText="Copy Bio",1500);
+        };
+        container.appendChild(div);
+    }
+}
+
+loadBios(100);
+
+window.addEventListener("scroll",()=>{
+    if(window.innerHeight + window.scrollY >= document.body.offsetHeight - 200){
+        loadBios(50);
+    }
+});
 </script>
+
 </body>
 </html>
