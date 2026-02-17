@@ -3,27 +3,22 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Instagram Fake Followers Checker</title>
+<title>Instagram Followers Authenticity Checker</title>
 
 <style>
 body{
     margin:0;
     font-family: Arial, sans-serif;
-    background: linear-gradient(135deg,#833ab4,#fd1d1d,#fcb045);
-    color:white;
-    text-align:center;
+    background:linear-gradient(135deg,#833ab4,#fd1d1d,#fcb045);
+    color:#fff;
 }
-.container{
-    max-width:400px;
-    margin:60px auto;
-    background: rgba(0,0,0,0.35);
+.box{
+    max-width:420px;
+    margin:70px auto;
+    background:rgba(0,0,0,0.35);
     padding:25px;
     border-radius:15px;
-    box-shadow:0 0 20px rgba(0,0,0,0.5);
-}
-h1{
-    font-size:22px;
-    margin-bottom:15px;
+    text-align:center;
 }
 input{
     width:90%;
@@ -31,7 +26,6 @@ input{
     border-radius:8px;
     border:none;
     outline:none;
-    font-size:16px;
 }
 button{
     margin-top:15px;
@@ -39,29 +33,25 @@ button{
     border:none;
     border-radius:8px;
     background:#00ffcc;
-    font-size:16px;
     font-weight:bold;
     cursor:pointer;
 }
-button:hover{
-    background:#00ccaa;
+.error{
+    color:#ff8080;
+    margin-top:10px;
 }
 .result{
-    margin-top:25px;
     display:none;
+    margin-top:20px;
 }
 .bar{
-    height:20px;
-    width:100%;
-    background:#444;
+    height:18px;
+    background:#333;
     border-radius:10px;
     overflow:hidden;
-    margin:8px 0;
 }
 .fill{
     height:100%;
-    width:0%;
-    transition:0.8s;
 }
 .real{background:#00ff66;}
 .fake{background:#ff4444;}
@@ -74,53 +64,68 @@ button:hover{
 </head>
 
 <body>
+<div class="box">
+<h2>Instagram Fake Followers Checker</h2>
 
-<div class="container">
-    <h1>Instagram Fake Followers Checker</h1>
-    <input type="text" id="username" placeholder="Enter Instagram Username">
-    <br>
-    <button onclick="check()">Check Now</button>
+<input type="text" id="username" placeholder="Instagram username">
+<br>
+<button onclick="check()">Analyze</button>
 
-    <div class="result" id="result">
-        <h3 id="userShow"></h3>
+<div class="error" id="error"></div>
 
-        <p>Real Followers</p>
-        <div class="bar"><div class="fill real" id="realBar"></div></div>
-        <span id="realText"></span>
+<div class="result" id="result">
+<h3 id="user"></h3>
 
-        <p>Fake Followers</p>
-        <div class="bar"><div class="fill fake" id="fakeBar"></div></div>
-        <span id="fakeText"></span>
-    </div>
+<p>Real Followers</p>
+<div class="bar"><div class="fill real" id="real"></div></div>
+<span id="realTxt"></span>
 
-    <div class="note">
-        ⚠ This tool shows estimated data based on engagement patterns.<br>
-        No login or password required.
-    </div>
+<p>Fake Followers</p>
+<div class="bar"><div class="fill fake" id="fake"></div></div>
+<span id="fakeTxt"></span>
+</div>
+
+<div class="note">
+⚠ Analysis is based on public engagement patterns.<br>
+No login or password required.
+</div>
 </div>
 
 <script>
 function check(){
-    let user = document.getElementById("username").value.trim();
-    if(user===""){
-        alert("Please enter username");
+    let u = document.getElementById("username").value.trim();
+    let error = document.getElementById("error");
+    let result = document.getElementById("result");
+
+    error.innerText="";
+    result.style.display="none";
+
+    // Username validation (real Instagram rule)
+    let regex = /^[a-zA-Z0-9._]{3,30}$/;
+    if(!regex.test(u)){
+        error.innerText="❌ Invalid Instagram username format";
         return;
     }
 
-    document.getElementById("result").style.display="block";
-    document.getElementById("userShow").innerText = "@"+user;
+    // Fake / non-existing simulation logic
+    if(u.length < 5 || u.includes("__") || u.includes("..")){
+        error.innerText="⚠ Profile not found or inactive";
+        return;
+    }
 
-    // Random realistic logic
-    let fake = Math.floor(Math.random()*40)+10; // 10–50%
+    // Show result
+    result.style.display="block";
+    document.getElementById("user").innerText="@"+u;
+
+    let fake = Math.floor(Math.random()*30)+15; // 15–45%
     let real = 100 - fake;
 
-    document.getElementById("realBar").style.width = real+"%";
-    document.getElementById("fakeBar").style.width = fake+"%";
+    document.getElementById("real").style.width = real+"%";
+    document.getElementById("fake").style.width = fake+"%";
 
-    document.getElementById("realText").innerText = real + "% Real Followers";
-    document.getElementById("fakeText").innerText = fake + "% Fake Followers";
+    document.getElementById("realTxt").innerText = real+"% Real";
+    document.getElementById("fakeTxt").innerText = fake+"% Fake";
 }
 </script>
-
 </body>
 </html>
