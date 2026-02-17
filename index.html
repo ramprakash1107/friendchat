@@ -2,130 +2,71 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<title>Instagram Profile Analyzer</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Instagram Followers Authenticity Checker</title>
 
 <style>
 body{
-    margin:0;
-    font-family: Arial, sans-serif;
-    background:linear-gradient(135deg,#833ab4,#fd1d1d,#fcb045);
-    color:#fff;
-}
-.box{
-    max-width:420px;
-    margin:70px auto;
-    background:rgba(0,0,0,0.35);
-    padding:25px;
-    border-radius:15px;
-    text-align:center;
+  font-family:Arial;
+  background:#111;
+  color:#fff;
+  text-align:center;
 }
 input{
-    width:90%;
-    padding:12px;
-    border-radius:8px;
-    border:none;
-    outline:none;
+  padding:12px;
+  width:260px;
+  border-radius:6px;
+  border:none;
 }
 button{
-    margin-top:15px;
-    padding:12px 25px;
-    border:none;
-    border-radius:8px;
-    background:#00ffcc;
-    font-weight:bold;
-    cursor:pointer;
+  padding:12px 20px;
+  margin-left:5px;
+  border:none;
+  border-radius:6px;
+  background:#e1306c;
+  color:#fff;
+  cursor:pointer;
 }
-.error{
-    color:#ff8080;
-    margin-top:10px;
+iframe{
+  margin-top:20px;
+  border:none;
 }
-.result{
-    display:none;
-    margin-top:20px;
-}
-.bar{
-    height:18px;
-    background:#333;
-    border-radius:10px;
-    overflow:hidden;
-}
-.fill{
-    height:100%;
-}
-.real{background:#00ff66;}
-.fake{background:#ff4444;}
 .note{
-    font-size:12px;
-    opacity:0.8;
-    margin-top:15px;
+  font-size:13px;
+  color:#ccc;
+  margin-top:15px;
 }
 </style>
 </head>
 
 <body>
-<div class="box">
-<h2>Instagram Fake Followers Checker</h2>
 
-<input type="text" id="username" placeholder="Instagram username">
-<br>
-<button onclick="check()">Analyze</button>
+<h2>Instagram Profile Checker</h2>
 
-<div class="error" id="error"></div>
+<input id="user" placeholder="Instagram username">
+<button onclick="load()">Check</button>
 
-<div class="result" id="result">
-<h3 id="user"></h3>
-
-<p>Real Followers</p>
-<div class="bar"><div class="fill real" id="real"></div></div>
-<span id="realTxt"></span>
-
-<p>Fake Followers</p>
-<div class="bar"><div class="fill fake" id="fake"></div></div>
-<span id="fakeTxt"></span>
-</div>
+<div id="embed"></div>
 
 <div class="note">
-⚠ Analysis is based on public engagement patterns.<br>
-No login or password required.
-</div>
+⚠ Instagram does not allow public access to followers data.<br>
+Profile preview is shown using official embed only.
 </div>
 
 <script>
-function check(){
-    let u = document.getElementById("username").value.trim();
-    let error = document.getElementById("error");
-    let result = document.getElementById("result");
+function load(){
+  let u = document.getElementById("user").value.trim();
+  if(u===""){
+    alert("Enter username");
+    return;
+  }
 
-    error.innerText="";
-    result.style.display="none";
-
-    // Username validation (real Instagram rule)
-    let regex = /^[a-zA-Z0-9._]{3,30}$/;
-    if(!regex.test(u)){
-        error.innerText="❌ Invalid Instagram username format";
-        return;
-    }
-
-    // Fake / non-existing simulation logic
-    if(u.length < 5 || u.includes("__") || u.includes("..")){
-        error.innerText="⚠ Profile not found or inactive";
-        return;
-    }
-
-    // Show result
-    result.style.display="block";
-    document.getElementById("user").innerText="@"+u;
-
-    let fake = Math.floor(Math.random()*30)+15; // 15–45%
-    let real = 100 - fake;
-
-    document.getElementById("real").style.width = real+"%";
-    document.getElementById("fake").style.width = fake+"%";
-
-    document.getElementById("realTxt").innerText = real+"% Real";
-    document.getElementById("fakeTxt").innerText = fake+"% Fake";
+  document.getElementById("embed").innerHTML = `
+  <iframe src="https://www.instagram.com/${u}/embed"
+  width="320" height="440"></iframe>
+  `;
 }
 </script>
+
 </body>
 </html>
