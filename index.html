@@ -9,115 +9,119 @@
 :root{ --vh:1vh; }
 
 body{
-margin:0;
-font-family:system-ui;
-background:#000;
-color:white;
-height:calc(var(--vh) * 100);
-display:flex;
-flex-direction:column;
+  margin:0;
+  font-family:system-ui;
+  background:#000;
+  color:white;
+  height:calc(var(--vh) * 100);
+  display:flex;
+  flex-direction:column;
 }
 
 /* LOGIN */
 #loginBox{
-padding:20px;
+  padding:20px;
 }
 #loginBox input,#loginBox button{
-width:100%;
-padding:14px;
-margin:10px 0;
-border-radius:10px;
-border:none;
-font-size:16px;
+  width:100%;
+  padding:14px;
+  margin:10px 0;
+  border-radius:10px;
+  border:none;
+  font-size:16px;
 }
 #loginBox button{
-background:#1d9bf0;
-color:white;
-font-weight:bold;
+  background:#1d9bf0;
+  color:white;
+  font-weight:bold;
 }
 
 /* HEADER */
 header{
-padding:10px;
-border-bottom:1px solid #222;
+  position: sticky;
+  top: 0;
+  background: #000;
+  padding: 10px;
+  border-bottom: 1px solid #222;
+  z-index: 10;
 }
 #roomName{font-weight:bold;}
 #online{font-size:12px;color:#aaa;}
 
 /* CHAT */
 #chat{
-flex:1;
-overflow-y:auto;
-padding:8px;
-display:flex;
-flex-direction:column;
-min-height:0;
+  flex: 1 1 auto;
+  overflow-y:auto;
+  padding:8px;
+  display:flex;
+  flex-direction:column;
+  min-height:0;
 }
 
 .msg{
-max-width:75%;
-padding:10px 14px;
-margin:6px 0;
-border-radius:18px;
-font-size:15px;
-word-wrap:break-word;
+  max-width:75%;
+  padding:10px 14px;
+  margin:6px 0;
+  border-radius:18px;
+  font-size:15px;
+  word-wrap:break-word;
 }
 
 .left{
-align-self:flex-start;
-background:#262626;
-border-bottom-left-radius:4px;
+  align-self:flex-start;
+  background:#262626;
+  border-bottom-left-radius:4px;
 }
 
 .right{
-align-self:flex-end;
-background:#1d9bf0;
-color:white;
-border-bottom-right-radius:4px;
+  align-self:flex-end;
+  background:#1d9bf0;
+  color:white;
+  border-bottom-right-radius:4px;
 }
 
 .seen{
-font-size:11px;
-color:#aaa;
-text-align:right;
-margin-right:8px;
+  font-size:11px;
+  color:#aaa;
+  text-align:right;
+  margin-right:8px;
 }
 
 /* TYPING */
 #typing{
-font-size:12px;
-color:#aaa;
-padding-left:10px;
-height:16px;
+  font-size:12px;
+  color:#aaa;
+  padding-left:10px;
+  height:16px;
 }
 
-/* INPUT */
+/* INPUT / FOOTER */
 footer{
-position:sticky;
-bottom:0;
-display:flex;
-padding:8px;
-border-top:1px solid #222;
-background:#000;
-z-index:10;
+  position: sticky;
+  bottom: 0;
+  display:flex;
+  padding:8px;
+  border-top:1px solid #222;
+  background:#000;
+  z-index: 20;
 }
 footer input{
-flex:1;
-padding:10px;
-border-radius:20px;
-border:none;
-background:#262626;
-color:white;
-font-size:14px;
+  flex:1;
+  padding:10px;
+  border-radius:20px;
+  border:none;
+  background:#262626;
+  color:white;
+  font-size:14px;
 }
 footer button{
-margin-left:6px;
-padding:10px 16px;
-border-radius:50%;
-border:none;
-background:#1d9bf0;
-color:white;
-font-weight:bold;
+  margin-left:6px;
+  padding:10px 16px;
+  border-radius:50%;
+  border:none;
+  background:#1d9bf0;
+  color:white;
+  font-weight:bold;
 }
 </style>
 </head>
@@ -158,12 +162,8 @@ function setVH(){
 setVH();
 window.addEventListener('resize', ()=>{
   setVH();
-  requestAnimationFrame(()=>{
-    const chat = document.getElementById("chat");
-    if(chat){
-      chat.scrollTop = chat.scrollHeight;
-    }
-  });
+  const chat = document.getElementById("chat");
+  if(chat) chat.scrollTop = chat.scrollHeight;
 });
 
 /* 🔥 FIREBASE */
@@ -187,118 +187,119 @@ const db = getDatabase(app);
 /* GLOBALS */
 let user="", room="", chatRef, userRef, typingRef;
 
-/* AUTO DELETE TIME */
-const AUTO_DELETE_TIME = 24*60*60*1000; // 24 hours
+/* AUTO DELETE TIME (24h) */
+const AUTO_DELETE_TIME = 24*60*60*1000; 
 
 /* ENTER ROOM */
 window.enterChat = function(){
-user = document.getElementById("username").value.trim();
-room = document.getElementById("roomcode").value.trim();
-if(!user || !room){ alert("Name aur Room code likho"); return; }
+  user = document.getElementById("username").value.trim();
+  room = document.getElementById("roomcode").value.trim();
+  if(!user || !room){ alert("Name aur Room code likho"); return; }
 
-loginBox.style.display="none";
-chatScreen.style.display="flex";
-roomName.innerText = "Room: " + room;
+  loginBox.style.display="none";
+  chatScreen.style.display="flex";
+  roomName.innerText = "Room: " + room;
 
-chatRef = ref(db,"rooms/"+room+"/messages");
-userRef = ref(db,"rooms/"+room+"/users/"+user);
-typingRef = ref(db,"rooms/"+room+"/typing/"+user);
+  chatRef = ref(db,"rooms/"+room+"/messages");
+  userRef = ref(db,"rooms/"+room+"/users/"+user);
+  typingRef = ref(db,"rooms/"+room+"/typing/"+user);
 
-/* set user online */
-set(userRef,true);
+  set(userRef,true);
 
-/* ONLINE USERS */
-onValue(ref(db,"rooms/"+room+"/users"), snap=>{
-  let count = snap.exists() ? Object.keys(snap.val()).length : 0;
-  online.innerText = count + " online";
-});
-
-/* TYPING STATUS */
-onValue(ref(db,"rooms/"+room+"/typing"), snap=>{
-  typing.innerText="";
-  snap.forEach(c=>{
-    if(c.key !== user && c.val()===true){
-      typing.innerText = c.key + " typing...";
-    }
+  /* ONLINE USERS */
+  onValue(ref(db,"rooms/"+room+"/users"), snap=>{
+    let count = snap.exists() ? Object.keys(snap.val()).length : 0;
+    online.innerText = count + " online";
   });
-});
 
-/* DELETE OLD MESSAGES (auto-delete) */
-onValue(chatRef, snap=>{
-  if(!snap.exists()) return;
-  const now = Date.now();
-  snap.forEach(child=>{
-    const msg = child.val();
-    if(msg.time && now - msg.time > AUTO_DELETE_TIME){
-      remove(ref(db,"rooms/"+room+"/messages/"+child.key));
-    }
+  /* TYPING STATUS */
+  onValue(ref(db,"rooms/"+room+"/typing"), snap=>{
+    typing.innerText="";
+    snap.forEach(c=>{
+      if(c.key !== user && c.val()===true){
+        typing.innerText = c.key + " typing...";
+      }
+    });
   });
-});
 
-/* DISPLAY MESSAGES */
-onChildAdded(chatRef, snap=>{
-  let m = snap.val();
-  let div = document.createElement("div");
-  div.classList.add("msg");
+  /* DELETE OLD MESSAGES (auto-delete 24h) */
+  onValue(chatRef, snap=>{
+    if(!snap.exists()) return;
+    const now = Date.now();
+    snap.forEach(child=>{
+      const msg = child.val();
+      if(msg.time && now - msg.time > AUTO_DELETE_TIME){
+        remove(ref(db,"rooms/"+room+"/messages/"+child.key));
+      }
+    });
+  });
 
-  if(m.user === user){
-    div.classList.add("right");
-    div.innerText = m.text;
-  }else{
-    div.classList.add("left");
-    div.innerHTML = "<b>"+m.user+"</b><br>"+m.text;
-    update(ref(db,"rooms/"+room+"/messages/"+snap.key),{seen:true});
-  }
+  /* DISPLAY MESSAGES */
+  onChildAdded(chatRef, snap=>{
+    let m = snap.val();
+    let div = document.createElement("div");
+    div.classList.add("msg");
 
-  chat.appendChild(div);
+    if(m.user === user){
+      div.classList.add("right");
+      div.innerText = m.text;
+    }else{
+      div.classList.add("left");
+      div.innerHTML = "<b>"+m.user+"</b><br>"+m.text;
+      update(ref(db,"rooms/"+room+"/messages/"+snap.key),{seen:true});
+    }
 
-  if(m.user === user){
-    let seen = document.createElement("div");
-    seen.className="seen";
-    seen.innerText = m.seen ? "Seen ✔✔" : "Sent ✔";
-    chat.appendChild(seen);
-  }
+    chat.appendChild(div);
 
-  chat.scrollTop = chat.scrollHeight;
-});
+    if(m.user === user){
+      let seen = document.createElement("div");
+      seen.className="seen";
+      seen.innerText = m.seen ? "Seen ✔✔" : "Sent ✔";
+      chat.appendChild(seen);
+    }
+
+    chat.scrollTop = chat.scrollHeight;
+  });
 }
 
 /* SEND MESSAGE */
 window.sendMsg = function(){
-let text = document.getElementById("msg").value.trim();
-if(text==="") return;
+  let text = document.getElementById("msg").value.trim();
+  if(text==="") return;
 
-push(chatRef,{
-  user:user,
-  text:text,
-  seen:false,
-  time: Date.now()
-});
+  push(chatRef,{
+    user:user,
+    text:text,
+    seen:false,
+    time: Date.now()
+  });
 
-document.getElementById("msg").value="";
-set(typingRef,false);
+  document.getElementById("msg").value="";
+  set(typingRef,false);
 }
 
 /* TYPING STATUS */
 window.typingStatus = function(v){
-set(typingRef,v);
+  set(typingRef,v);
 }
 
-/* LEAVE ROOM (DELETE ALL MESSAGES + TYPING + USER) */
+/* LEAVE ROOM - delete all messages, typing status, user */
 window.leaveRoom = function(){
   if(!room || !user) return;
-  // Delete all messages
+
+  // Delete all messages in room
   onValue(chatRef, snap=>{
     if(!snap.exists()) return;
     snap.forEach(child=>{
       remove(ref(db,"rooms/"+room+"/messages/"+child.key));
     });
   });
-  // Delete typing status
-  remove(ref(db,"rooms/"+room+"/typing/"+user));
-  // Remove user
+
+  // Remove typing status and user
+  remove(ref(db,"rooms/"+room+"/typing/"+user]);
   remove(userRef);
-  // Go back to login
+
+  // Reset UI
   chatScreen.style.display="none";
   loginBox.style.display="block";
   document.getElementById("chat").innerHTML="";
@@ -308,6 +309,12 @@ window.leaveRoom = function(){
   user="";
   room="";
 }
+
+/* FOCUS SCROLL FIX */
+document.getElementById("msg").addEventListener("focus", ()=>{
+  const chat = document.getElementById("chat");
+  if(chat) chat.scrollTop = chat.scrollHeight;
+});
 </script>
 
 </body>
