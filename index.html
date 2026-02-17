@@ -133,7 +133,7 @@ footer button{
 <h2>🔐 Private Chat</h2>
 <input id="username" placeholder="Your name">
 <input id="roomcode" placeholder="Room code">
-<button onclick="enterChat()">Enter Chat</button>
+<button id="enterBtn">Enter Chat</button>
 </div>
 
 <!-- CHAT -->
@@ -184,6 +184,18 @@ appId: "1:1026542245723:web:b892bfcc1d2358a018ac7e"
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
+/* DOM ELEMENTS */
+const loginBox = document.getElementById("loginBox");
+const chatScreen = document.getElementById("chatScreen");
+const usernameInput = document.getElementById("username");
+const roomcodeInput = document.getElementById("roomcode");
+const chatDiv = document.getElementById("chat");
+const typingDiv = document.getElementById("typing");
+const roomNameDiv = document.getElementById("roomName");
+const onlineDiv = document.getElementById("online");
+const msgInput = document.getElementById("msg");
+const enterBtn = document.getElementById("enterBtn");
+
 /* GLOBALS */
 let user="", room="", chatRef, userRef, typingRef;
 
@@ -191,14 +203,14 @@ let user="", room="", chatRef, userRef, typingRef;
 const AUTO_DELETE_TIME = 24*60*60*1000; 
 
 /* ENTER ROOM */
-window.enterChat = function(){
-  user = document.getElementById("username").value.trim();
-  room = document.getElementById("roomcode").value.trim();
+function enterChat(){
+  user = usernameInput.value.trim();
+  room = roomcodeInput.value.trim();
   if(!user || !room){ alert("Name aur Room code likho"); return; }
 
   loginBox.style.display="none";
   chatScreen.style.display="flex";
-  roomName.innerText = "Room: " + room;
+  roomNameDiv.innerText = "Room: " + room;
 
   chatRef = ref(db,"rooms/"+room+"/messages");
   userRef = ref(db,"rooms/"+room+"/users/"+user);
@@ -209,15 +221,15 @@ window.enterChat = function(){
   /* ONLINE USERS */
   onValue(ref(db,"rooms/"+room+"/users"), snap=>{
     let count = snap.exists() ? Object.keys(snap.val()).length : 0;
-    online.innerText = count + " online";
+    onlineDiv.innerText = count + " online";
   });
 
   /* TYPING STATUS */
   onValue(ref(db,"rooms/"+room+"/typing"), snap=>{
-    typing.innerText="";
+    typingDiv.innerText="";
     snap.forEach(c=>{
       if(c.key !== user && c.val()===true){
-        typing.innerText = c.key + " typing...";
+        typingDiv.innerText = c.key + " typing...";
       }
     });
   });
@@ -249,22 +261,25 @@ window.enterChat = function(){
       update(ref(db,"rooms/"+room+"/messages/"+snap.key),{seen:true});
     }
 
-    chat.appendChild(div);
+    chatDiv.appendChild(div);
 
     if(m.user === user){
       let seen = document.createElement("div");
       seen.className="seen";
       seen.innerText = m.seen ? "Seen ✔✔" : "Sent ✔";
-      chat.appendChild(seen);
+      chatDiv.appendChild(seen);
     }
 
-    chat.scrollTop = chat.scrollHeight;
+    chatDiv.scrollTop = chatDiv.scrollHeight;
   });
 }
 
+/* Bind enter button */
+enterBtn.addEventListener("click", enterChat);
+
 /* SEND MESSAGE */
-window.sendMsg = function(){
-  let text = document.getElementById("msg").value.trim();
+function sendMsg(){
+  let text = msgInput.value.trim();
   if(text==="") return;
 
   push(chatRef,{
@@ -274,17 +289,17 @@ window.sendMsg = function(){
     time: Date.now()
   });
 
-  document.getElementById("msg").value="";
+  msgInput.value="";
   set(typingRef,false);
 }
 
 /* TYPING STATUS */
-window.typingStatus = function(v){
+function typingStatus(v){
   set(typingRef,v);
 }
 
 /* LEAVE ROOM - delete all messages, typing status, user */
-window.leaveRoom = function(){
+function leaveRoom(){
   if(!room || !user) return;
 
   // Delete all messages in room
@@ -302,18 +317,17 @@ window.leaveRoom = function(){
   // Reset UI
   chatScreen.style.display="none";
   loginBox.style.display="block";
-  document.getElementById("chat").innerHTML="";
-  document.getElementById("typing").innerText="";
-  roomName.innerText="";
-  online.innerText="";
+  chatDiv.innerHTML="";
+  typingDiv.innerText="";
+  roomNameDiv.innerText="";
+  onlineDiv.innerText="";
   user="";
   room="";
 }
 
 /* FOCUS SCROLL FIX */
-document.getElementById("msg").addEventListener("focus", ()=>{
-  const chat = document.getElementById("chat");
-  if(chat) chat.scrollTop = chat.scrollHeight;
+msgInput.addEventListener("focus", ()=>{
+  chatDiv.scrollTop = chatDiv.scrollHeight;
 });
 </script>
 
