@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Private DM Chat</title>
+<title>Private Chat</title>
 
 <style>
 *{box-sizing:border-box}
@@ -19,7 +19,7 @@ body{
 #login{
   padding:20px;
 }
-#login h1{margin:0}
+#login h1{margin-bottom:6px}
 #login p{color:#aaa;font-size:14px}
 #login input,#login button{
   width:100%;
@@ -39,7 +39,7 @@ body{
   display:flex;
 }
 
-/* USER LIST */
+/* USERS */
 #users{
   width:35%;
   border-right:1px solid #222;
@@ -53,7 +53,7 @@ body{
 .user:hover{background:#111}
 
 /* CHAT */
-#chatArea{
+#chat{
   flex:1;
   display:flex;
   flex-direction:column;
@@ -61,17 +61,21 @@ body{
 header{
   padding:10px;
   border-bottom:1px solid #222;
+  font-weight:bold;
 }
 #messages{
   flex:1;
   padding:10px;
   overflow-y:auto;
+  display:flex;
+  flex-direction:column;
 }
 .msg{
   max-width:70%;
-  padding:10px;
+  padding:10px 14px;
   margin:6px 0;
-  border-radius:16px;
+  border-radius:18px;
+  font-size:15px;
 }
 .me{
   background:#1d9bf0;
@@ -81,6 +85,11 @@ header{
   background:#1e1e1e;
   align-self:flex-start;
 }
+.seen{
+  font-size:11px;
+  color:#aaa;
+  text-align:right;
+}
 footer{
   display:flex;
   padding:8px;
@@ -89,8 +98,8 @@ footer{
 footer input{
   flex:1;
   padding:12px;
-  border:none;
   border-radius:20px;
+  border:none;
   background:#111;
   color:#fff;
 }
@@ -100,6 +109,7 @@ footer button{
   padding:0 16px;
   background:#1d9bf0;
   color:#fff;
+  font-size:18px;
 }
 </style>
 </head>
@@ -109,8 +119,8 @@ footer button{
 <!-- LOGIN -->
 <div id="login">
   <h1>🔐 Private Chat</h1>
-  <p>Online users select karke private chat karein</p>
-  <input id="name" placeholder="Enter username">
+  <p>Simple & secure private messaging</p>
+  <input id="username" placeholder="Enter username">
   <button onclick="login()">Enter</button>
 </div>
 
@@ -118,7 +128,7 @@ footer button{
 <div id="app">
   <div id="users"></div>
 
-  <div id="chatArea">
+  <div id="chat">
     <header id="chatHeader">Select a user</header>
     <div id="messages"></div>
     <footer>
@@ -129,35 +139,37 @@ footer button{
 </div>
 
 <script type="module">
-import { initializeApp } from
-"https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
 import {
-getDatabase, ref, set, push, onValue, remove
-} from
-"https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
+  getDatabase, ref, set, push, onValue, update, remove
+} from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
 
+/* FIREBASE CONFIG */
 const firebaseConfig = {
   apiKey: "AIzaSyARuO_pN2vdYrVKYkKHHaNys7WI8HqM6I4",
   authDomain: "friendchat-43941.firebaseapp.com",
   databaseURL: "https://friendchat-43941-default-rtdb.firebaseio.com",
-  projectId: "friendchat-43941",
+  projectId: "friendchat-43941"
 };
 
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
+const appFB = initializeApp(firebaseConfig);
+const db = getDatabase(appFB);
 
+/* STATE */
 let me="", currentUser="", chatId="";
 
+/* LOGIN */
 window.login = ()=>{
-  me = name.value.trim();
-  if(!me) return alert("Name likho");
+  me = username.value.trim();
+  if(!me) return alert("Username likho");
+
   set(ref(db,"online/"+me),true);
   login.style.display="none";
   app.style.display="flex";
 
-  onValue(ref(db,"online"),s=>{
+  onValue(ref(db,"online"),snap=>{
     users.innerHTML="";
-    s.forEach(u=>{
+    snap.forEach(u=>{
       if(u.key!==me){
         const d=document.createElement("div");
         d.className="user";
@@ -169,36 +181,52 @@ window.login = ()=>{
   });
 };
 
+/* OPEN CHAT */
 function openChat(user){
   currentUser=user;
   chatHeader.textContent=user;
   messages.innerHTML="";
   chatId=[me,user].sort().join("_");
 
-  onValue(ref(db,"chats/"+chatId),s=>{
+  onValue(ref(db,"chats/"+chatId),snap=>{
     messages.innerHTML="";
-    s.forEach(m=>{
+    snap.forEach(m=>{
+      const data=m.val();
+
       const d=document.createElement("div");
-      d.className="msg "+(m.val().from===me?"me":"other");
-      d.textContent=m.val().text;
+      d.className="msg "+(data.from===me?"me":"other");
+      d.textContent=data.text;
       messages.appendChild(d);
+
+      if(data.from===me){
+        const s=document.createElement("div");
+        s.className="seen";
+        s.textContent=data.seen?"Seen ✔✔":"Sent ✔";
+        messages.appendChild(s);
+      }else{
+        update(ref(db,"chats/"+chatId+"/"+m.key),{seen:true});
+      }
     });
     messages.scrollTop=messages.scrollHeight;
   });
 }
 
-window.send=()=>{
-  if(!text.value||!currentUser)return;
+/* SEND MESSAGE */
+window.send = ()=>{
+  if(!text.value||!currentUser) return;
   push(ref(db,"chats/"+chatId),{
     from:me,
-    text:text.value
+    text:text.value,
+    seen:false,
+    time:Date.now()
   });
   text.value="";
 };
 
+/* LEAVE / CLOSE */
 window.onbeforeunload=()=>{
   remove(ref(db,"online/"+me));
-  remove(ref(db,"chats/"+chatId)); // chat delete on leave
+  if(chatId) remove(ref(db,"chats/"+chatId));
 };
 </script>
 
