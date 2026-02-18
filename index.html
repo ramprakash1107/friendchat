@@ -2,12 +2,13 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Private Friend Chat</title>
+
 <style>
 :root{ --vh:1vh; }
 *{ box-sizing:border-box; }
-
 body{
   margin:0;
   font-family:system-ui,-apple-system,BlinkMacSystemFont;
@@ -17,7 +18,6 @@ body{
   display:flex;
   flex-direction:column;
 }
-
 /* LOGIN */
 #loginBox{
   padding:20px;
@@ -38,7 +38,6 @@ body{
   color:#fff;
   font-weight:bold;
 }
-
 /* CHAT SCREEN */
 #chatScreen{
   display:none;
@@ -46,8 +45,7 @@ body{
   flex-direction:column;
   min-height:0;
 }
-
-/* HEADER (NEVER MOVE) */
+/* HEADER */
 header{
   flex-shrink:0;
   padding:10px;
@@ -57,7 +55,6 @@ header{
 }
 #roomName{font-weight:600;}
 #online{font-size:12px;color:#aaa;}
-
 /* CHAT AREA */
 #chat{
   flex:1;
@@ -66,7 +63,6 @@ header{
   display:flex;
   flex-direction:column;
 }
-
 /* MESSAGE */
 .msg{
   max-width:75%;
@@ -91,17 +87,14 @@ header{
   font-size:11px;
   color:#aaa;
   text-align:right;
-  margin-right:8px;
+  margin-left:8px;
 }
-
 /* TYPING */
 #typing{
   font-size:12px;
   color:#aaa;
-  padding-left:10px;
-  height:16px;
+  margin:2px 10px 0 10px;
 }
-
 /* FOOTER */
 footer{
   flex-shrink:0;
@@ -128,7 +121,6 @@ footer button{
   color:#fff;
   font-size:18px;
 }
-
 /* LEAVE */
 #leaveBtn{
   position:absolute;
@@ -150,7 +142,8 @@ footer button{
 <div id="loginBox">
   <h2>🔐 Private Chat</h2>
   <div id="credit">Website by @rp_gupta_07</div>
-  <input id="username" placeholder="Your name">
+  <input id="username" placeholder="Username">
+  <input id="userpassword" type="password" placeholder="Password">
   <input id="roomcode" placeholder="Room code">
   <button id="enterBtn">Enter Chat</button>
 </div>
@@ -173,15 +166,18 @@ footer button{
 </div>
 
 <script type="module">
+/* KEYBOARD HEIGHT FIX */
 function setVH(){
-  document.documentElement.style.setProperty('--vh', window.innerHeight*0.01+'px');
+  document.documentElement.style.setProperty(
+    '--vh', window.innerHeight * 0.01 + 'px'
+  );
 }
 setVH();
 window.addEventListener('resize', setVH);
 
 /* FIREBASE */
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
-import { getDatabase, ref, push, onChildAdded, onValue, set, remove, update } 
+import { getDatabase, ref, push, onChildAdded, onValue, set, remove, get } 
 from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
 
 const firebaseConfig = {
@@ -193,121 +189,111 @@ const firebaseConfig = {
   messagingSenderId: "1026542245723",
   appId: "1:1026542245723:web:b892bfcc1d2358a018ac7e"
 };
-
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-/* DOM ELEMENTS */
+/* ELEMENTS */
 const loginBox = document.getElementById("loginBox");
 const chatScreen = document.getElementById("chatScreen");
-const chatDiv = document.getElementById("chat");
-const typingDiv = document.getElementById("typing");
+const chat = document.getElementById("chat");
 const roomName = document.getElementById("roomName");
 const online = document.getElementById("online");
+const typingEl = document.getElementById("typing");
 const enterBtn = document.getElementById("enterBtn");
 const sendBtn = document.getElementById("sendBtn");
 const leaveBtn = document.getElementById("leaveBtn");
-const usernameInput = document.getElementById("username");
-const roomInput = document.getElementById("roomcode");
 const msgInput = document.getElementById("msg");
+const usernameInput = document.getElementById("username");
+const passwordInput = document.getElementById("userpassword");
+const roomcodeInput = document.getElementById("roomcode");
 
 /* STATE */
-let user="", room="", chatRef, typingRef, userRef;
+let user="", room="", chatRef, usersRef;
 
 /* ENTER CHAT */
 enterBtn.addEventListener("click", async ()=>{
   user = usernameInput.value.trim();
-  room = roomInput.value.trim();
-  if(!user||!room){ alert("Name aur Room code likho"); return; }
+  const password = passwordInput.value.trim();
+  room = roomcodeInput.value.trim();
+  if(!user || !room || !password){ alert("Username, password aur Room code likho"); return; }
 
-  // CLEAR OLD CHAT
-  chatDiv.innerHTML = "";
-  typingDiv.textContent = "";
+  const userRef = ref(db, `rooms/${room}/users/${user}`);
+  const snap = await get(userRef);
 
-  // CHECK USERNAME UNIQUE
-  const userRefCheck = ref(db,`rooms/${room}/users/${user}`);
-  let exists = false;
-  await onValue(userRefCheck, snap=>{
-    if(snap.exists()) exists = true;
-  }, { onlyOnce:true });
-
-  if(exists){
-    alert("Ye username is room me already exist karta hai! Alag name try karo.");
-    return;
+  if(snap.exists()){
+    if(snap.val().password !== password){
+      alert("Password galat hai!");
+      return;
+    }
+    set(ref(db, `rooms/${room}/users/${user}/online`), true);
+  } else {
+    set(userRef, { password: password, online: true, typing: false });
   }
 
   loginBox.style.display="none";
   chatScreen.style.display="flex";
-  roomName.textContent = "Room: "+room;
+  roomName.textContent = "Room: " + room;
 
   chatRef = ref(db,`rooms/${room}/messages`);
-  typingRef = ref(db,`rooms/${room}/typing/${user}`);
-  userRef = ref(db,`rooms/${room}/users/${user}`);
+  usersRef = ref(db,`rooms/${room}/users`);
 
-  set(userRef,true);
-  set(typingRef,false);
+  // ONLINE USER LIST
+  onValue(usersRef, snap=>{
+    const users = snap.val() || {};
+    const names = Object.keys(users).filter(u=>users[u].online);
+    online.textContent = "Online: " + names.join(", ");
 
-  // ONLINE USERS
-  onValue(ref(db,`rooms/${room}/users`), snap=>{
-    online.textContent = (snap.exists()?Object.keys(snap.val()).length:0) + " online";
+    // Typing indicator
+    const typingUsers = Object.keys(users).filter(u=>u!==user && users[u].typing);
+    typingEl.textContent = typingUsers.length ? typingUsers.join(", ") + " typing..." : "";
   });
 
-  // TYPING STATUS
-  onValue(ref(db,`rooms/${room}/typing`), snap=>{
-    let text="";
-    snap.forEach(c=>{
-      if(c.key!==user && c.val()===true) text+=c.key+" typing...";
-    });
-    typingDiv.textContent = text;
-  });
-
-  // MESSAGES DISPLAY + SEEN
+  // MESSAGES
   onChildAdded(chatRef, snap=>{
     const m = snap.val();
+    const msgId = snap.key;
     const div = document.createElement("div");
-    div.className = "msg "+(m.user===user?"right":"left");
-    div.innerHTML = (m.user===user ? m.text : "<b>"+m.user+"</b><br>"+m.text);
-    chatDiv.appendChild(div);
+    div.className = "msg " + (m.user===user?"right":"left");
+    div.innerHTML = `<b>${m.user}</b>: ${m.text} <span class="seen">${m.seen?.includes(user)?"✅":"⌛"}</span>`;
+    chat.appendChild(div);
+    chat.scrollTop = chat.scrollHeight;
 
-    if(m.user!==user){
-      update(ref(db,`rooms/${room}/messages/${snap.key}`),{seen:true});
+    // Mark as seen
+    if(!m.seen?.includes(user)){
+      const updatedSeen = [...(m.seen||[]), user];
+      set(ref(db,`rooms/${room}/messages/${msgId}/seen`), updatedSeen);
     }
+  });
 
-    if(m.user===user){
-      const seenDiv = document.createElement("div");
-      seenDiv.className="seen";
-      seenDiv.textContent = m.seen?"Seen ✔✔":"Sent ✔";
-      chatDiv.appendChild(seenDiv);
-    }
-
-    chatDiv.scrollTop = chatDiv.scrollHeight;
+  // Typing indicator
+  const typingRef = ref(db, `rooms/${room}/users/${user}/typing`);
+  msgInput.addEventListener("input", ()=>{
+    set(typingRef, msgInput.value.trim()!== "");
   });
 });
 
-/* SEND MESSAGE */
+/* SEND */
 sendBtn.addEventListener("click", ()=>{
   const text = msgInput.value.trim();
   if(!text) return;
-  push(chatRef,{user,text,time:Date.now(),seen:false});
+  const newMsgRef = push(chatRef,{user,text,time:Date.now(),seen:[]});
   msgInput.value="";
-  set(typingRef,false);
+  set(ref(db, `rooms/${room}/users/${user}/typing`), false);
+  chat.scrollTop = chat.scrollHeight;
 });
 
-/* TYPING STATUS */
-msgInput.addEventListener("input",()=>{
-  set(typingRef,msgInput.value.trim()!=="");
-});
-
-/* LEAVE ROOM */
+/* LEAVE */
 leaveBtn.addEventListener("click", ()=>{
-  remove(ref(db,`rooms/${room}`));
+  set(ref(db, `rooms/${room}/users/${user}/online`), false);
+  set(ref(db, `rooms/${room}/users/${user}/typing`), false);
   location.reload();
 });
 
-/* FOCUS SCROLL FIX */
+/* FOCUS FIX */
 msgInput.addEventListener("focus",()=>{
-  setTimeout(()=>chatDiv.scrollTop=chatDiv.scrollHeight,300);
+  setTimeout(()=>chat.scrollTop=chat.scrollHeight,300);
 });
 </script>
+
 </body>
 </html>
