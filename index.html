@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Private Friend Chat</title>
+
 <style>
 :root{ --vh:1vh; }
 *{ box-sizing:border-box; }
@@ -18,12 +19,38 @@ body{
   flex-direction:column;
 }
 
-/* LOGIN */
+/* HOME / LOGIN */
 #loginBox{
-  padding:20px;
+  padding:22px;
 }
-#loginBox h2{margin-bottom:5px;}
-#credit{font-size:12px;color:#777;margin-bottom:15px;}
+
+#loginBox h1{
+  font-size:28px;
+  margin-bottom:6px;
+}
+
+#tagline{
+  color:#aaa;
+  font-size:14px;
+  margin-bottom:18px;
+}
+
+#about{
+  background:#0f0f0f;
+  border-radius:14px;
+  padding:14px;
+  font-size:14px;
+  line-height:1.6;
+  color:#ccc;
+  margin-bottom:20px;
+}
+
+#credit{
+  font-size:12px;
+  color:#666;
+  margin-bottom:15px;
+}
+
 #loginBox input,#loginBox button{
   width:100%;
   padding:14px;
@@ -32,7 +59,12 @@ body{
   border:none;
   font-size:16px;
 }
-#loginBox input{background:#111;color:#fff;}
+
+#loginBox input{
+  background:#111;
+  color:#fff;
+}
+
 #loginBox button{
   background:#1d9bf0;
   color:#fff;
@@ -47,7 +79,6 @@ body{
   min-height:0;
 }
 
-/* HEADER (NEVER MOVE) */
 header{
   flex-shrink:0;
   padding:10px;
@@ -55,81 +86,10 @@ header{
   background:#000;
   position:relative;
 }
+
 #roomName{font-weight:600;}
 #online{font-size:12px;color:#aaa;}
 
-/* CHAT AREA */
-#chat{
-  flex:1;
-  overflow-y:auto;
-  padding:10px;
-  display:flex;
-  flex-direction:column;
-}
-
-/* MESSAGE */
-.msg{
-  max-width:75%;
-  padding:10px 14px;
-  margin:6px 0;
-  border-radius:18px;
-  word-wrap:break-word;
-  font-size:15px;
-}
-.left{
-  align-self:flex-start;
-  background:#1e1e1e;
-  border-bottom-left-radius:4px;
-}
-.right{
-  align-self:flex-end;
-  background:#1d9bf0;
-  color:#fff;
-  border-bottom-right-radius:4px;
-}
-.seen{
-  font-size:11px;
-  color:#aaa;
-  text-align:right;
-  margin-right:8px;
-}
-
-/* TYPING */
-#typing{
-  font-size:12px;
-  color:#aaa;
-  padding-left:10px;
-  height:16px;
-}
-
-/* FOOTER */
-footer{
-  flex-shrink:0;
-  display:flex;
-  gap:8px;
-  padding:8px;
-  border-top:1px solid #222;
-  background:#000;
-}
-footer input{
-  flex:1;
-  padding:12px;
-  border-radius:20px;
-  border:none;
-  background:#1e1e1e;
-  color:#fff;
-  font-size:14px;
-}
-footer button{
-  padding:0 16px;
-  border-radius:50%;
-  border:none;
-  background:#1d9bf0;
-  color:#fff;
-  font-size:18px;
-}
-
-/* LEAVE */
 #leaveBtn{
   position:absolute;
   right:10px;
@@ -141,15 +101,98 @@ footer button{
   border-radius:6px;
   font-size:12px;
 }
+
+#chat{
+  flex:1;
+  overflow-y:auto;
+  padding:10px;
+  display:flex;
+  flex-direction:column;
+}
+
+.msg{
+  max-width:75%;
+  padding:10px 14px;
+  margin:6px 0;
+  border-radius:18px;
+  font-size:15px;
+}
+
+.left{
+  align-self:flex-start;
+  background:#1e1e1e;
+  border-bottom-left-radius:4px;
+}
+
+.right{
+  align-self:flex-end;
+  background:#1d9bf0;
+  border-bottom-right-radius:4px;
+}
+
+.seen{
+  font-size:11px;
+  color:#aaa;
+  text-align:right;
+  margin-right:8px;
+}
+
+#typing{
+  font-size:12px;
+  color:#aaa;
+  padding-left:10px;
+  height:16px;
+}
+
+footer{
+  flex-shrink:0;
+  display:flex;
+  gap:8px;
+  padding:8px;
+  border-top:1px solid #222;
+}
+
+footer input{
+  flex:1;
+  padding:12px;
+  border-radius:20px;
+  border:none;
+  background:#1e1e1e;
+  color:#fff;
+}
+
+footer button{
+  padding:0 16px;
+  border-radius:50%;
+  border:none;
+  background:#1d9bf0;
+  color:#fff;
+  font-size:18px;
+}
 </style>
 </head>
 
 <body>
 
-<!-- LOGIN -->
+<!-- HOME -->
 <div id="loginBox">
-  <h2>🔐 Private Chat</h2>
+  <h1>🔐 Private Chat</h1>
+  <div id="tagline">Secure • Simple • Temporary Chat</div>
+
+  <div id="about">
+    👋 Welcome!  
+    Ye ek private chat website hai jahan aap aur aapke friend
+    **same room code daal kar** baat kar sakte ho.  
+    <br><br>
+    ✅ Koi login nahi  
+    ✅ Koi data save nahi  
+    ✅ Chat leave karte hi sab delete  
+    <br><br>
+    Bas naam aur room code daalo aur chatting start karo 🚀
+  </div>
+
   <div id="credit">Website by @rp_gupta_07</div>
+
   <input id="username" placeholder="Your name">
   <input id="roomcode" placeholder="Room code">
   <button id="enterBtn">Enter Chat</button>
@@ -179,7 +222,6 @@ function setVH(){
 setVH();
 window.addEventListener('resize', setVH);
 
-/* FIREBASE */
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
 import { getDatabase, ref, push, onChildAdded, onValue, set, remove, update } 
 from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
@@ -197,7 +239,6 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-/* DOM ELEMENTS */
 const loginBox = document.getElementById("loginBox");
 const chatScreen = document.getElementById("chatScreen");
 const chatDiv = document.getElementById("chat");
@@ -211,103 +252,48 @@ const usernameInput = document.getElementById("username");
 const roomInput = document.getElementById("roomcode");
 const msgInput = document.getElementById("msg");
 
-/* STATE */
-let user="", room="", chatRef, typingRef, userRef;
+let user="", room="", chatRef, typingRef;
 
-/* ENTER CHAT */
-enterBtn.addEventListener("click", async ()=>{
-  user = usernameInput.value.trim();
-  room = roomInput.value.trim();
-  if(!user||!room){ alert("Name aur Room code likho"); return; }
-
-  // CLEAR OLD CHAT
-  chatDiv.innerHTML = "";
-  typingDiv.textContent = "";
-
-  // CHECK USERNAME UNIQUE
-  const userRefCheck = ref(db,`rooms/${room}/users/${user}`);
-  let exists = false;
-  await onValue(userRefCheck, snap=>{
-    if(snap.exists()) exists = true;
-  }, { onlyOnce:true });
-
-  if(exists){
-    alert("Ye username is room me already exist karta hai! Alag name try karo.");
-    return;
-  }
+enterBtn.onclick = ()=>{
+  user=usernameInput.value.trim();
+  room=roomInput.value.trim();
+  if(!user||!room){alert("Name aur Room code likho");return;}
 
   loginBox.style.display="none";
   chatScreen.style.display="flex";
-  roomName.textContent = "Room: "+room;
+  roomName.textContent="Room: "+room;
 
-  chatRef = ref(db,`rooms/${room}/messages`);
-  typingRef = ref(db,`rooms/${room}/typing/${user}`);
-  userRef = ref(db,`rooms/${room}/users/${user}`);
+  chatRef=ref(db,"rooms/"+room+"/messages");
+  typingRef=ref(db,"rooms/"+room+"/typing/"+user);
 
-  set(userRef,true);
-  set(typingRef,false);
+  set(ref(db,"rooms/"+room+"/users/"+user),true);
 
-  // ONLINE USERS
-  onValue(ref(db,`rooms/${room}/users`), snap=>{
-    online.textContent = (snap.exists()?Object.keys(snap.val()).length:0) + " online";
+  onValue(ref(db,"rooms/"+room+"/users"),s=>{
+    online.textContent=(s.exists()?Object.keys(s.val()).length:0)+" online";
   });
 
-  // TYPING STATUS
-  onValue(ref(db,`rooms/${room}/typing`), snap=>{
-    let text="";
-    snap.forEach(c=>{
-      if(c.key!==user && c.val()===true) text+=c.key+" typing...";
-    });
-    typingDiv.textContent = text;
+  onChildAdded(chatRef,s=>{
+    const m=s.val();
+    const d=document.createElement("div");
+    d.className="msg "+(m.user===user?"right":"left");
+    d.innerHTML=(m.user===user?m.text:"<b>"+m.user+"</b><br>"+m.text);
+    chatDiv.appendChild(d);
+    chatDiv.scrollTop=chatDiv.scrollHeight;
   });
+};
 
-  // MESSAGES DISPLAY + SEEN
-  onChildAdded(chatRef, snap=>{
-    const m = snap.val();
-    const div = document.createElement("div");
-    div.className = "msg "+(m.user===user?"right":"left");
-    div.innerHTML = (m.user===user ? m.text : "<b>"+m.user+"</b><br>"+m.text);
-    chatDiv.appendChild(div);
-
-    if(m.user!==user){
-      update(ref(db,`rooms/${room}/messages/${snap.key}`),{seen:true});
-    }
-
-    if(m.user===user){
-      const seenDiv = document.createElement("div");
-      seenDiv.className="seen";
-      seenDiv.textContent = m.seen?"Seen ✔✔":"Sent ✔";
-      chatDiv.appendChild(seenDiv);
-    }
-
-    chatDiv.scrollTop = chatDiv.scrollHeight;
-  });
-});
-
-/* SEND MESSAGE */
-sendBtn.addEventListener("click", ()=>{
-  const text = msgInput.value.trim();
-  if(!text) return;
-  push(chatRef,{user,text,time:Date.now(),seen:false});
+sendBtn.onclick=()=>{
+  const t=msgInput.value.trim();
+  if(!t)return;
+  push(chatRef,{user,text:t});
   msgInput.value="";
-  set(typingRef,false);
-});
+};
 
-/* TYPING STATUS */
-msgInput.addEventListener("input",()=>{
-  set(typingRef,msgInput.value.trim()!=="");
-});
-
-/* LEAVE ROOM */
-leaveBtn.addEventListener("click", ()=>{
-  remove(ref(db,`rooms/${room}`));
+leaveBtn.onclick=()=>{
+  remove(ref(db,"rooms/"+room)); // 🔥 poora chat delete
   location.reload();
-});
-
-/* FOCUS SCROLL FIX */
-msgInput.addEventListener("focus",()=>{
-  setTimeout(()=>chatDiv.scrollTop=chatDiv.scrollHeight,300);
-});
+};
 </script>
+
 </body>
 </html>
