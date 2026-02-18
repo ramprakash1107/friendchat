@@ -105,16 +105,17 @@ enterBtn.addEventListener("click", async()=>{
   userRef=ref(db,`users/${user}`);
   set(userRef,true);
 
-  // Listen for online users
-  onValue(ref(db,"users"),snap=>{
-    userListDiv.innerHTML="";
-    snap.forEach(c=>{
-      if(c.key!==user){
-        const div=document.createElement("div");
-        div.textContent=c.key;
-        div.classList.toggle("active", c.key===selectedUser);
-        div.onclick=()=>{
-          selectedUser=c.key;
+  // LISTEN FOR USERS IN REALTIME (new users included)
+  onValue(ref(db,"users"), snap => {
+    const prevSelected = selectedUser; // save selected user
+    userListDiv.innerHTML = "";
+    snap.forEach(c => {
+      if(c.key !== user){
+        const div = document.createElement("div");
+        div.textContent = c.key;
+        div.classList.toggle("active", c.key === prevSelected);
+        div.onclick = () => {
+          selectedUser = c.key;
           Array.from(userListDiv.children).forEach(d=>d.classList.remove("active"));
           div.classList.add("active");
           openChat(selectedUser);
@@ -138,7 +139,7 @@ function openChat(otherUser){
   onChildAdded(chatRef,snap=>{
     const m=snap.val();
     const div=document.createElement("div");
-    div.className="msg "+(m.user===user?"right":"left"); // right for sender, left for receiver
+    div.className="msg "+(m.user===user?"right":"left");
     div.innerHTML=m.user===user?m.text:"<b>"+m.user+"</b><br>"+m.text;
     chatDiv.appendChild(div);
     setTimeout(()=>div.style.opacity=1,50);
