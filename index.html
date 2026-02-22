@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Real Ludo (Clean Engine)</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Online Real Ludo</title>
 
 <style>
 body{
@@ -11,214 +11,184 @@ body{
   background:#111;
   color:#fff;
   font-family:system-ui;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
+  text-align:center;
 }
 h2{margin:10px 0}
 
-#board{
-  width:90vmin;
-  height:90vmin;
-  background:#fff;
-  display:grid;
-  grid-template-columns:repeat(15,1fr);
-  grid-template-rows:repeat(15,1fr);
-  border:4px solid #000;
-  position:relative;
-}
-.cell{border:1px solid #aaa; position:relative;}
-.red{background:#f44336}
-.blue{background:#2196f3}
-.green{background:#4caf50}
-.yellow{background:#ffeb3b}
-.safe{background:#ddd}
-.center{
-  grid-column:7/10;
-  grid-row:7/10;
-  background:conic-gradient(
-    #f44336 0 90deg,
-    #4caf50 90 180deg,
-    #ffeb3b 180 270deg,
-    #2196f3 270 360deg
-  );
-}
-
-.token{
-  width:70%;
-  height:70%;
-  border-radius:50%;
-  position:absolute;
-  top:15%;
-  left:15%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  color:#fff;
-  font-size:12px;
-  font-weight:bold;
-}
-.token.red{background:#b71c1c}
-.token.blue{background:#0d47a1}
-
-#ui{
-  margin:10px;
-  display:flex;
-  gap:12px;
-  align-items:center;
+#login input,#login button{
+  width:90%;
+  padding:14px;
+  margin:8px;
+  border-radius:12px;
+  border:none;
+  font-size:16px;
 }
 button{
-  padding:10px 16px;
-  border:none;
-  border-radius:10px;
-  font-size:16px;
   background:#1d9bf0;
   color:#fff;
   font-weight:bold;
 }
+#game{display:none}
+
+#board{
+  width:300px;
+  height:300px;
+  margin:15px auto;
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  grid-template-rows:repeat(5,1fr);
+  background:#fff;
+}
+.cell{
+  border:1px solid #333;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  position:relative;
+}
+.token{
+  width:70%;
+  height:70%;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#fff;
+  font-weight:bold;
+  font-size:14px;
+}
+.red{background:#e53935}
+.blue{background:#1e88e5}
+.safe{background:#ddd}
 </style>
 </head>
 
 <body>
 
-<h2>🎲 Real Ludo (Engine + UI)</h2>
-
-<div id="ui">
-  <div id="turn">Turn: RED</div>
-  <button onclick="rollDice()">🎲 Roll</button>
-  <div id="dice">-</div>
+<div id="login">
+  <h2>🎲 Online Ludo</h2>
+  <input id="room" placeholder="Room ID">
+  <button onclick="createRoom()">Create Room</button>
+  <button onclick="joinRoom()">Join Room</button>
 </div>
 
-<div id="board"></div>
+<div id="game">
+  <h3 id="turn">Turn:</h3>
+  <div id="board"></div>
+  <button onclick="rollDice()">🎲 Roll Dice</button>
+  <h3 id="dice">-</h3>
+</div>
 
-<script>
-/* ======================
-   REAL LUDO ENGINE
-====================== */
+<script type="module">
+/* ================= FIREBASE ================= */
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
+import { getDatabase, ref, set, onValue, get } 
+from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
 
-// 52 step common path
-const COMMON_PATH = [...Array(52).keys()];
-
-// safe star cells (real)
-const SAFE_CELLS = [0,8,13,21,26,34,39,47];
-
-// player start index
-const START_INDEX = {
-  red: 0,
-  blue: 13,
-  yellow: 26,
-  green: 39
+const firebaseConfig = {
+  apiKey: "AIzaSyARuO_pN2vdYrVKYkKHHaNys7WI8HqM6I4",
+  authDomain: "friendchat-43941.firebaseapp.com",
+  databaseURL: "https://friendchat-43941-default-rtdb.firebaseio.com",
+  projectId: "friendchat-43941",
+  storageBucket: "friendchat-43941.firebasestorage.app",
+  messagingSenderId: "1026542245723",
+  appId: "1:1026542245723:web:b892bfcc1d2358a018ac7e"
 };
 
-// game state
-let game = {
-  turn: "red",
-  dice: 0,
-  players: {
-    red:    [-1,-1,-1,-1],
-    blue:   [-1,-1,-1,-1],
-    yellow: [-1,-1,-1,-1],
-    green:  [-1,-1,-1,-1]
-  }
-};
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
 
-// roll dice
-function rollDice(){
-  if(game.dice!==0) return;
-  game.dice = Math.floor(Math.random()*6)+1;
-  document.getElementById("dice").textContent = game.dice;
-}
+/* ================= GAME ================= */
 
-// move token
-function moveToken(color, i){
-  if(color!==game.turn) return alert("Turn nahi hai");
-  let d = game.dice;
-  if(d===0) return;
-
-  let pos = game.players[color][i];
-
-  // home
-  if(pos===-1){
-    if(d!==6) return;
-    game.players[color][i]=START_INDEX[color];
-  }else{
-    let newPos = (pos + d) % 52;
-    game.players[color][i]=newPos;
-    cutLogic(color,newPos);
-  }
-
-  endTurn(d);
-  drawTokens();
-}
-
-// cut logic
-function cutLogic(mover,pos){
-  if(SAFE_CELLS.includes(pos)) return;
-  for(let c in game.players){
-    if(c===mover) continue;
-    game.players[c].forEach((p,i)=>{
-      if(p===pos){
-        game.players[c][i]=-1;
-      }
-    });
-  }
-}
-
-// turn logic
-function endTurn(d){
-  game.dice=0;
-  if(d!==6){
-    game.turn = game.turn==="red"?"blue":"red";
-  }
-  document.getElementById("turn").textContent =
-    "Turn: "+game.turn.toUpperCase();
-  document.getElementById("dice").textContent="-";
-}
-
-/* ======================
-   BOARD + UI
-====================== */
+let roomId="", player="";
+const PATH = [0,1,2,3,4,9,14,19,24,23,22,21,20,15,10,5];
+const SAFE = [0,4,8,12];
 
 const board=document.getElementById("board");
-
-// simple 15x15 layout (visual only)
-for(let i=0;i<225;i++){
-  const c=document.createElement("div");
-  c.className="cell";
-  board.appendChild(c);
+for(let i=0;i<25;i++){
+  const d=document.createElement("div");
+  d.className="cell";
+  if(SAFE.includes(i)) d.classList.add("safe");
+  board.appendChild(d);
 }
 const cells=[...document.querySelectorAll(".cell")];
 
-// place center
-cells[112].classList.add("center");
-
-// map path roughly in spiral (visual only)
-const VISUAL_PATH=[];
-let p=112;
-for(let i=0;i<52;i++){
-  p+=1;
-  VISUAL_PATH.push(p);
-  if(cells[p]) cells[p].classList.add("safe");
+function createRoom(){
+  roomId=document.getElementById("room").value.trim();
+  if(!roomId) return alert("Room ID likho");
+  player="red";
+  set(ref(db,"ludo/"+roomId),{
+    turn:"red",
+    dice:0,
+    pos:{red:-1,blue:-1}
+  });
+  start();
 }
 
-// draw tokens
-function drawTokens(){
-  document.querySelectorAll(".token").forEach(t=>t.remove());
-  ["red","blue"].forEach(color=>{
-    game.players[color].forEach((p,i)=>{
-      if(p>=0){
-        const t=document.createElement("div");
-        t.className="token "+color;
-        t.textContent=i+1;
-        t.onclick=()=>moveToken(color,i);
-        cells[VISUAL_PATH[p]].appendChild(t);
-      }
-    });
+function joinRoom(){
+  roomId=document.getElementById("room").value.trim();
+  if(!roomId) return alert("Room ID likho");
+  player="blue";
+  start();
+}
+
+function start(){
+  document.getElementById("login").style.display="none";
+  document.getElementById("game").style.display="block";
+
+  onValue(ref(db,"ludo/"+roomId),snap=>{
+    if(!snap.exists()) return;
+    const d=snap.val();
+    draw(d.pos);
+    document.getElementById("turn").innerText="Turn: "+d.turn.toUpperCase();
+    document.getElementById("dice").innerText=d.dice||"-";
   });
 }
 
-drawTokens();
-</script>
+function rollDice(){
+  get(ref(db,"ludo/"+roomId)).then(s=>{
+    let g=s.val();
+    if(g.turn!==player) return alert("Wait turn");
+    if(g.dice!==0) return;
 
+    g.dice=Math.floor(Math.random()*6)+1;
+
+    if(g.pos[player]===-1){
+      if(g.dice===6) g.pos[player]=0;
+    }else{
+      g.pos[player]+=g.dice;
+      if(g.pos[player]>=PATH.length) g.pos[player]=PATH.length-1;
+
+      // CUT
+      if(!SAFE.includes(PATH[g.pos[player]])){
+        let other=player==="red"?"blue":"red";
+        if(g.pos[player]===g.pos[other]) g.pos[other]=-1;
+      }
+    }
+
+    if(g.dice!==6){
+      g.turn=player==="red"?"blue":"red";
+      g.dice=0;
+    }
+    set(ref(db,"ludo/"+roomId),g);
+  });
+}
+
+function draw(pos){
+  document.querySelectorAll(".token").forEach(t=>t.remove());
+  if(pos.red>=0){
+    let t=document.createElement("div");
+    t.className="token red";
+    t.textContent="R";
+    cells[PATH[pos.red]].appendChild(t);
+  }
+  if(pos.blue>=0){
+    let t=document.createElement("div");
+    t.className="token blue";
+    t.textContent="B";
+    cells[PATH[pos.blue]].appendChild(t);
+  }
+}
+</script>
 </body>
 </html>
