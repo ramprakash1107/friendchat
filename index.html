@@ -3,29 +3,51 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Real Ludo Online</title>
+<title>Real Ludo Working</title>
 
 <style>
-body{margin:0;background:#111;color:#fff;font-family:sans-serif;text-align:center}
-#board{
-  width:360px;height:360px;margin:10px auto;
-  display:grid;grid-template-columns:repeat(15,1fr);grid-template-rows:repeat(15,1fr);
-  background:#fff;border:3px solid #000
+body{
+  margin:0;
+  background:#111;
+  color:#fff;
+  font-family:sans-serif;
+  text-align:center;
 }
-.cell{border:1px solid #ccc;position:relative}
-.red{background:#e53935}
-.green{background:#43a047}
-.home{
-  display:grid;grid-template-columns:repeat(2,1fr);
-  grid-template-rows:repeat(2,1fr);gap:6px;padding:14px
+#board{
+  width:300px;
+  height:300px;
+  margin:10px auto;
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  grid-template-rows:repeat(5,1fr);
+  background:#fff;
+  border:3px solid #000;
+}
+.cell{
+  border:1px solid #999;
+  position:relative;
 }
 .goti{
-  width:20px;height:20px;border-radius:50%;
-  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)
+  width:22px;
+  height:22px;
+  border-radius:50%;
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
 }
-#dice{font-size:28px;margin:6px}
-button{padding:10px 16px;border:none;border-radius:8px;
-background:#1d9bf0;color:#fff;font-size:16px}
+.red{background:#e53935}
+.green{background:#43a047}
+
+button{
+  padding:10px 16px;
+  border:none;
+  border-radius:8px;
+  background:#1d9bf0;
+  color:#fff;
+  font-size:16px;
+}
+#dice{font-size:26px;margin:8px}
 </style>
 </head>
 
@@ -40,11 +62,11 @@ background:#1d9bf0;color:#fff;font-size:16px}
 <button onclick="rollDice()">ROLL</button>
 
 <script type="module">
-/* FIREBASE */
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
-import { getDatabase, ref, set, update, onValue } 
+import { getDatabase, ref, onValue, update, get, set } 
 from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
 
+/* FIREBASE */
 const firebaseConfig = {
   apiKey: "AIzaSyARuO_pN2vdYrVKYkKHHaNys7WI8HqM6I4",
   databaseURL: "https://friendchat-43941-default-rtdb.firebaseio.com",
@@ -53,29 +75,30 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-/* ROOM */
+/* ROOM & COLOR */
 const room = prompt("Room code");
-const color = prompt("Choose color: red / green");
-document.getElementById("roomText").textContent="Room: "+room;
+const myColor = prompt("Color: red / green");
 
-/* PATH (simple real-style path) */
-const path = [
-  1,2,3,4,5,6,21,36,51,66,
-  81,82,83,84,85,86
-];
+/* PATH (VISIBLE GRID PATH) */
+const path = [0,1,2,3,4,9,14,19,24];
 
-/* INIT */
 const gameRef = ref(db,"ludo/"+room);
-set(gameRef,{
-  turn:"red",
-  dice:0,
-  red:{pos:-1},
-  green:{pos:-1}
+
+/* INIT ONLY ONCE */
+get(gameRef).then(snap=>{
+  if(!snap.exists()){
+    set(gameRef,{
+      turn:"red",
+      dice:0,
+      red:{pos:-1},
+      green:{pos:-1}
+    });
+  }
 });
 
 /* BOARD */
 const board=document.getElementById("board");
-for(let i=0;i<225;i++){
+for(let i=0;i<25;i++){
   const c=document.createElement("div");
   c.className="cell";
   c.id="c"+i;
@@ -97,24 +120,27 @@ function draw(s){
   document.getElementById("turnText").textContent="Turn: "+s.turn;
 }
 
-/* LISTENER */
+/* LISTEN */
 onValue(gameRef,snap=>{
   if(snap.exists()) draw(snap.val());
 });
 
-/* DICE + MOVE + CUT */
-window.rollDice=()=>{
-  onValue(gameRef,snap=>{
+/* ROLL */
+window.rollDice = ()=>{
+  get(gameRef).then(snap=>{
     const s=snap.val();
-    if(s.turn!==color) return alert("Aapki turn nahi hai");
+    if(s.turn!==myColor){
+      alert("Aapki turn nahi hai");
+      return;
+    }
 
     const d=Math.floor(Math.random()*6)+1;
-    let me=s[color];
-    const other=color==="red"?"green":"red";
+    let me=s[myColor];
+    const other=myColor==="red"?"green":"red";
 
     if(me.pos===-1){
       if(d===6) me.pos=0;
-    }else if(me.pos+d<path.length){
+    }else if(me.pos+d < path.length){
       me.pos+=d;
     }
 
@@ -124,12 +150,13 @@ window.rollDice=()=>{
 
     update(gameRef,{
       dice:d,
-      [color]:me,
+      [myColor]:me,
       [other]:s[other],
       turn:other
     });
-  },{onlyOnce:true});
+  });
 };
 </script>
+
 </body>
 </html>
