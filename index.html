@@ -1,43 +1,44 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Real Ludo Working</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Real Ludo Online</title>
 
 <style>
 body{
   margin:0;
   background:#111;
   color:#fff;
-  font-family:sans-serif;
+  font-family:system-ui;
   text-align:center;
 }
 #board{
-  width:300px;
-  height:300px;
+  width:360px;
+  height:360px;
   margin:10px auto;
   display:grid;
-  grid-template-columns:repeat(5,1fr);
-  grid-template-rows:repeat(5,1fr);
+  grid-template-columns:repeat(15,1fr);
+  grid-template-rows:repeat(15,1fr);
   background:#fff;
   border:3px solid #000;
 }
 .cell{
-  border:1px solid #999;
+  border:1px solid #ccc;
   position:relative;
-}
-.goti{
-  width:22px;
-  height:22px;
-  border-radius:50%;
-  position:absolute;
-  top:50%;
-  left:50%;
-  transform:translate(-50%,-50%);
 }
 .red{background:#e53935}
 .green{background:#43a047}
+.safe{background:#ddd}
+
+.goti{
+  width:18px;
+  height:18px;
+  border-radius:50%;
+  position:absolute;
+  top:50%;left:50%;
+  transform:translate(-50%,-50%);
+}
 
 button{
   padding:10px 16px;
@@ -47,7 +48,7 @@ button{
   color:#fff;
   font-size:16px;
 }
-#dice{font-size:26px;margin:8px}
+#dice{font-size:26px;margin:6px}
 </style>
 </head>
 
@@ -62,31 +63,39 @@ button{
 <button onclick="rollDice()">ROLL</button>
 
 <script type="module">
+/* ---------- FIREBASE ---------- */
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
-import { getDatabase, ref, onValue, update, get, set } 
+import { getDatabase, ref, set, get, update, onValue }
 from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
 
-/* FIREBASE */
 const firebaseConfig = {
   apiKey: "AIzaSyARuO_pN2vdYrVKYkKHHaNys7WI8HqM6I4",
   databaseURL: "https://friendchat-43941-default-rtdb.firebaseio.com",
   projectId: "friendchat-43941",
 };
+
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-/* ROOM & COLOR */
+/* ---------- ROOM ---------- */
 const room = prompt("Room code");
-const myColor = prompt("Color: red / green");
-
-/* PATH (VISIBLE GRID PATH) */
-const path = [0,1,2,3,4,9,14,19,24];
+const myColor = prompt("Color (red / green)");
+document.getElementById("roomText").textContent="Room: "+room;
 
 const gameRef = ref(db,"ludo/"+room);
 
-/* INIT ONLY ONCE */
-get(gameRef).then(snap=>{
-  if(!snap.exists()){
+/* ---------- REAL PATH (VISIBLE) ---------- */
+const path = [
+  1,2,3,4,5,
+  20,35,50,65,80,
+  81,82,83,84,85,
+  70,55,40,25,
+  24,23,22,21
+];
+
+/* ---------- INIT ONCE ---------- */
+get(gameRef).then(s=>{
+  if(!s.exists()){
     set(gameRef,{
       turn:"red",
       dice:0,
@@ -96,16 +105,21 @@ get(gameRef).then(snap=>{
   }
 });
 
-/* BOARD */
+/* ---------- BOARD ---------- */
 const board=document.getElementById("board");
-for(let i=0;i<25;i++){
-  const c=document.createElement("div");
-  c.className="cell";
-  c.id="c"+i;
-  board.appendChild(c);
+for(let i=0;i<225;i++){
+  const d=document.createElement("div");
+  d.className="cell";
+  d.id="c"+i;
+  board.appendChild(d);
 }
 
-/* DRAW */
+/* COLOR PATH CELLS */
+path.forEach(i=>{
+  document.getElementById("c"+i).classList.add("safe");
+});
+
+/* ---------- DRAW ---------- */
 function draw(s){
   document.querySelectorAll(".cell").forEach(c=>c.innerHTML="");
   ["red","green"].forEach(col=>{
@@ -120,12 +134,12 @@ function draw(s){
   document.getElementById("turnText").textContent="Turn: "+s.turn;
 }
 
-/* LISTEN */
-onValue(gameRef,snap=>{
-  if(snap.exists()) draw(snap.val());
+/* ---------- LISTENER ---------- */
+onValue(gameRef,s=>{
+  if(s.exists()) draw(s.val());
 });
 
-/* ROLL */
+/* ---------- GAME LOGIC ---------- */
 window.rollDice = ()=>{
   get(gameRef).then(snap=>{
     const s=snap.val();
@@ -144,8 +158,9 @@ window.rollDice = ()=>{
       me.pos+=d;
     }
 
+    // CUT
     if(me.pos>=0 && me.pos===s[other].pos){
-      s[other].pos=-1; // CUT
+      s[other].pos=-1;
     }
 
     update(gameRef,{
