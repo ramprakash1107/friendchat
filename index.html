@@ -6,70 +6,68 @@
     <title>RP Gupta Real Ludo Pro</title>
     <style>
         :root { --red: #ff4757; --green: #2ed573; --blue: #1e90ff; --yellow: #ffa502; --bg: #1e1e2e; }
-        body { background: var(--bg); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; flex-direction: column; align-items: center; height: 100vh; overflow: hidden; }
+        body { background: var(--bg); color: white; font-family: sans-serif; margin: 0; display: flex; flex-direction: column; align-items: center; }
         
-        #status-bar { background: #2d2d44; width: 100%; padding: 12px; text-align: center; font-weight: bold; border-bottom: 3px solid #3d3d5c; font-size: 14px; }
-        
+        #status-bar { background: #2d2d44; width: 100%; padding: 15px; text-align: center; font-weight: bold; border-bottom: 3px solid #3d3d5c; }
+
+        /* Ludo Board with Real Grid Lines */
         .ludo-board { 
-            position: relative; width: 95vw; height: 95vw; max-width: 400px; max-height: 400px; 
-            margin: 15px auto; background: #fff; display: grid; 
+            position: relative; width: 95vw; height: 95vw; max-width: 420px; max-height: 420px; 
+            margin: 20px auto; background: #fff; display: grid; 
             grid-template-columns: repeat(15, 1fr); grid-template-rows: repeat(15, 1fr);
             border: 4px solid #333; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
+        /* Drawing Boxes/Lines */
+        .cell { border: 0.5px solid #ccc; box-sizing: border-box; position: relative; }
+        
         /* Home Squares */
-        .home { border: 1px solid #333; }
+        .home { border: 2px solid #333; }
         .red-home { grid-area: 1/1/7/7; background: var(--red); }
         .green-home { grid-area: 1/10/7/16; background: var(--green); }
-        .yellow-home { grid-area: 10/10/16/16; background: var(--yellow); }
         .blue-home { grid-area: 10/1/16/7; background: var(--blue); }
-        .center-finish { grid-area: 7/7/10/10; background: #eee; display: flex; align-items: center; justify-content: center; color: #333; font-weight: bold; font-size: 10px; }
+        .yellow-home { grid-area: 10/10/16/16; background: var(--yellow); }
+        .center-finish { grid-area: 7/7/10/10; background: #eee; border: 2px solid #333; display: flex; align-items: center; justify-content: center; color: #333; font-weight: bold; font-size: 10px; }
 
-        /* Path Styling */
-        .cell { border: 0.2px solid #ccc; box-sizing: border-box; }
-        .safe-zone { background: #cfcfcf !important; }
+        /* Path Coloring (Lines where tokens move) */
+        .path-red { background: #ffcccc; }
+        .path-green { background: #ccffcc; }
+        .path-yellow { background: #fff4cc; }
+        .path-blue { background: #cce5ff; }
+        .safe { background: #bdc3c7 !important; } /* Star/Safe spot */
 
-        /* Tokens */
+        /* Professional Tokens (Goti) */
         .token { 
-            width: 80%; height: 80%; border-radius: 50%; position: absolute; 
-            border: 2px solid #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.4); 
-            z-index: 100; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold;
+            width: 70%; height: 70%; border-radius: 50%; position: absolute; 
+            top: 15%; left: 15%; border: 2px solid #fff; 
+            box-shadow: 0 3px 6px rgba(0,0,0,0.4); z-index: 100;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        .controls { width: 100%; display: flex; justify-content: space-around; align-items: center; padding: 10px; background: #2d2d44; position: fixed; bottom: 0; }
-        .dice { width: 55px; height: 55px; background: white; border-radius: 12px; color: #333; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: bold; box-shadow: 0 5px 0 #999; }
-        button { padding: 15px 25px; border-radius: 50px; border: none; background: #2ed573; color: white; font-weight: bold; font-size: 16px; cursor: pointer; box-shadow: 0 4px 0 #1a7e43; }
+        /* Controls */
+        .controls { width: 100%; display: flex; justify-content: space-around; align-items: center; padding: 20px 0; background: #2d2d44; position: fixed; bottom: 0; }
+        .dice-box { width: 60px; height: 60px; background: white; border-radius: 12px; color: #333; display: flex; align-items: center; justify-content: center; font-size: 30px; font-weight: bold; box-shadow: 0 5px 0 #999; }
+        button { padding: 15px 30px; border-radius: 50px; border: none; background: #2ed573; color: white; font-weight: bold; font-size: 18px; cursor: pointer; box-shadow: 0 4px 0 #1a7e43; }
         button:active { transform: translateY(4px); box-shadow: none; }
-        button:disabled { background: #555; box-shadow: none; cursor: not-allowed; }
     </style>
 </head>
 <body>
 
-<div id="status-bar">Ludo Multiplayer: Connecting...</div>
+<div id="status-bar">Ludo Online: Baari ka intezar...</div>
 
-<div class="ludo-board" id="main-board">
-    <div class="home red-home"></div>
-    <div class="home green-home"></div>
-    <div class="home yellow-home"></div>
-    <div class="home blue-home"></div>
-    <div class="center-finish">FINISH</div>
-
-    <div id="p1" class="token" style="background:var(--red); display:none;">1</div>
-    <div id="p2" class="token" style="background:var(--yellow); display:none;">2</div>
-</div>
+<div class="ludo-board" id="board">
+    </div>
 
 <div class="controls">
-    <div id="player-label">Aap: ?</div>
-    <div class="dice" id="dice-ui">?</div>
-    <button id="roll-btn" onclick="roll()">Dice Roll</button>
+    <div id="my-label">Aap: ?</div>
+    <div class="dice-box" id="dice-ui">?</div>
+    <button id="roll-btn" onclick="handleRoll()">Dice Roll</button>
 </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
     import { getDatabase, ref, set, onValue, update } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
 
-    // Firebase Setup
     const firebaseConfig = {
         apiKey: "AIzaSyARuO_pN2vdYrVKYkKHHaNys7WI8HqM6I4",
         authDomain: "friendchat-43941.firebaseapp.com",
@@ -82,76 +80,58 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
-    const gameRef = ref(db, 'ludo/room_pro_1');
+    const gameRef = ref(db, 'ludo/room_final_1');
 
-    // Game Variables
-    let myColor = ""; 
+    // 1. Create Board Layout
+    const board = document.getElementById('board');
+    for(let i=0; i<225; i++) {
+        let cell = document.createElement('div');
+        cell.className = 'cell';
+        board.appendChild(cell);
+    }
+
+    // Static Sections
+    board.children[0].className = 'home red-home';
+    board.children[9].className = 'home green-home';
+    board.children[135].className = 'home blue-home';
+    board.children[144].className = 'home yellow-home';
+    board.children[96].className = 'center-finish';
+    board.children[96].innerText = "FINISH";
+
+    // 2. Setup Tokens
+    let redGoti = document.createElement('div');
+    redGoti.className = 'token';
+    redGoti.style.background = 'var(--red)';
+    board.children[16].appendChild(redGoti);
+
+    let yellowGoti = document.createElement('div');
+    yellowGoti.className = 'token';
+    yellowGoti.style.background = 'var(--yellow)';
+    board.children[158].appendChild(yellowGoti);
+
+    // 3. Multiplayer Logic
+    let myColor = "";
     let gameState = { turn: 'red', dice: 0, p1Pos: 0, p2Pos: 0 };
 
-    // Path Logic (Coordinates for movement)
-    const redPath = [[7,14],[7,13],[7,12],[7,11],[7,10],[6,9],[5,9],[4,9],[3,9],[2,9],[1,9],[0,9],[0,8],[0,7],[1,7],[2,7],[3,7],[4,7],[5,7],[6,7],[7,6],[7,5],[7,4],[7,3],[7,2],[7,1],[7,0],[8,0],[9,0],[9,1],[9,2],[9,3],[9,4],[9,5],[9,6],[10,7],[11,7],[12,7],[13,7],[14,7],[15,7],[15,8],[15,9],[14,9],[13,9],[12,9],[11,9],[10,9],[9,10],[9,11],[9,12],[9,13],[9,14],[9,15],[8,15],[8,14],[8,13],[8,12],[8,11],[8,10],[8,9]];
-    const yellowPath = [[9,10],[9,11],[9,12],[9,13],[9,14],[9,15],[8,15],[7,15],[7,14],[7,13],[7,12],[7,11],[7,10],[6,9],[5,9],[4,9],[3,9],[2,9],[1,9],[0,9],[0,8],[0,7],[1,7],[2,7],[3,7],[4,7],[5,7],[6,7],[7,6],[7,5],[7,4],[7,3],[7,2],[7,1],[7,0],[8,0],[9,0],[9,1],[9,2],[9,3],[9,4],[9,5],[9,6],[10,7],[11,7],[12,7],[13,7],[14,7],[15,7],[15,8],[14,8],[13,8],[12,8],[11,8],[10,8],[9,8]];
-
-    window.roll = () => {
-        if (gameState.turn !== myColor) return;
-        const v = Math.floor(Math.random() * 6) + 1;
-        update(gameRef, { dice: v, canMove: true });
-        
-        // Auto-move if token is already out (Simplification)
-        setTimeout(() => moveToken(), 800);
+    window.handleRoll = () => {
+        if(gameState.turn !== myColor) return alert("Aapki baari nahi hai!");
+        const roll = Math.floor(Math.random() * 6) + 1;
+        update(gameRef, { dice: roll, turn: myColor === 'red' ? 'yellow' : 'red' });
     };
-
-    function moveToken() {
-        let newPos = (myColor === 'red' ? gameState.p1Pos : gameState.p2Pos) + gameState.dice;
-        if(newPos >= 56) { alert("Jeet gaye!"); newPos = 0; }
-        
-        let updateData = { dice: 0, turn: myColor === 'red' ? 'yellow' : 'red' };
-        if(myColor === 'red') updateData.p1Pos = newPos;
-        else updateData.p2Pos = newPos;
-        
-        update(gameRef, updateData);
-    }
 
     onValue(gameRef, (snap) => {
         const data = snap.val();
         if(!data) return set(gameRef, gameState);
         gameState = data;
-
-        document.getElementById('dice-ui').innerText = data.dice || "?";
-        document.getElementById('status-bar').innerText = data.turn === myColor ? "TERI BAARI HAI!" : "DOST KI BAARI...";
-        document.getElementById('roll-btn').disabled = (data.turn !== myColor || data.dice > 0);
-
-        renderTokens();
+        document.getElementById('dice-ui').innerText = data.dice;
+        document.getElementById('status-bar').innerText = data.turn === myColor ? "AAPKI BAARI!" : "DOST CHAL RAHA HAI...";
     });
 
-    function renderTokens() {
-        const t1 = document.getElementById('p1');
-        const t2 = document.getElementById('p2');
-        
-        // Red Token Position
-        if(gameState.p1Pos === 0) { t1.style.gridArea = "2/2/3/3"; } 
-        else { 
-            let coord = redPath[gameState.p1Pos];
-            t1.style.gridColumn = coord[0] + 1; t1.style.gridRow = coord[1] + 1;
-        }
-        t1.style.display = "flex";
-
-        // Yellow Token Position
-        if(gameState.p2Pos === 0) { t2.style.gridArea = "11/11/12/13"; }
-        else {
-            let coord = yellowPath[gameState.p2Pos];
-            t2.style.gridColumn = coord[0] + 1; t2.style.gridRow = coord[1] + 1;
-        }
-        t2.style.display = "flex";
-    }
-
-    // Role Selection
     window.onload = () => {
-        myColor = confirm("Red (Player 1) loge? Cancel = Yellow (Player 2)") ? 'red' : 'yellow';
-        document.getElementById('player-label').innerText = "Aap: " + myColor.toUpperCase();
+        myColor = confirm("Red loge? (OK=Red, Cancel=Yellow)") ? 'red' : 'yellow';
+        document.getElementById('my-label').innerText = "Aap: " + myColor.toUpperCase();
     };
 </script>
 
 </body>
 </html>
-
