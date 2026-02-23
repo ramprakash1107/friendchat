@@ -1,152 +1,118 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>RP Gupta Ludo Pro</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multiplayer Guessing Game</title>
     <style>
-        :root { --red: #ff4757; --green: #2ed573; --blue: #1e90ff; --yellow: #ffa502; --bg: #1e1e2e; }
-        body { background: var(--bg); color: white; font-family: sans-serif; margin: 0; display: flex; flex-direction: column; align-items: center; overflow: hidden; height: 100vh; }
-        
-        #status-bar { background: #2d2d44; width: 100%; padding: 12px; text-align: center; font-weight: bold; border-bottom: 2px solid #3d3d5c; color: #2ed573; }
-
-        /* Ludo Board Container */
-        .ludo-board { 
-            position: relative; width: 95vw; height: 95vw; max-width: 400px; max-height: 400px; 
-            background: #fff; display: grid; grid-template-columns: repeat(15, 1fr); 
-            grid-template-rows: repeat(15, 1fr); border: 4px solid #333; margin-top: 20px;
-        }
-
-        /* Cells and Lines */
-        .cell { border: 0.2px solid #ddd; box-sizing: border-box; display: flex; align-items: center; justify-content: center; position: relative; }
-        
-        /* Home Squares */
-        .home { border: 2px solid #333; z-index: 5; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; padding: 10px; }
-        .red-home { grid-area: 1/1/7/7; background: var(--red); }
-        .green-home { grid-area: 1/10/7/16; background: var(--green); }
-        .blue-home { grid-area: 10/1/16/7; background: var(--blue); }
-        .yellow-home { grid-area: 10/10/16/16; background: var(--yellow); }
-        .center-finish { grid-area: 7/7/10/10; background: #eee; border: 2px solid #333; display: flex; align-items: center; justify-content: center; color: #333; font-weight: bold; font-size: 10px; }
-
-        /* Path Styling */
-        .path-red { background: #ffcccc; }
-        .path-yellow { background: #fff4cc; }
-
-        /* Goti (Token) - Size Fixed */
-        .token { 
-            width: 80%; height: 80%; border-radius: 50%; 
-            border: 2px solid #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.4); 
-            z-index: 100; transition: all 0.4s ease;
-        }
-
-        /* Controls */
-        .controls { width: 100%; display: flex; justify-content: space-around; align-items: center; padding: 15px 0; background: #2d2d44; position: fixed; bottom: 0; border-top: 2px solid #3d3d5c; }
-        .dice-box { width: 55px; height: 55px; background: white; border-radius: 10px; color: #333; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: bold; box-shadow: 0 4px 0 #999; }
-        button { padding: 12px 30px; border-radius: 50px; border: none; background: #2ed573; color: white; font-weight: bold; font-size: 16px; cursor: pointer; box-shadow: 0 4px 0 #1a7e43; }
-        button:disabled { opacity: 0.5; cursor: not-allowed; }
+        body { font-family: sans-serif; background: #0b0e11; color: #fff; text-align: center; margin: 0; padding: 20px; }
+        .card { background: #1c2128; padding: 20px; border-radius: 15px; max-width: 400px; margin: auto; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+        h2 { color: #1d9bf0; }
+        input { width: 80%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px solid #333; background: #0d1117; color: #fff; text-align: center; }
+        button { width: 85%; padding: 12px; background: #1d9bf0; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        button:hover { background: #1a8cd8; }
+        #gameArea { display: none; }
+        .log { margin-top: 20px; height: 150px; overflow-y: auto; background: #0d1117; padding: 10px; border-radius: 8px; font-size: 14px; text-align: left; }
+        .status { margin: 15px 0; font-weight: bold; color: #ffad1f; }
+        #credit { font-size: 12px; color: #555; margin-top: 10px; }
     </style>
 </head>
 <body>
 
-<div id="status-bar">Connecting...</div>
+    <div class="card" id="loginBox">
+        <h2>🎮 Multiplayer Guess</h2>
+        <div id="credit">Game by @rp_gupta_07</div>
+        <input type="text" id="username" placeholder="Apna Naam Likho">
+        <input type="text" id="roomcode" placeholder="Room Code (e.g. 777)">
+        <button onclick="startApp()">Game Join Karein</button>
+    </div>
 
-<div class="ludo-board" id="board-grid">
-    <div class="home red-home" id="red-base"></div>
-    <div class="home green-home"></div>
-    <div class="home blue-home"></div>
-    <div class="home yellow-home" id="yellow-base"></div>
-    <div class="center-finish">FINISH</div>
-</div>
-
-<div class="controls">
-    <div id="p-label" style="font-weight:bold;">Aap: ?</div>
-    <div class="dice-box" id="dice-val">?</div>
-    <button id="roll-btn" onclick="handleRoll()">ROLL</button>
-</div>
-
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
-    import { getDatabase, ref, set, onValue, update } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
-
-    const firebaseConfig = {
-        apiKey: "AIzaSyARuO_pN2vdYrVKYkKHHaNys7WI8HqM6I4",
-        authDomain: "friendchat-43941.firebaseapp.com",
-        databaseURL: "https://friendchat-43941-default-rtdb.firebaseio.com",
-        projectId: "friendchat-43941",
-        storageBucket: "friendchat-43941.appspot.com",
-        messagingSenderId: "1026542245723",
-        appId: "1:1026542245723:web:b892bfcc1d2358a018ac7e"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-    const gameRef = ref(db, 'ludo/real_match_1');
-
-    // Create Path Cells
-    const board = document.getElementById('board-grid');
-    for(let i=0; i<225; i++) {
-        let cell = document.createElement('div');
-        cell.className = 'cell';
-        board.appendChild(cell);
-    }
-
-    // Path Coordinates (Simulated for Red)
-    const redPath = [[6,1],[6,2],[6,3],[6,4],[6,5],[5,6],[4,6],[3,6],[2,6],[1,6],[0,6],[0,7],[0,8],[1,8],[2,8],[3,8],[4,8],[5,8],[6,9],[6,10],[6,11],[6,12],[6,13],[6,14],[7,14],[8,14],[8,13],[8,12],[8,11],[8,10],[8,9],[9,8],[10,8],[11,8],[12,8],[13,8],[14,8],[14,7],[14,6],[13,6],[12,6],[11,6],[10,6],[9,5],[8,4],[8,3],[8,2],[8,1],[8,0],[7,0],[7,1],[7,2],[7,3],[7,4],[7,5],[7,6]];
-
-    let myRole = "";
-    let gameState = { turn: 'red', dice: 0, redPos: -1, yellowPos: -1 };
-
-    window.handleRoll = () => {
-        if(gameState.turn !== myRole) return;
-        const roll = Math.floor(Math.random() * 6) + 1;
-        let updateData = { dice: roll, turn: myRole === 'red' ? 'yellow' : 'red' };
+    <div class="card" id="gameArea">
+        <h3 id="roomDisplay"></h3>
+        <p>1 se 100 ke beech ka number guess karo!</p>
+        <div class="status" id="hint">Waiting for moves...</div>
+        <input type="number" id="guessInput" placeholder="Number daalein">
+        <button onclick="sendGuess()">Guess!</button>
         
-        if(myRole === 'red') updateData.redPos = (gameState.redPos + roll) % 56;
-        else updateData.yellowPos = (gameState.yellowPos + roll) % 56;
-        
-        update(gameRef, updateData);
-    };
+        <div class="log" id="gameLog"></div>
+        <button onclick="location.reload()" style="background:#e53935; margin-top:10px;">Leave Game</button>
+    </div>
 
-    onValue(gameRef, (snap) => {
-        const data = snap.val();
-        if(!data) return set(gameRef, gameState);
-        gameState = data;
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
+        import { getDatabase, ref, set, onValue, push, remove } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
 
-        document.getElementById('dice-val').innerText = data.dice;
-        document.getElementById('status-bar').innerText = (data.turn === myRole) ? "AAPKI BAARI!" : "DOST KI BAARI...";
-        renderGoti();
-    });
+        // Aapke purane chat app ki Firebase details
+        const firebaseConfig = {
+            apiKey: "AIzaSyARuO_pN2vdYrVKYkKHHaNys7WI8HqM6I4",
+            authDomain: "friendchat-43941.firebaseapp.com",
+            databaseURL: "https://friendchat-43941-default-rtdb.firebaseio.com",
+            projectId: "friendchat-43941",
+            storageBucket: "friendchat-43941.firebasestorage.app",
+            messagingSenderId: "1026542245723",
+            appId: "1:1026542245723:web:b892bfcc1d2358a018ac7e"
+        };
 
-    function renderGoti() {
-        // Remove old tokens to refresh
-        document.querySelectorAll('.token').forEach(t => t.remove());
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
 
-        // Red Goti
-        const rG = document.createElement('div');
-        rG.className = 'token';
-        rG.style.background = 'var(--red)';
-        if(gameState.redPos === -1) document.getElementById('red-base').appendChild(rG);
-        else moveGotiToPath(rG, redPath[gameState.redPos]);
+        let user, room, targetNumber;
 
-        // Yellow Goti (Simplified for demo)
-        const yG = document.createElement('div');
-        yG.className = 'token';
-        yG.style.background = 'var(--yellow)';
-        if(gameState.yellowPos === -1) document.getElementById('yellow-base').appendChild(yG);
-        else moveGotiToPath(yG, redPath[(gameState.yellowPos + 26) % 56]); // Offset for yellow
-    }
+        window.startApp = () => {
+            user = document.getElementById('username').value.trim();
+            room = document.getElementById('roomcode').value.trim();
+            if(!user || !room) return alert("Naam aur Room Code zaroori hai!");
 
-    function moveGotiToPath(goti, coords) {
-        const cellIndex = (coords[1] * 15) + coords[0];
-        const targetCell = board.children[cellIndex + 5]; // Adjustment for home divs
-        if(targetCell) targetCell.appendChild(goti);
-    }
+            document.getElementById('loginBox').style.display = 'none';
+            document.getElementById('gameArea').style.display = 'block';
+            document.getElementById('roomDisplay').innerText = "Room: " + room;
 
-    window.onload = () => {
-        myRole = confirm("Red (P1) loge?") ? 'red' : 'yellow';
-        document.getElementById('p-label').innerText = "Aap: " + myRole.toUpperCase();
-    };
-</script>
+            // Setup Game: Agar room naya hai toh secret number generate karo
+            const gameRef = ref(db, `games/${room}/config`);
+            onValue(gameRef, (snapshot) => {
+                if (!snapshot.exists()) {
+                    set(gameRef, { target: Math.floor(Math.random() * 100) + 1 });
+                } else {
+                    targetNumber = snapshot.val().target;
+                }
+            }, { onlyOnce: false });
+
+            listenForGuesses();
+        };
+
+        window.sendGuess = () => {
+            const val = parseInt(document.getElementById('guessInput').value);
+            if(!val) return;
+
+            let hint = "";
+            if(val < targetNumber) hint = "Low! ⬆️";
+            else if(val > targetNumber) hint = "High! ⬇️";
+            else hint = "WON! 🎉";
+
+            push(ref(db, `games/${room}/moves`), { user, val, hint });
+            document.getElementById('guessInput').value = "";
+        };
+
+        function listenForGuesses() {
+            onValue(ref(db, `games/${room}/moves`), (snapshot) => {
+                const log = document.getElementById('gameLog');
+                const hintDiv = document.getElementById('hint');
+                log.innerHTML = "";
+                
+                if (snapshot.exists()) {
+                    const data = snapshot.val();
+                    Object.values(data).reverse().forEach(move => {
+                        const p = document.createElement('p');
+                        p.innerHTML = `<b>${move.user}:</b> ${move.val} (${move.hint})`;
+                        log.appendChild(p);
+
+                        if(move.hint === "WON! 🎉") {
+                            hintDiv.innerHTML = `<span style="color:#4BB543">${move.user} Jeet Gaya! No: ${move.val}</span>`;
+                        }
+                    });
+                }
+            });
+        }
+    </script>
 </body>
 </html>
-
