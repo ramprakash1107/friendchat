@@ -2,38 +2,43 @@
 <html lang="hi">
 <head>
 <meta charset="UTF-8">
-<title>Tic-Tac-Toe Pro | RP GUPTA</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RP GUPTA | Official Game</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
 <style>
-:root { --primary: #1d9bf0; --bg: #050505; --cell: #151515; --win: #00ff88; --msg-me: #1d9bf0; --msg-other: #333; }
-body { background: var(--bg); color: #fff; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 10px; display: flex; justify-content: center; }
-.container { width: 100%; max-width: 380px; text-align: center; }
+:root { --primary: #1d9bf0; --bg: #000; --cell: #111; --win: #00ff88; --msg-me: #1d9bf0; --msg-other: #222; }
+body { background: var(--bg); color: #fff; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0; overflow-x: hidden; }
 
-.dev-by { font-size: 12px; color: #888; text-decoration: none; display: block; margin-bottom: 5px; }
-.insta-link { color: #e1306c; font-weight: bold; text-decoration: none; border: 1px solid #e1306c; padding: 6px 15px; border-radius: 20px; font-size: 13px; display: inline-block; margin-top: 10px; }
+/* Sticky Header - Score fixed rahega */
+.header-fixed { position: sticky; top: 0; background: var(--bg); z-index: 100; padding: 10px; border-bottom: 1px solid #222; }
 
-h2 { margin: 10px 0; font-size: 24px; color: var(--primary); }
+.container { width: 100%; max-width: 400px; margin: auto; padding-bottom: 20px; }
 
-input { width: 85%; padding: 12px; margin: 10px 0; border-radius: 10px; border: 1px solid #333; background: #111; color: #fff; text-align: center; }
-button { padding: 12px 25px; border-radius: 10px; border: none; background: var(--primary); color: #fff; font-weight: bold; cursor: pointer; }
+.dev-brand { font-size: 14px; color: var(--primary); font-weight: bold; text-decoration: none; letter-spacing: 1px; }
+.insta-btn { background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); color: white; padding: 5px 15px; border-radius: 20px; text-decoration: none; font-size: 12px; display: inline-block; margin-top: 5px; }
 
-#scoreboard { display: flex; justify-content: space-around; margin: 15px 0; background: #111; padding: 10px; border-radius: 15px; border: 1px solid #222; }
-.score-val { font-size: 22px; color: var(--primary); font-weight: bold; }
+#scoreboard { display: flex; justify-content: space-around; background: #111; padding: 12px; border-radius: 15px; margin-top: 10px; border: 1px solid #333; }
+.score-val { font-size: 24px; color: var(--primary); font-weight: bold; }
 
-#board { display: grid; grid-template-columns: repeat(3, 95px); gap: 10px; justify-content: center; margin: 15px auto; }
-.cell { width: 95px; height: 95px; background: var(--cell); border-radius: 12px; font-size: 45px; display: flex; align-items: center; justify-content: center; border: 1px solid #222; }
-.win-cell { border-color: var(--win); color: var(--win); background: rgba(0, 255, 136, 0.1); }
+#board { display: grid; grid-template-columns: repeat(3, 100px); gap: 10px; justify-content: center; margin: 20px auto; }
+.cell { width: 100px; height: 100px; background: var(--cell); border-radius: 15px; font-size: 50px; display: flex; align-items: center; justify-content: center; border: 1px solid #222; transition: 0.3s; }
+.win-cell { border-color: var(--win); color: var(--win); background: rgba(0, 255, 136, 0.15); animation: winGlow 1s infinite alternate; }
 
-#chatContainer { background: #111; border-radius: 15px; padding: 10px; margin-top: 10px; border: 1px solid #222; }
-#messages { height: 140px; overflow-y: auto; display: flex; flex-direction: column; padding: 5px; }
-.msg { max-width: 80%; padding: 8px 12px; border-radius: 15px; margin: 4px 0; font-size: 14px; word-wrap: break-word; position: relative; }
-.msg b { font-size: 10px; display: block; margin-bottom: 2px; opacity: 0.8; }
-.me { align-self: flex-end; background: var(--msg-me); border-bottom-right-radius: 2px; text-align: right; }
-.other { align-self: flex-start; background: var(--msg-other); border-bottom-left-radius: 2px; text-align: left; }
+@keyframes winGlow { from { box-shadow: 0 0 5px var(--win); } to { box-shadow: 0 0 20px var(--win); } }
 
-.chat-input-area { display: flex; gap: 8px; margin-top: 10px; }
-.chat-input-area input { margin: 0; flex: 1; padding: 10px; font-size: 14px; }
-.chat-input-area button { padding: 10px 15px; }
+/* Chat Bubbles */
+#chatSection { padding: 15px; }
+#messages { height: 150px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
+.msg { max-width: 70%; padding: 8px 12px; border-radius: 18px; font-size: 14px; position: relative; line-height: 1.4; }
+.me { align-self: flex-end; background: var(--msg-me); border-bottom-right-radius: 2px; }
+.other { align-self: flex-start; background: var(--msg-other); border-bottom-left-radius: 2px; }
+
+.input-group { display: flex; gap: 10px; background: #111; padding: 8px; border-radius: 25px; border: 1px solid #333; }
+.input-group input { background: transparent; border: none; color: #fff; flex: 1; padding-left: 10px; outline: none; }
+.input-group button { background: var(--primary); border: none; color: white; width: 35px; height: 35px; border-radius: 50%; cursor: pointer; }
+
+#joinBox { padding: 50px 20px; }
+.login-input { width: 80%; padding: 15px; border-radius: 30px; border: 1px solid #333; background: #111; color: #fff; text-align: center; font-size: 16px; margin-bottom: 20px; }
+.start-btn { width: 85%; padding: 15px; border-radius: 30px; background: var(--primary); color: white; font-weight: bold; border: none; font-size: 16px; cursor: pointer; }
 
 .hidden { display: none; }
 </style>
@@ -41,38 +46,42 @@ button { padding: 12px 25px; border-radius: 10px; border: none; background: var(
 <body>
 
 <div class="container">
-    <a href="https://www.instagram.com/rp_gupta_07?igsh=MWVvcHQ5YmF4NmlycQ==" target="_blank" class="dev-by">Developed by @rp_gupta_07</a>
-    <h2>🎮 RP GUPTA Games</h2>
-
     <div id="joinBox">
-        <p style="color:#888; font-size:14px;">Fixed Room Enabled: Sabke liye ek hi game!</p>
-        <input id="nameInput" placeholder="Apna Naam Likhein...">
+        <h1 style="margin-bottom: 5px;">RP GUPTA</h1>
+        <p style="color:#666; margin-top:0;">Official Gaming Portal</p>
+        <input id="nameInput" class="login-input" placeholder="Enter Your Name">
         <br>
-        <button onclick="joinRoom()">Game Shuru Karein</button>
-        <br>
-        <a href="https://www.instagram.com/rp_gupta_07?igsh=MWVvcHQ5YmF4NmlycQ==" target="_blank" class="insta-link">Follow on Instagram</a>
+        <button onclick="joinRoom()" class="start-btn">PLAY NOW</button>
+        <br><br>
+        <a href="https://www.instagram.com/rp_gupta_07?igsh=MWVvcHQ5YmF4NmlycQ==" target="_blank" class="insta-btn">Follow @rp_gupta_07</a>
     </div>
 
     <div id="gameArea" class="hidden">
-        <div id="scoreboard">
-            <div><span id="p1Name">X</span><br><span id="p1Score" class="score-val">0</span></div>
-            <div style="align-self:center; opacity:0.3;">VS</div>
-            <div><span id="p2Name">O</span><br><span id="p2Score" class="score-val">0</span></div>
+        <div class="header-fixed">
+            <a href="https://www.instagram.com/rp_gupta_07?igsh=MWVvcHQ5YmF4NmlycQ==" target="_blank" class="dev-brand">DEV BY RP GUPTA</a>
+            <div id="scoreboard">
+                <div><small id="p1Name">Player 1</small><br><span id="p1Score" class="score-val">0</span></div>
+                <div style="font-size: 20px; align-self: center; opacity: 0.2;">|</div>
+                <div><small id="p2Name">Player 2</small><br><span id="p2Score" class="score-val">0</span></div>
+            </div>
+            <h4 id="status" style="margin: 8px 0 0 0; color: var(--primary); font-size: 14px;">Connecting...</h4>
         </div>
-        
-        <h4 id="status" style="margin:10px 0; color:var(--primary);">Dost ka intezar...</h4>
-        <div id="board"></div>
-        <button id="restartBtn" class="hidden" onclick="restart()">Naya Match (Clear Chat)</button>
 
-        <div id="chatContainer">
+        <div id="board"></div>
+        
+        <div style="text-align: center;">
+            <button id="restartBtn" class="hidden" onclick="restart()" style="background:#222; color:#fff; padding:8px 20px; border-radius:20px; border:1px solid #444; margin-bottom:10px;">New Match</button>
+        </div>
+
+        <div id="chatSection">
             <div id="messages"></div>
-            <div class="chat-input-area">
-                <input id="chatInput" placeholder="Message...">
+            <div class="input-group">
+                <input id="chatInput" placeholder="Send a message...">
                 <button onclick="sendMsg()">➤</button>
             </div>
         </div>
-        <br>
-        <a href="https://www.instagram.com/rp_gupta_07?igsh=MWVvcHQ5YmF4NmlycQ==" target="_blank" class="dev-by">Follow @rp_gupta_07 for updates</a>
+        
+        <p style="font-size: 10px; color: #444; margin-top: 20px;">© 2026 RP GUPTA. All Rights Reserved.</p>
     </div>
 </div>
 
@@ -92,9 +101,7 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
-
-// ✅ FIXED ROOM ID - Ab baar-baar nahi dalna padega
-const FIXED_ROOM = "RP_GUPTA_MAIN_ROOM";
+const ROOM_ID = "PRO_GAMER_ZONE"; // Hidden Fixed Room
 let mySymbol, myName, gameRef, chatRef;
 
 const boardDiv = document.getElementById("board");
@@ -107,10 +114,10 @@ for(let i=0; i<9; i++) {
 
 function joinRoom() {
     myName = document.getElementById("nameInput").value.trim();
-    if(!myName) return alert("Pehle naam likho!");
+    if(!myName) return;
 
-    gameRef = db.ref("rooms/" + FIXED_ROOM + "/game");
-    chatRef = db.ref("rooms/" + FIXED_ROOM + "/chat");
+    gameRef = db.ref("rooms/" + ROOM_ID + "/game");
+    chatRef = db.ref("rooms/" + ROOM_ID + "/chat");
 
     gameRef.once("value", snap => {
         let g = snap.val();
@@ -139,18 +146,18 @@ function listenGame() {
             boardDiv.children[i].innerText = v;
             boardDiv.children[i].classList.remove("win-cell");
         });
-        document.getElementById("p1Name").innerText = g.players?.X || "X";
-        document.getElementById("p2Name").innerText = g.players?.O || "O";
+        document.getElementById("p1Name").innerText = g.players?.X || "Waiting...";
+        document.getElementById("p2Name").innerText = g.players?.O || "Waiting...";
         document.getElementById("p1Score").innerText = g.scores?.X || 0;
         document.getElementById("p2Score").innerText = g.scores?.O || 0;
 
         const wData = checkWinner(g.board);
         if(wData) {
-            document.getElementById("status").innerText = wData === "draw" ? "🤝 Draw!" : "🏆 Winner: " + (wData.w === "X" ? g.players.X : g.players.O);
+            document.getElementById("status").innerText = wData === "draw" ? "GAME DRAW!" : (wData.w === "X" ? g.players.X : g.players.O) + " WON!";
             if(wData.line) wData.line.forEach(idx => boardDiv.children[idx].classList.add("win-cell"));
             document.getElementById("restartBtn").classList.remove("hidden");
         } else {
-            document.getElementById("status").innerText = (g.turn === mySymbol) ? "👉 Aapki Baari" : "⏳ Opponent ki baari...";
+            document.getElementById("status").innerText = (g.turn === mySymbol) ? "YOUR TURN" : "OPPONENT'S TURN...";
             document.getElementById("restartBtn").classList.add("hidden");
         }
     });
@@ -171,10 +178,8 @@ function move(i) {
 }
 
 function restart() {
-    // ✅ GAME RESTART HOTE HI CHAT AUR BOARD DELETE HO JAYEGA
     gameRef.update({ board: Array(9).fill(""), turn: "X" });
-    chatRef.remove(); 
-    document.getElementById("messages").innerHTML = "";
+    chatRef.remove();
 }
 
 function checkWinner(b) {
@@ -199,16 +204,12 @@ function listenChat() {
         const d = document.createElement("div");
         const isMe = m.name === myName;
         d.className = "msg " + (isMe ? "me" : "other");
-        d.innerHTML = `<b>${m.name}</b>${m.msg}`;
+        d.innerHTML = m.msg;
         msgDiv.appendChild(d);
         msgDiv.scrollTop = msgDiv.scrollHeight;
     });
-    // Jab chat delete ho toh screen se bhi hat jaye
-    chatRef.on("child_removed", () => {
-        msgDiv.innerHTML = "";
-    });
+    chatRef.on("child_removed", () => msgDiv.innerHTML = "");
 }
 </script>
 </body>
 </html>
-
