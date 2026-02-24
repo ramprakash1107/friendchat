@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Room Join Test</title>
+<title>Tic Tac Toe Online</title>
 
 <style>
 body{
@@ -11,37 +11,56 @@ body{
   background:#000;
   color:#fff;
   font-family:system-ui;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  height:100vh;
-}
-#box{
-  width:90%;
-  max-width:400px;
   text-align:center;
 }
+#joinBox{padding:30px}
 input,button{
   width:100%;
   padding:14px;
   margin:10px 0;
-  border-radius:10px;
+  border-radius:12px;
   border:none;
   font-size:16px;
 }
 input{background:#111;color:#fff}
 button{background:#1d9bf0;color:#fff;font-weight:bold}
-#status{margin-top:15px;font-size:18px}
+
+#game{display:none}
+#status{margin:15px;font-size:18px}
+
+#board{
+  display:grid;
+  grid-template-columns:repeat(3,90px);
+  gap:10px;
+  justify-content:center;
+  margin:20px auto;
+}
+.cell{
+  width:90px;
+  height:90px;
+  background:#222;
+  font-size:36px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:12px;
+  cursor:pointer;
+}
 </style>
 </head>
 
 <body>
 
-<div id="box">
-  <h2>🔐 Join Room</h2>
+<h2>🎮 Tic Tac Toe</h2>
+
+<div id="joinBox">
   <input id="room" placeholder="Room code">
-  <button onclick="join()">Join</button>
+  <button onclick="joinRoom()">Join Room</button>
+</div>
+
+<div id="game">
   <div id="status"></div>
+  <div id="board"></div>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -56,23 +75,70 @@ firebase.initializeApp({
 });
 
 const db = firebase.database();
-let userId = "u" + Math.random().toString(36).slice(2);
+let roomId="", player="", board=[], turn="";
 
-function join(){
-  const room = document.getElementById("room").value.trim();
-  if(!room){ alert("Room code likho"); return; }
+const boardDiv=document.getElementById("board");
+const statusDiv=document.getElementById("status");
 
-  const userRef = db.ref("rooms/"+room+"/users/"+userId);
-  userRef.set(true);
+/* create board */
+for(let i=0;i<9;i++){
+  const c=document.createElement("div");
+  c.className="cell";
+  c.onclick=()=>play(i);
+  boardDiv.appendChild(c);
+}
 
-  // remove on disconnect
-  userRef.onDisconnect().remove();
+function joinRoom(){
+  roomId=document.getElementById("room").value.trim();
+  if(!roomId){ alert("Room code likho"); return; }
 
-  db.ref("rooms/"+room+"/users").on("value", snap=>{
-    const count = snap.exists() ? Object.keys(snap.val()).length : 0;
-    document.getElementById("status").innerText =
-      "Connected users: " + count;
+  const ref=db.ref("ttt/"+roomId);
+
+  ref.once("value").then(snap=>{
+    if(!snap.exists()){
+      player="X";
+      ref.set({
+        board:["","","","","","","","",""],
+        turn:"X",
+        players:{X:true,O:false}
+      });
+    }else{
+      const d=snap.val();
+      if(d.players.O){
+        alert("Room full");
+        return;
+      }
+      player="O";
+      ref.child("players/O").set(true);
+    }
+
+    document.getElementById("joinBox").style.display="none";
+    document.getElementById("game").style.display="block";
+
+    ref.on("value", s=>{
+      const d=s.val();
+      board=d.board;
+      turn=d.turn;
+      updateUI();
+    });
   });
+}
+
+function play(i){
+  if(board[i]!=="" || turn!==player) return;
+  board[i]=player;
+  turn = player==="X" ? "O" : "X";
+  db.ref("ttt/"+roomId).update({board,turn});
+}
+
+function updateUI(){
+  document.querySelectorAll(".cell").forEach((c,i)=>{
+    c.innerText=board[i];
+  });
+  statusDiv.innerText =
+    (turn===player)
+    ? "Your Turn ("+player+")"
+    : "Opponent Turn";
 }
 </script>
 
