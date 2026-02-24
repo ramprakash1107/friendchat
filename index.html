@@ -6,14 +6,44 @@
 <title>Tic Tac Toe Online</title>
 
 <style>
-body{margin:0;font-family:system-ui;background:#000;color:#fff;text-align:center}
+body{
+  margin:0;
+  font-family:system-ui;
+  background:#000;
+  color:#fff;
+  text-align:center;
+}
 #login{padding:20px}
-input,button{width:100%;padding:14px;margin:10px 0;border-radius:12px;border:none}
+input,button{
+  width:100%;
+  padding:14px;
+  margin:10px 0;
+  border-radius:12px;
+  border:none;
+  font-size:16px;
+}
 input{background:#111;color:#fff}
 button{background:#1d9bf0;color:#fff;font-weight:bold}
 #game{display:none;padding:20px}
-#board{display:grid;grid-template-columns:repeat(3,90px);gap:10px;justify-content:center;margin:20px auto}
-.cell{width:90px;height:90px;background:#1e1e1e;font-size:36px;display:flex;align-items:center;justify-content:center;border-radius:12px}
+#status{margin:10px 0}
+#board{
+  display:grid;
+  grid-template-columns:repeat(3,90px);
+  gap:10px;
+  justify-content:center;
+  margin:20px auto;
+}
+.cell{
+  width:90px;
+  height:90px;
+  background:#1e1e1e;
+  font-size:36px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:12px;
+  cursor:pointer;
+}
 </style>
 </head>
 
@@ -21,9 +51,8 @@ button{background:#1d9bf0;color:#fff;font-weight:bold}
 
 <div id="login">
   <h2>🎮 Tic Tac Toe</h2>
-  <input id="name" placeholder="Your name">
-  <input id="room" placeholder="Room code">
-  <button id="join">Join</button>
+  <input id="roomInput" placeholder="Room code">
+  <button id="joinBtn">Join Game</button>
 </div>
 
 <div id="game">
@@ -36,6 +65,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebas
 import { getDatabase, ref, set, update, get, onValue }
 from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
 
+/* 🔥 FIREBASE CONFIG (same as yours) */
 const firebaseConfig = {
   apiKey: "AIzaSyARuO_pN2vdYrVKYkKHHaNys7WI8HqM6I4",
   authDomain: "friendchat-43941.firebaseapp.com",
@@ -46,74 +76,90 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
+/* ELEMENTS */
+const roomInput = document.getElementById("roomInput");
+const joinBtn = document.getElementById("joinBtn");
 const login = document.getElementById("login");
 const game = document.getElementById("game");
 const statusDiv = document.getElementById("status");
 const boardDiv = document.getElementById("board");
 
-let roomId="", player="";
-let board=["","","","","","","","",""];
-let turn="X";
+/* STATE */
+let roomId = "";
+let player = "";
+let board = ["","","","","","","","",""];
+let turn = "X";
 
-/* UI */
+/* BOARD UI */
 for(let i=0;i<9;i++){
-  const d=document.createElement("div");
-  d.className="cell";
-  d.onclick=()=>move(i);
-  boardDiv.appendChild(d);
+  const cell = document.createElement("div");
+  cell.className = "cell";
+  cell.onclick = () => move(i);
+  boardDiv.appendChild(cell);
 }
 
-/* JOIN (CORRECT METHOD) */
-document.getElementById("join").onclick = async ()=>{
-  roomId = room.value.trim();
-  if(!roomId) return alert("Room likho");
+/* JOIN (100% SAFE) */
+joinBtn.onclick = async () => {
+  roomId = roomInput.value.trim();
+  if(!roomId){
+    alert("Room code likho");
+    return;
+  }
 
   const roomRef = ref(db,"ttt/"+roomId);
   const snap = await get(roomRef);
 
   if(!snap.exists()){
-    player="X";
+    // First player
+    player = "X";
     await set(roomRef,{
-      board:["","","","","","","","",""],
-      turn:"X",
-      players:{X:true,O:false}
+      board: ["","","","","","","","",""],
+      turn: "X",
+      players: { X:true, O:false }
     });
   }else{
-    const d=snap.val();
-    if(!d.players.O){
-      player="O";
+    const data = snap.val();
+    if(!data.players.O){
+      // Second player
+      player = "O";
       await update(roomRef,{
-        "players/O":true
+        "players/O": true
       });
     }else{
-      alert("Room full");
+      alert("Room full ho chuka hai");
       return;
     }
   }
 
-  login.style.display="none";
-  game.style.display="block";
-  statusDiv.innerText="You are "+player;
+  login.style.display = "none";
+  game.style.display = "block";
+  statusDiv.innerText = "You are " + player;
 
-  onValue(roomRef,s=>{
-    const d=s.val();
-    board=d.board;
-    turn=d.turn;
+  // realtime sync
+  onValue(roomRef, snap=>{
+    const d = snap.val();
+    board = d.board;
+    turn = d.turn;
     updateUI();
   });
 };
 
 /* MOVE */
 function move(i){
-  if(board[i] || turn!==player) return;
-  board[i]=player;
-  turn = player==="X"?"O":"X";
-  update(ref(db,"ttt/"+roomId),{board,turn});
+  if(board[i] || turn !== player) return;
+  board[i] = player;
+  turn = player === "X" ? "O" : "X";
+  update(ref(db,"ttt/"+roomId),{ board, turn });
 }
 
+/* UI */
 function updateUI(){
-  document.querySelectorAll(".cell").forEach((c,i)=>c.innerText=board[i]);
-  statusDiv.innerText = turn===player?"Your turn":"Opponent turn";
+  document.querySelectorAll(".cell").forEach((c,i)=>{
+    c.innerText = board[i];
+  });
+  statusDiv.innerText = (turn === player)
+    ? "Your Turn"
+    : "Opponent Turn";
 }
 </script>
 
