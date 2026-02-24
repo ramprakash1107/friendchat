@@ -2,76 +2,86 @@
 <html lang="hi">
 <head>
 <meta charset="UTF-8">
-<title>RP GUPTA | Elite Arena</title>
+<title>RP GUPTA 07 | Gaming Portal</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 <style>
-:root { --primary: #00d2ff; --bg: #050505; --cell: #121212; --win: #00ff88; }
-body { background: var(--bg); color: #fff; font-family: sans-serif; margin: 0; padding: 0; overflow: hidden; height: 100vh; }
+:root { --primary: #00d2ff; --bg: #050505; --cell: #1a1a1a; --win: #00ff88; --me: #1d9bf0; --other: #333; }
+body { background: var(--bg); color: #fff; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0; overflow: hidden; height: 100vh; }
 .container { display: flex; flex-direction: column; height: 100vh; max-width: 420px; margin: auto; }
 
-/* Header & Stats */
-.header { padding: 10px; border-bottom: 1px solid #222; background: #000; }
-.stats { display: flex; justify-content: space-between; font-size: 12px; color: var(--primary); margin-bottom: 5px; }
+/* Header Branding */
+.header { padding: 15px; border-bottom: 1px solid #333; background: #000; text-align: center; }
+.brand { font-size: 24px; font-weight: 900; background: linear-gradient(to right, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-transform: uppercase; letter-spacing: 2px; }
 
-/* Tic Tac Toe Board - Sabse Important */
-#board { display: grid; grid-template-columns: repeat(3, 85px); gap: 8px; justify-content: center; margin: 10px auto; }
-.cell { width: 85px; height: 85px; background: var(--cell); border-radius: 12px; font-size: 40px; display: flex; align-items: center; justify-content: center; border: 1px solid #333; }
+/* Stats Bar */
+.stats { display: flex; justify-content: space-around; padding: 8px; background: #111; font-size: 13px; border-bottom: 1px solid #222; }
 
-/* Timer in Center */
-.timer-box { font-size: 20px; font-weight: bold; color: var(--primary); margin-bottom: 5px; }
+/* Tic Tac Toe Board */
+#board { display: grid; grid-template-columns: repeat(3, 90px); gap: 10px; justify-content: center; margin: 15px auto; }
+.cell { width: 90px; height: 90px; background: var(--cell); border-radius: 15px; font-size: 45px; display: flex; align-items: center; justify-content: center; border: 2px solid #333; transition: 0.3s; }
+.cell:active { transform: scale(0.9); }
 
-/* Emoji & Chat - Neeche ke side */
-.emoji-row { display: flex; justify-content: center; gap: 15px; padding: 10px; background: #111; }
-.emoji-btn { font-size: 22px; cursor: pointer; background: none; border: none; }
+/* Chat Left/Right Style */
+#messages { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 8px; background: rgba(255,255,255,0.02); }
+.msg { max-width: 75%; padding: 8px 12px; border-radius: 15px; font-size: 14px; position: relative; word-wrap: break-word; }
+.msg b { display: block; font-size: 10px; margin-bottom: 2px; opacity: 0.7; }
+.me { align-self: flex-end; background: var(--me); color: white; border-bottom-right-radius: 2px; text-align: right; }
+.other { align-self: flex-start; background: var(--other); color: white; border-bottom-left-radius: 2px; text-align: left; }
 
-#messages { flex: 1; overflow-y: auto; padding: 10px; font-size: 13px; text-align: left; border-top: 1px solid #222; }
-.chat-input { display: flex; padding: 8px; background: #000; border-top: 1px solid #222; }
-.chat-input input { flex: 1; background: #111; border: 1px solid #333; color: #fff; padding: 8px; border-radius: 5px; outline: none; }
+/* Winner Overlay */
+#winnerOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 10000; text-align: center; }
+#winnerName { font-size: 50px; font-weight: 900; margin-bottom: 20px; text-shadow: 0 0 20px var(--win); animation: glow 1s infinite alternate; }
+@keyframes glow { from { transform: scale(1); } to { transform: scale(1.1); } }
 
-.floating-emoji { position: fixed; bottom: 100px; font-size: 40px; animation: floatUp 2s ease-out forwards; pointer-events: none; }
-@keyframes floatUp { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-300px); } }
+.emoji-row { display: flex; justify-content: center; gap: 15px; padding: 10px; background: #000; }
+.chat-input { display: flex; padding: 10px; background: #111; border-top: 1px solid #333; }
+.chat-input input { flex: 1; background: #000; border: 1px solid #444; color: #fff; padding: 10px; border-radius: 8px; outline: none; }
 .hidden { display: none; }
 </style>
 </head>
 <body>
 
+<div id="winnerOverlay">
+    <div style="color:var(--primary); font-size: 20px;">🏆 MATCH FINISHED 🏆</div>
+    <div id="winnerName">PLAYER WON!</div>
+    <button onclick="restartMatch()" style="padding: 12px 30px; border-radius: 25px; border: none; background: var(--win); color: #000; font-weight: bold; cursor: pointer;">PLAY AGAIN</button>
+</div>
+
 <div class="container">
-    <div id="homeScreen" style="padding: 50px 20px; text-align: center;">
-        <h1 style="color:var(--primary); margin:0;">RP GUPTA</h1>
-        <p style="color:#666; font-size:14px;">Multiplayer Gaming Portal</p>
-        <div style="background:#111; padding:20px; border-radius:15px; margin-top:30px;">
-            <input id="userName" style="width:90%; padding:12px; margin-bottom:10px; border-radius:8px; border:none; background:#000; color:#fff;" placeholder="Apna Naam Likhein">
-            <button onclick="createRoom()" style="width:95%; padding:12px; background:var(--primary); border:none; border-radius:8px; font-weight:bold;">CREATE TABLE</button>
-            <p style="margin:10px; opacity:0.3;">OR</p>
-            <input id="joinCode" style="width:90%; padding:12px; margin-bottom:10px; border-radius:8px; border:none; background:#000; color:#fff;" placeholder="Room Code">
-            <button onclick="joinExistingRoom()" style="width:95%; padding:12px; background:#222; color:#fff; border:1px solid #444; border-radius:8px;">JOIN TABLE</button>
+    <div id="homeScreen" style="padding: 60px 20px; text-align: center;">
+        <div class="brand">RP GUPTA 07</div>
+        <div style="background:#111; padding:25px; border-radius:20px; border: 1px solid #333; margin-top:40px;">
+            <input id="userName" style="width:90%; padding:15px; margin-bottom:15px; border-radius:10px; border:none; background:#000; color:#fff; text-align:center;" placeholder="Enter Your Name">
+            <button onclick="createRoom()" style="width:95%; padding:15px; background:var(--primary); border:none; border-radius:10px; font-weight:bold; color:#000;">CREATE ROOM</button>
+            <p style="margin:15px; opacity:0.3;">— OR —</p>
+            <input id="joinCode" style="width:90%; padding:15px; margin-bottom:15px; border-radius:10px; border:none; background:#000; color:#fff; text-align:center;" placeholder="5-Digit Code">
+            <button onclick="joinExistingRoom()" style="width:95%; padding:15px; background:#222; color:#fff; border:1px solid #444; border-radius:10px;">JOIN ROOM</button>
         </div>
     </div>
 
     <div id="gameScreen" class="hidden">
         <div class="header">
-            <div class="stats">
-                <span>💰 Coins: <span id="myCoins">100</span></span>
-                <span>🏆 Room: <span id="displayRoomCode">00000</span></span>
-            </div>
-            <div class="timer-box" id="timer">15</div>
-            <div id="status" style="font-size:13px; font-weight:bold; color:var(--win);">WAITING...</div>
+            <div class="brand">RP GUPTA 07</div>
+        </div>
+        <div class="stats">
+            <span>ROOM: <b id="displayRoomCode" style="color:var(--primary)">00000</b></span>
+            <span id="status" style="color:var(--win); font-weight:bold;">YOUR TURN</span>
         </div>
 
         <div id="board"></div>
 
         <div class="emoji-row">
-            <button class="emoji-btn" onclick="sendEmoji('😂')">😂</button>
-            <button class="emoji-btn" onclick="sendEmoji('🔥')">🔥</button>
-            <button class="emoji-btn" onclick="sendEmoji('😠')">😠</button>
-            <button class="emoji-btn" onclick="sendEmoji('😎')">😎</button>
+            <button style="background:none; border:none; font-size:24px;" onclick="sendEmoji('😂')">😂</button>
+            <button style="background:none; border:none; font-size:24px;" onclick="sendEmoji('🔥')">🔥</button>
+            <button style="background:none; border:none; font-size:24px;" onclick="sendEmoji('😠')">😠</button>
+            <button style="background:none; border:none; font-size:24px;" onclick="sendEmoji('😎')">😎</button>
         </div>
 
         <div id="messages"></div>
         <div class="chat-input">
-            <input id="msgInput" placeholder="Chat karein...">
-            <button onclick="sendMsg()" style="background:var(--primary); border:none; margin-left:5px; border-radius:5px; padding:0 15px;">➤</button>
+            <input id="msgInput" placeholder="Type a message...">
+            <button onclick="sendMsg()" style="background:var(--primary); border:none; margin-left:8px; border-radius:8px; padding:0 15px; color:#000;">➤</button>
         </div>
     </div>
 </div>
@@ -92,10 +102,8 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
-let myRoomId, myName, mySymbol, gameRef, chatRef, emojiRef, timerInt;
-let coins = 100;
+let myRoomId, myName, mySymbol, gameRef, chatRef, emojiRef;
 
-// Setup Board
 const boardDiv = document.getElementById("board");
 for(let i=0; i<9; i++) {
     const d = document.createElement("div"); d.className = "cell";
@@ -104,7 +112,7 @@ for(let i=0; i<9; i++) {
 
 function createRoom() {
     myName = document.getElementById("userName").value.trim();
-    if(!myName) return alert("Naam likho!");
+    if(!myName) return alert("Please enter name!");
     myRoomId = Math.floor(10000 + Math.random() * 90000).toString();
     initRoom("X");
 }
@@ -112,7 +120,7 @@ function createRoom() {
 function joinExistingRoom() {
     myName = document.getElementById("userName").value.trim();
     myRoomId = document.getElementById("joinCode").value.trim();
-    if(!myName || !myRoomId) return alert("Details dalo!");
+    if(!myName || !myRoomId) return alert("Enter details!");
     initRoom("O");
 }
 
@@ -123,7 +131,7 @@ function initRoom(sym) {
     emojiRef = db.ref("rooms/" + myRoomId + "/emojis");
 
     if(sym === "X") {
-        gameRef.set({ board: Array(9).fill(""), turn: "X", players: {X: myName}, scores: {X:0, O:0}, timer: 15 });
+        gameRef.set({ board: Array(9).fill(""), turn: "X", players: {X: myName} });
     } else {
         gameRef.child("players/O").set(myName);
     }
@@ -135,40 +143,29 @@ function initRoom(sym) {
     listenGame();
     listenChat();
     listenEmojis();
-    startShotClock();
-}
-
-function startShotClock() {
-    clearInterval(timerInt);
-    timerInt = setInterval(() => {
-        gameRef.once("value", snap => {
-            const g = snap.val();
-            if(!g || checkWinner(g.board)) return;
-            if(g.turn === mySymbol) {
-                let currentT = g.timer || 15;
-                if(currentT <= 0) {
-                    gameRef.update({ turn: mySymbol === "X" ? "O" : "X", timer: 15 });
-                } else {
-                    gameRef.update({ timer: currentT - 1 });
-                }
-            }
-        });
-    }, 1000);
+    gameRef.onDisconnect().remove();
+    chatRef.onDisconnect().remove();
 }
 
 function listenGame() {
     gameRef.on("value", snap => {
         const g = snap.val(); if(!g) return;
-        g.board.forEach((v, i) => { boardDiv.children[i].innerText = v; });
-        document.getElementById("timer").innerText = g.timer || 0;
+        g.board.forEach((v, i) => { 
+            boardDiv.children[i].innerText = v;
+            boardDiv.children[i].style.color = (v==='X') ? '#00d2ff' : '#ff4b2b';
+        });
         
         const w = checkWinner(g.board);
-        if(w && w !== "draw") {
-            if(w.w === mySymbol) { confetti(); }
-            document.getElementById("status").innerText = "WINNER: " + w.w;
-            setTimeout(() => { gameRef.update({ board: Array(9).fill(""), turn: "X", timer: 15 }); }, 3000);
+        if(w) {
+            const winnerText = w==="draw" ? "MATCH DRAW!" : (w.w==="X"?g.players.X:g.players.O) + " JEET GAYA!";
+            document.getElementById("winnerName").innerText = winnerText;
+            document.getElementById("winnerOverlay").style.display = "flex";
+            if(w!=="draw") {
+                confetti({ particleCount: 200, spread: 80, origin: { y: 0.6 } });
+            }
         } else {
-            document.getElementById("status").innerText = g.turn === mySymbol ? "AAPKI BAARI" : "WAIT...";
+            document.getElementById("winnerOverlay").style.display = "none";
+            document.getElementById("status").innerText = g.turn === mySymbol ? "YOUR TURN" : "WAITING...";
         }
     });
 }
@@ -178,8 +175,13 @@ function move(i) {
         const g = snap.val();
         if(!g || g.turn !== mySymbol || g.board[i] !== "" || checkWinner(g.board)) return;
         g.board[i] = mySymbol;
-        gameRef.update({ board: g.board, turn: mySymbol === "X" ? "O" : "X", timer: 15 });
+        gameRef.update({ board: g.board, turn: mySymbol === "X" ? "O" : "X" });
     });
+}
+
+function restartMatch() {
+    gameRef.update({ board: Array(9).fill(""), turn: "X" });
+    chatRef.remove();
 }
 
 function sendEmoji(e) { emojiRef.set({ emoji: e, t: Date.now() }); }
@@ -188,9 +190,10 @@ function listenEmojis() {
     emojiRef.on("value", snap => {
         const d = snap.val(); if(!d) return;
         const el = document.createElement("div");
-        el.className = "floating-emoji";
-        el.innerText = d.emoji;
+        el.style.position = "fixed"; el.style.bottom = "100px";
+        el.style.fontSize = "50px"; el.innerText = d.emoji;
         el.style.left = Math.random() * 80 + "%";
+        el.style.animation = "floatUp 2s forwards";
         document.body.appendChild(el);
         setTimeout(() => el.remove(), 2000);
     });
@@ -207,11 +210,13 @@ function listenChat() {
     chatRef.on("child_added", snap => {
         const d = snap.val();
         const m = document.createElement("div");
-        m.innerHTML = `<b>${d.n}:</b> ${d.m}`;
-        const box = document.getElementById("messages");
-        box.appendChild(m);
-        box.scrollTop = box.scrollHeight;
+        const isMe = d.n === myName;
+        m.className = "msg " + (isMe ? "me" : "other");
+        m.innerHTML = `<b>${d.n}</b>${d.m}`;
+        document.getElementById("messages").appendChild(m);
+        document.getElementById("messages").scrollTop = 10000;
     });
+    chatRef.on("child_removed", () => document.getElementById("messages").innerHTML = "");
 }
 
 function checkWinner(b) {
@@ -222,3 +227,4 @@ function checkWinner(b) {
 </script>
 </body>
 </html>
+
