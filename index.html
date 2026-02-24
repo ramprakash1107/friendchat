@@ -2,8 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport"
-content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tic Tac Toe Online</title>
 
 <style>
@@ -28,13 +27,6 @@ button{ background:#1d9bf0; color:#fff; font-weight:bold; }
 
 #game{ display:none; padding:20px; }
 
-#top{
-  display:flex;
-  justify-content:space-between;
-  font-size:14px;
-  margin-bottom:10px;
-}
-
 #status{ margin:10px 0; min-height:24px; }
 
 #board{
@@ -55,8 +47,6 @@ button{ background:#1d9bf0; color:#fff; font-weight:bold; }
   border-radius:12px;
   cursor:pointer;
 }
-
-#restart{ background:#00c853; }
 #leave{ background:#e53935; }
 </style>
 </head>
@@ -71,29 +61,17 @@ button{ background:#1d9bf0; color:#fff; font-weight:bold; }
 </div>
 
 <div id="game">
-  <div id="top">
-    <div id="players"></div>
-    <div id="score"></div>
-  </div>
-
   <div id="status"></div>
   <div id="board"></div>
-
-  <button id="restart">Next Round</button>
-  <button id="leave">Leave</button>
+  <button id="leave">Leave Game</button>
 </div>
-
-<!-- 🔊 Sounds -->
-<audio id="tap" src="https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3"></audio>
-<audio id="win" src="https://assets.mixkit.co/active_storage/sfx/2019/2019-preview.mp3"></audio>
-<audio id="draw" src="https://assets.mixkit.co/active_storage/sfx/2020/2020-preview.mp3"></audio>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
 import { getDatabase, ref, set, onValue, remove }
 from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
 
-/* 🔥 AAPKA FIREBASE CONFIG */
+/* 🔥 FIREBASE CONFIG (AAPKA) */
 const firebaseConfig = {
   apiKey: "AIzaSyARuO_pN2vdYrVKYkKHHaNys7WI8HqM6I4",
   authDomain: "friendchat-43941.firebaseapp.com",
@@ -108,28 +86,21 @@ const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
 /* ELEMENTS */
-const joinBtn = document.getElementById("join");
 const login = document.getElementById("login");
 const game = document.getElementById("game");
-const boardDiv = document.getElementById("board");
+const joinBtn = document.getElementById("join");
 const statusDiv = document.getElementById("status");
-const playersDiv = document.getElementById("players");
-const scoreDiv = document.getElementById("score");
-const restartBtn = document.getElementById("restart");
+const boardDiv = document.getElementById("board");
 const leaveBtn = document.getElementById("leave");
-
-const tapSound = document.getElementById("tap");
-const winSound = document.getElementById("win");
-const drawSound = document.getElementById("draw");
 
 /* STATE */
 let roomId="", myName="", player="";
 let board=["","","","","","","","",""];
-let turn="X", winner=null;
-let players={X:"",O:""};
-let score={X:0,O:0};
+let turn="X";
+let winner=null;
 
-/* BOARD */
+/* BOARD UI */
+boardDiv.innerHTML="";
 for(let i=0;i<9;i++){
   const c=document.createElement("div");
   c.className="cell";
@@ -137,58 +108,68 @@ for(let i=0;i<9;i++){
   boardDiv.appendChild(c);
 }
 
-/* JOIN */
-joinBtn.onclick=()=>{
+/* JOIN GAME (NO BUG – NO RACE CONDITION) */
+joinBtn.onclick = ()=>{
   myName = name.value.trim();
   roomId = room.value.trim();
-  if(!myName || !roomId) return alert("Name aur Room code likho");
+  if(!myName || !roomId){
+    alert("Name aur Room code likho");
+    return;
+  }
 
   const roomRef = ref(db,"ttt/"+roomId);
 
-  onValue(roomRef,snap=>{
+  onValue(roomRef, snap=>{
     if(!snap.exists()){
-      player="X";
-      players.X=myName;
-      set(roomRef,{board,turn,winner,players,score});
+      // FIRST PLAYER
+      player = "X";
+      set(roomRef,{
+        board:["","","","","","","","",""],
+        turn:"X",
+        winner:null,
+        players:{ X: myName, O: "" }
+      });
     }else{
-      player="O";
-      players = snap.val().players;
-      players.O=myName;
-      set(roomRef,{...snap.val(),players});
+      const d = snap.val();
+      if(!d.players.O){
+        // SECOND PLAYER
+        player = "O";
+        set(roomRef,{
+          ...d,
+          players:{ ...d.players, O: myName }
+        });
+      }else{
+        alert("Room full ho chuka hai");
+        return;
+      }
     }
-  },{once:true});
 
-  onValue(roomRef,snap=>{
+    login.style.display="none";
+    game.style.display="block";
+    statusDiv.innerText = "You are " + player;
+  },{ once:true });
+
+  // REALTIME UPDATE
+  onValue(roomRef, snap=>{
     if(!snap.exists()) return;
-    const d=snap.val();
-    board=d.board;
-    turn=d.turn;
-    winner=d.winner;
-    players=d.players;
-    score=d.score;
+    const d = snap.val();
+    board = d.board;
+    turn = d.turn;
+    winner = d.winner;
     updateUI();
   });
-
-  login.style.display="none";
-  game.style.display="block";
 };
 
 /* MOVE */
 function move(i){
   if(board[i] || turn!==player || winner) return;
-  board[i]=player;
-  tapSound.play();
+  board[i] = player;
   winner = checkWinner();
-  if(winner && winner!=="draw"){
-    score[winner]++;
-    winSound.play();
-  }
-  if(winner==="draw") drawSound.play();
-  turn = player==="X"?"O":"X";
-  set(ref(db,"ttt/"+roomId),{board,turn,winner,players,score});
+  turn = player==="X" ? "O" : "X";
+  set(ref(db,"ttt/"+roomId),{ board, turn, winner });
 }
 
-/* CHECK */
+/* WIN CHECK */
 function checkWinner(){
   const w=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
   for(const [a,b,c] of w){
@@ -202,27 +183,21 @@ function checkWinner(){
 
 /* UI */
 function updateUI(){
-  document.querySelectorAll(".cell").forEach((c,i)=>c.innerText=board[i]);
+  document.querySelectorAll(".cell").forEach((c,i)=>{
+    c.innerText = board[i];
+  });
 
-  playersDiv.innerText = `${players.X||"X"} ❌ vs ⭕ ${players.O||"O"}`;
-  scoreDiv.innerText = `${score.X} : ${score.O}`;
-
-  if(winner==="draw") statusDiv.innerText="🤝 Draw";
-  else if(winner) statusDiv.innerText=`🏆 ${players[winner]} Wins`;
-  else statusDiv.innerText = turn===player ? "Your Turn" : "Opponent Turn";
+  if(winner==="draw"){
+    statusDiv.innerText="🤝 Draw";
+  }else if(winner){
+    statusDiv.innerText = (winner===player) ? "🏆 You Win" : "❌ You Lose";
+  }else{
+    statusDiv.innerText = (turn===player) ? "Your Turn" : "Opponent Turn";
+  }
 }
 
-/* NEXT ROUND */
-restartBtn.onclick=()=>{
-  if(player!=="X") return;
-  board=["","","","","","","","",""];
-  turn="X";
-  winner=null;
-  set(ref(db,"ttt/"+roomId),{board,turn,winner,players,score});
-};
-
 /* LEAVE */
-leaveBtn.onclick=()=>{
+leaveBtn.onclick = ()=>{
   remove(ref(db,"ttt/"+roomId));
   location.reload();
 };
