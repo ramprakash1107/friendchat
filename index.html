@@ -2,7 +2,7 @@
 <html lang="hi">
 <head>
 <meta charset="UTF-8">
-<title>@rp_gupta_07 | Elite Gaming Arena</title>
+<title>Ultimate Tic-Tac-Toe Arena</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 <style>
@@ -12,24 +12,24 @@ body { background: var(--bg); color: #fff; font-family: 'Inter', sans-serif; mar
 
 /* Header Branding */
 .header { padding: 15px; background: #000; text-align: center; border-bottom: 1px solid #222; }
-.brand-name { font-size: 20px; font-weight: 800; color: #fff; letter-spacing: 2px; text-transform: uppercase; }
+.game-title { font-size: 18px; font-weight: 800; color: #fff; letter-spacing: 2px; text-transform: uppercase; }
 
 /* Scoreboard */
-#scoreboard { display: flex; justify-content: space-around; padding: 12px; background: linear-gradient(180deg, #0a0a0a 0%, #000 100%); border-bottom: 1px solid #222; }
+#scoreboard { display: flex; justify-content: space-around; padding: 12px; background: #0a0a0a; border-bottom: 1px solid #222; }
 .score-box { text-align: center; flex: 1; }
-.score-num { font-size: 26px; font-weight: 900; color: var(--primary); text-shadow: 0 0 10px rgba(0,210,255,0.3); }
+.score-num { font-size: 26px; font-weight: 900; color: var(--primary); }
 .score-label { font-size: 10px; color: #555; font-weight: bold; }
 
 /* Game Area Panel */
 .arena-panel { padding: 10px; flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
 
 #board { display: grid; grid-template-columns: repeat(3, 90px); gap: 12px; justify-content: center; margin: 10px auto; }
-.cell { width: 90px; height: 90px; background: var(--cell); border-radius: 12px; font-size: 48px; display: flex; align-items: center; justify-content: center; border: 1px solid #222; transition: 0.2s; box-shadow: inset 0 0 15px rgba(255,255,255,0.02); }
+.cell { width: 90px; height: 90px; background: var(--cell); border-radius: 12px; font-size: 48px; display: flex; align-items: center; justify-content: center; border: 1px solid #222; transition: 0.2s; }
 
-/* Battle Log (Filling Space) */
-.battle-log { background: #0a0a0a; border-radius: 12px; padding: 10px; margin: 10px 0; border: 1px solid #111; font-size: 11px; }
-.log-title { color: #444; font-weight: bold; margin-bottom: 5px; border-bottom: 1px solid #111; padding-bottom: 3px; }
-#status-log { color: var(--win); }
+/* Developer Box (Replacing Live Activity) */
+.dev-box { background: linear-gradient(135deg, #0a0a0a 0%, #111 100%); border-radius: 12px; padding: 12px; margin: 10px 0; border: 1px solid #222; text-align: center; }
+.dev-text { color: #888; font-size: 11px; margin-bottom: 5px; }
+.dev-link { color: var(--primary); font-weight: bold; text-decoration: none; font-size: 13px; }
 
 /* Chat Bubbles */
 #messages { height: 120px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
@@ -43,38 +43,40 @@ body { background: var(--bg); color: #fff; font-family: 'Inter', sans-serif; mar
 
 /* Footer Branding */
 .footer-branding { padding: 15px; text-align: center; background: #000; border-top: 1px solid #222; }
-.follow-link { color: #e1306c; text-decoration: none; font-weight: bold; font-size: 13px; }
+.follow-id { color: #e1306c; text-decoration: none; font-weight: bold; font-size: 14px; }
 
 .hidden { display: none; }
 .input-group { background: #111; padding: 25px; border-radius: 20px; margin: 20px; border: 1px solid #222; }
-input { width: 100%; padding: 12px; margin-bottom: 12px; border-radius: 10px; border: 1px solid #222; background: #000; color: #fff; box-sizing: border-box; text-align: center; }
-.btn-main { width: 100%; padding: 14px; border-radius: 10px; border: none; background: var(--primary); color: #000; font-weight: 900; cursor: pointer; }
+input { width: 100%; padding: 12px; margin-bottom: 12px; border-radius: 10px; border: 1px solid #222; background: #000; color: #fff; box-sizing: border-box; text-align: center; font-size: 14px; outline: none; }
+.btn-main { width: 100%; padding: 14px; border-radius: 10px; border: none; background: var(--primary); color: #000; font-weight: 900; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; }
 </style>
 </head>
 <body>
 
 <div id="winnerOverlay">
-    <div style="letter-spacing: 5px; color: #555; font-size: 12px;">BATTLE FINISHED</div>
-    <div id="winnerMsg" style="font-size: 40px; font-weight: 900; color: var(--win); margin: 20px 0;">WINNER!</div>
-    <button onclick="restartMatch()" style="padding: 12px 35px; border-radius: 25px; border: none; background: #fff; font-weight: bold; cursor: pointer;">START NEXT ROUND</button>
+    <div id="winnerMsg" style="font-size: 36px; font-weight: 900; color: var(--win); margin-bottom: 20px;">WINNER!</div>
+    <button onclick="restartMatch()" style="padding: 12px 35px; border-radius: 25px; border: none; background: #fff; font-weight: bold; cursor: pointer;">PLAY AGAIN</button>
 </div>
 
 <div class="container">
-    <div id="homeScreen" style="padding-top: 50px; text-align: center;">
-        <div class="brand-name">@rp_gupta_07</div>
+    <div id="homeScreen" style="padding-top: 60px; text-align: center;">
+        <div class="game-title">ULTIMATE TIC-TAC-TOE</div>
         <div class="input-group">
-            <input id="userName" placeholder="APNA NAAM LIKHO">
-            <button class="btn-main" onclick="createRoom()">CREATE NEW TABLE</button>
-            <div style="margin: 15px; color: #333; font-size: 12px;">OR JOIN EXISTING</div>
-            <input id="joinCode" placeholder="ROOM CODE DAALO">
-            <button class="btn-main" style="background:#222; color:#fff;" onclick="joinExistingRoom()">JOIN BATTLE</button>
+            <input id="userName" placeholder="ENTER YOUR NAME">
+            <button class="btn-main" onclick="createRoom()">START NEW GAME</button>
+            <div style="margin: 15px; color: #333; font-size: 12px;">OR JOIN FRIEND</div>
+            <input id="joinCode" placeholder="ENTER ROOM CODE">
+            <button class="btn-main" style="background:#222; color:#fff;" onclick="joinExistingRoom()">JOIN GAME</button>
         </div>
-        <a href="https://www.instagram.com/rp_gupta_07" target="_blank" class="follow-link">FOLLOW FOR UPDATES</a>
+        <div style="margin-top: 20px;">
+            <div style="color:#444; font-size:11px; margin-bottom:5px;">Follow Developer</div>
+            <a href="https://www.instagram.com/rp_gupta_07" target="_blank" class="follow-id">@rp_gupta_07</a>
+        </div>
     </div>
 
     <div id="gameScreen" class="hidden">
         <div class="header">
-            <div class="brand-name">@rp_gupta_07</div>
+            <div class="game-title">BATTLE ARENA</div>
         </div>
 
         <div id="scoreboard">
@@ -91,14 +93,14 @@ input { width: 100%; padding: 12px; margin-bottom: 12px; border-radius: 10px; bo
 
         <div class="arena-panel">
             <div style="text-align: center; font-size: 11px; color: var(--primary); margin-bottom: 5px; font-weight: bold;">
-                ACTIVE ROOM: <span id="displayRoomCode">-----</span>
+                ROOM CODE: <span id="displayRoomCode">-----</span>
             </div>
             
             <div id="board"></div>
 
-            <div class="battle-log">
-                <div class="log-title">LIVE ACTIVITY</div>
-                <div id="status-log">Waiting for opponent to join...</div>
+            <div class="dev-box">
+                <div class="dev-text">Game Designed & Developed By</div>
+                <a href="https://www.instagram.com/rp_gupta_07" target="_blank" class="dev-link">INSTA: @rp_gupta_07</a>
             </div>
 
             <div style="display: flex; justify-content: space-around; padding: 5px; margin-bottom: 5px;">
@@ -117,9 +119,8 @@ input { width: 100%; padding: 12px; margin-bottom: 12px; border-radius: 10px; bo
         </div>
 
         <div class="footer-branding">
-            <div style="font-size: 10px; color: #444; letter-spacing: 1px; margin-bottom: 5px;">SERVER STATUS: ONLINE</div>
-            <a href="https://www.instagram.com/rp_gupta_07" target="_blank" style="color: #fff; text-decoration: none; font-size: 12px; font-weight: bold; opacity: 0.7;">
-                OFFICIAL PORTAL OF @rp_gupta_07
+            <a href="https://www.instagram.com/rp_gupta_07" target="_blank" style="color: #666; text-decoration: none; font-size: 11px; font-weight: bold; letter-spacing: 1px;">
+                OFFICIAL GAME BY @rp_gupta_07
             </a>
         </div>
     </div>
@@ -151,8 +152,8 @@ for(let i=0; i<9; i++) {
 
 function createRoom() {
     myName = document.getElementById("userName").value.trim();
-    if(!myName) return alert("Pehle naam likho!");
-    myRoomId = Math.floor(10000 + Math.random() * 90000).toString(); // Auto Generate Code
+    if(!myName) return alert("Pehle apna naam likho!");
+    myRoomId = Math.floor(10000 + Math.random() * 90000).toString();
     initRoom("X");
 }
 
@@ -202,7 +203,6 @@ function listenGame() {
             if(w!=="draw") confetti({ particleCount: 300, spread: 100, origin: { y: 0.5 } });
         } else {
             document.getElementById("winnerOverlay").style.display = "none";
-            document.getElementById("status-log").innerText = g.turn === mySymbol ? "AAPKI BAARI HAI, MOVE CHALO!" : "WAIT... DOST MOVE CHAL RAHA HAI";
         }
     });
 }
@@ -266,3 +266,4 @@ function checkWinner(b) {
 </script>
 </body>
 </html>
+
