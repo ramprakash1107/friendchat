@@ -2,131 +2,166 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tic Tac Toe Online</title>
-
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
 body{
-  margin:0;
-  font-family:system-ui;
   background:#000;
   color:#fff;
+  font-family:sans-serif;
   text-align:center;
 }
 input,button{
-  width:80%;
-  padding:15px;
+  padding:12px;
   font-size:18px;
-  border-radius:10px;
-  border:none;
-  margin:10px 0;
+  margin:5px;
+  border-radius:6px;
 }
-button{background:#1d9bf0;color:#fff}
-#game{display:none}
-.grid{
+#board{
   display:grid;
   grid-template-columns:repeat(3,100px);
-  gap:10px;
+  gap:8px;
   justify-content:center;
+  margin-top:20px;
 }
 .cell{
-  width:100px;height:100px;
+  width:100px;
+  height:100px;
   background:#111;
-  font-size:40px;
+  font-size:48px;
   display:flex;
   align-items:center;
   justify-content:center;
+  cursor:pointer;
 }
+.hidden{display:none;}
 </style>
 </head>
-
 <body>
 
-<div id="join">
-  <h2>Join Room</h2>
-  <input id="room" placeholder="Room ID (1111)">
-  <button onclick="joinRoom()">Join</button>
-  <p id="status"></p>
+<h2>🎮 Online Tic Tac Toe</h2>
+
+<div id="joinBox">
+  <input id="roomInput" placeholder="5 digit room code">
+  <br>
+  <button onclick="joinRoom()">Join Room</button>
 </div>
 
-<div id="game">
-  <h2 id="role"></h2>
-  <div class="grid" id="grid"></div>
-</div>
+<h3 id="status"></h3>
 
+<div id="board" class="hidden"></div>
+<br>
+<button id="restartBtn" class="hidden" onclick="restart()">Restart</button>
+
+<!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
 <script>
-firebase.initializeApp({
-  apiKey: "AIzaSyARuO_pN2vdYrVKYkKHHaNys7WI8HqM6I4",
-  authDomain: "friendchat-43941.firebaseapp.com",
-  databaseURL: "https://friendchat-43941-default-rtdb.firebaseio.com",
-  projectId: "friendchat-43941"
-});
+// 🔴 APNA FIREBASE CONFIG YAHA DALO
+const firebaseConfig = {
+  apiKey: "API_KEY",
+  authDomain: "PROJECT.firebaseapp.com",
+  databaseURL: "https://PROJECT-default-rtdb.firebaseio.com",
+  projectId: "PROJECT",
+  storageBucket: "PROJECT.appspot.com",
+  messagingSenderId: "SENDER_ID",
+  appId: "APP_ID"
+};
 
+firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
-let roomId, mySymbol;
+
+let roomId, mySymbol, gameRef;
+
+const boardDiv = document.getElementById("board");
+for(let i=0;i<9;i++){
+  const d=document.createElement("div");
+  d.className="cell";
+  d.onclick=()=>move(i);
+  boardDiv.appendChild(d);
+}
 
 function joinRoom(){
-  roomId = room.value;
-  if(!roomId) return;
+  roomId = document.getElementById("roomInput").value;
+  if(roomId.length !== 5){
+    alert("5 digit room code daalo");
+    return;
+  }
 
-  const ref = db.ref("rooms/"+roomId);
+  gameRef = db.ref("rooms/"+roomId);
 
-  ref.once("value", snap=>{
-    if(!snap.exists()){
-      mySymbol = "X";
-      ref.set({
-        players:1,
+  gameRef.once("value", snap=>{
+    let data = snap.val();
+    if(!data){
+      mySymbol="X";
+      gameRef.set({
         board:["","","","","","","","",""],
-        turn:"X"
+        turn:"X",
+        players:1
       });
+    }else if(data.players===1){
+      mySymbol="O";
+      gameRef.update({players:2});
     }else{
-      mySymbol = "O";
-      ref.update({players:2});
+      alert("Room full");
+      return;
     }
 
-    startGame();
+    document.getElementById("joinBox").classList.add("hidden");
+    boardDiv.classList.remove("hidden");
+    listenGame();
   });
 }
 
-function startGame(){
-  join.style.display="none";
-  game.style.display="block";
-  role.innerText = "You are "+mySymbol;
+function listenGame(){
+  gameRef.on("value", snap=>{
+    const g=snap.val();
+    if(!g) return;
 
-  const grid = document.getElementById("grid");
-  grid.innerHTML="";
+    document.getElementById("status").innerText =
+      g.turn===mySymbol ? "👉 Aapki baari" : "⏳ Opponent ki baari";
 
-  for(let i=0;i<9;i++){
-    const c = document.createElement("div");
-    c.className="cell";
-    c.onclick=()=>move(i);
-    grid.appendChild(c);
-  }
-
-  db.ref("rooms/"+roomId).on("value",snap=>{
-    const d=snap.val();
-    if(!d) return;
-    document.querySelectorAll(".cell").forEach((c,i)=>{
-      c.innerText=d.board[i];
+    g.board.forEach((v,i)=>{
+      boardDiv.children[i].innerText=v;
     });
+
+    const w = winner(g.board);
+    if(w){
+      document.getElementById("status").innerText =
+        w==="draw" ? "🤝 Draw" : "🏆 Winner: "+w;
+      document.getElementById("restartBtn").classList.remove("hidden");
+    }
   });
 }
 
 function move(i){
-  const ref=db.ref("rooms/"+roomId);
-  ref.once("value",snap=>{
-    const d=snap.val();
-    if(d.board[i]=="" && d.turn==mySymbol){
-      d.board[i]=mySymbol;
-      d.turn=mySymbol=="X"?"O":"X";
-      ref.update(d);
-    }
+  gameRef.once("value", snap=>{
+    const g=snap.val();
+    if(g.turn!==mySymbol) return;
+    if(g.board[i]!=="" ) return;
+
+    g.board[i]=mySymbol;
+    g.turn = mySymbol==="X"?"O":"X";
+    gameRef.update(g);
   });
 }
-</script>
 
+function restart(){
+  gameRef.update({
+    board:["","","","","","","","",""],
+    turn:"X"
+  });
+  document.getElementById("restartBtn").classList.add("hidden");
+}
+
+function winner(b){
+  const w=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+  for(let a of w){
+    if(b[a[0]] && b[a[0]]===b[a[1]] && b[a[1]]===b[a[2]]) return b[a[0]];
+  }
+  return b.includes("")?null:"draw";
+}
+</script>
 </body>
 </html>
