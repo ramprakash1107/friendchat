@@ -7,61 +7,61 @@
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 <style>
 :root { --primary: #00d2ff; --bg: #050505; --cell: #121212; --win: #00ff88; }
-body { background: var(--bg); color: #fff; font-family: 'Segoe UI', sans-serif; margin: 0; text-align: center; overflow: hidden; }
+body { background: var(--bg); color: #fff; font-family: sans-serif; margin: 0; padding: 0; overflow: hidden; height: 100vh; }
+.container { display: flex; flex-direction: column; height: 100vh; max-width: 420px; margin: auto; }
 
-.container { width: 100%; max-width: 420px; margin: auto; height: 100vh; display: flex; flex-direction: column; }
+/* Header & Stats */
+.header { padding: 10px; border-bottom: 1px solid #222; background: #000; }
+.stats { display: flex; justify-content: space-between; font-size: 12px; color: var(--primary); margin-bottom: 5px; }
 
-/* Timer & Coins UI */
-.stats-bar { display: flex; justify-content: space-around; background: #111; padding: 10px; font-size: 13px; border-bottom: 1px solid #222; }
-.timer-circle { width: 40px; height: 40px; border: 3px solid var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: var(--primary); }
+/* Tic Tac Toe Board - Sabse Important */
+#board { display: grid; grid-template-columns: repeat(3, 85px); gap: 8px; justify-content: center; margin: 10px auto; }
+.cell { width: 85px; height: 85px; background: var(--cell); border-radius: 12px; font-size: 40px; display: flex; align-items: center; justify-content: center; border: 1px solid #333; }
 
-/* Home Screen */
-#homeScreen { padding: 40px 20px; }
-.logo { font-size: 35px; font-weight: 900; background: linear-gradient(to right, #00d2ff, #3a7bd5); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-.box { background: #111; padding: 20px; border-radius: 20px; border: 1px solid #222; margin-top: 20px; }
-input { width: 85%; padding: 12px; border-radius: 10px; border: 1px solid #333; background: #000; color: #fff; margin-bottom: 10px; text-align: center; }
-.btn { width: 90%; padding: 14px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; }
+/* Timer in Center */
+.timer-box { font-size: 20px; font-weight: bold; color: var(--primary); margin-bottom: 5px; }
 
-/* Game Board */
-#board { display: grid; grid-template-columns: repeat(3, 95px); gap: 10px; justify-content: center; margin: 15px auto; }
-.cell { width: 95px; height: 95px; background: var(--cell); border-radius: 15px; font-size: 45px; display: flex; align-items: center; justify-content: center; border: 1px solid #222; }
+/* Emoji & Chat - Neeche ke side */
+.emoji-row { display: flex; justify-content: center; gap: 15px; padding: 10px; background: #111; }
+.emoji-btn { font-size: 22px; cursor: pointer; background: none; border: none; }
 
-/* Emoji Floating Animation */
-.emoji-btn { font-size: 24px; cursor: pointer; background: none; border: none; transition: 0.2s; }
-.emoji-btn:hover { transform: scale(1.3); }
-.floating-emoji { position: fixed; bottom: 100px; font-size: 40px; animation: floatUp 2s ease-out forwards; z-index: 1000; }
-@keyframes floatUp { 0% { bottom: 80px; opacity: 1; transform: translateX(0); } 100% { bottom: 400px; opacity: 0; transform: translateX(50px); } }
+#messages { flex: 1; overflow-y: auto; padding: 10px; font-size: 13px; text-align: left; border-top: 1px solid #222; }
+.chat-input { display: flex; padding: 8px; background: #000; border-top: 1px solid #222; }
+.chat-input input { flex: 1; background: #111; border: 1px solid #333; color: #fff; padding: 8px; border-radius: 5px; outline: none; }
 
-#messages { height: 100px; overflow-y: auto; font-size: 12px; padding: 10px; background: rgba(255,255,255,0.05); }
+.floating-emoji { position: fixed; bottom: 100px; font-size: 40px; animation: floatUp 2s ease-out forwards; pointer-events: none; }
+@keyframes floatUp { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-300px); } }
 .hidden { display: none; }
 </style>
 </head>
 <body>
 
 <div class="container">
-    <div id="homeScreen">
-        <div class="logo">RP GUPTA ARENA</div>
-        <p style="color: #666; font-size: 12px;">Fast Paced • Betting • Reactions</p>
-        <div class="box">
-            <input id="userName" placeholder="Enter Name">
-            <button class="btn" style="background:var(--primary)" onclick="createRoom()">CREATE TABLE (20 Coins)</button>
-            <div style="margin: 10px; opacity: 0.3;">OR</div>
-            <input id="joinCode" placeholder="Room Code">
-            <button class="btn" style="background:#222; color:#fff" onclick="joinExistingRoom()">JOIN TABLE</button>
+    <div id="homeScreen" style="padding: 50px 20px; text-align: center;">
+        <h1 style="color:var(--primary); margin:0;">RP GUPTA</h1>
+        <p style="color:#666; font-size:14px;">Multiplayer Gaming Portal</p>
+        <div style="background:#111; padding:20px; border-radius:15px; margin-top:30px;">
+            <input id="userName" style="width:90%; padding:12px; margin-bottom:10px; border-radius:8px; border:none; background:#000; color:#fff;" placeholder="Apna Naam Likhein">
+            <button onclick="createRoom()" style="width:95%; padding:12px; background:var(--primary); border:none; border-radius:8px; font-weight:bold;">CREATE TABLE</button>
+            <p style="margin:10px; opacity:0.3;">OR</p>
+            <input id="joinCode" style="width:90%; padding:12px; margin-bottom:10px; border-radius:8px; border:none; background:#000; color:#fff;" placeholder="Room Code">
+            <button onclick="joinExistingRoom()" style="width:95%; padding:12px; background:#222; color:#fff; border:1px solid #444; border-radius:8px;">JOIN TABLE</button>
         </div>
     </div>
 
     <div id="gameScreen" class="hidden">
-        <div class="stats-bar">
-            <div>💰 Coins: <span id="myCoins">100</span></div>
-            <div class="timer-circle" id="timer">15</div>
-            <div>🏆 Room: <span id="displayRoomCode">00000</span></div>
+        <div class="header">
+            <div class="stats">
+                <span>💰 Coins: <span id="myCoins">100</span></span>
+                <span>🏆 Room: <span id="displayRoomCode">00000</span></span>
+            </div>
+            <div class="timer-box" id="timer">15</div>
+            <div id="status" style="font-size:13px; font-weight:bold; color:var(--win);">WAITING...</div>
         </div>
 
         <div id="board"></div>
-        <h4 id="status" style="color:var(--primary); margin: 5px;"></h4>
 
-        <div style="padding: 10px; display: flex; justify-content: center; gap: 20px; border-top: 1px solid #222;">
+        <div class="emoji-row">
             <button class="emoji-btn" onclick="sendEmoji('😂')">😂</button>
             <button class="emoji-btn" onclick="sendEmoji('🔥')">🔥</button>
             <button class="emoji-btn" onclick="sendEmoji('😠')">😠</button>
@@ -69,11 +69,10 @@ input { width: 85%; padding: 12px; border-radius: 10px; border: 1px solid #333; 
         </div>
 
         <div id="messages"></div>
-        <div style="display:flex; padding: 5px; background:#111;">
-            <input id="msgInput" style="margin:0; flex:1; padding:8px;" placeholder="Chat...">
-            <button onclick="sendMsg()" style="background:var(--primary); border:none; padding:5px 15px; border-radius:5px;">➤</button>
+        <div class="chat-input">
+            <input id="msgInput" placeholder="Chat karein...">
+            <button onclick="sendMsg()" style="background:var(--primary); border:none; margin-left:5px; border-radius:5px; padding:0 15px;">➤</button>
         </div>
-        <button onclick="location.reload()" style="color:red; background:none; border:none; padding:10px; font-size:10px;">QUIT GAME</button>
     </div>
 </div>
 
@@ -96,6 +95,13 @@ const db = firebase.database();
 let myRoomId, myName, mySymbol, gameRef, chatRef, emojiRef, timerInt;
 let coins = 100;
 
+// Setup Board
+const boardDiv = document.getElementById("board");
+for(let i=0; i<9; i++) {
+    const d = document.createElement("div"); d.className = "cell";
+    d.onclick = () => move(i); boardDiv.appendChild(d);
+}
+
 function createRoom() {
     myName = document.getElementById("userName").value.trim();
     if(!myName) return alert("Naam likho!");
@@ -106,7 +112,7 @@ function createRoom() {
 function joinExistingRoom() {
     myName = document.getElementById("userName").value.trim();
     myRoomId = document.getElementById("joinCode").value.trim();
-    if(!myName || !myRoomId) return alert("Details bharo!");
+    if(!myName || !myRoomId) return alert("Details dalo!");
     initRoom("O");
 }
 
@@ -153,18 +159,16 @@ function startShotClock() {
 function listenGame() {
     gameRef.on("value", snap => {
         const g = snap.val(); if(!g) return;
-        g.board.forEach((v, i) => { document.getElementById("board").children[i].innerText = v; });
+        g.board.forEach((v, i) => { boardDiv.children[i].innerText = v; });
         document.getElementById("timer").innerText = g.timer || 0;
-        document.getElementById("myCoins").innerText = coins;
         
         const w = checkWinner(g.board);
         if(w && w !== "draw") {
-            if(w.w === mySymbol) { coins += 20; confetti(); }
-            else { coins -= 20; }
+            if(w.w === mySymbol) { confetti(); }
             document.getElementById("status").innerText = "WINNER: " + w.w;
             setTimeout(() => { gameRef.update({ board: Array(9).fill(""), turn: "X", timer: 15 }); }, 3000);
         } else {
-            document.getElementById("status").innerText = g.turn === mySymbol ? "YOUR TURN" : "WAIT...";
+            document.getElementById("status").innerText = g.turn === mySymbol ? "AAPKI BAARI" : "WAIT...";
         }
     });
 }
@@ -178,7 +182,7 @@ function move(i) {
     });
 }
 
-function sendEmoji(e) { emojiRef.set({ emoji: e, sender: myName, t: Date.now() }); }
+function sendEmoji(e) { emojiRef.set({ emoji: e, t: Date.now() }); }
 
 function listenEmojis() {
     emojiRef.on("value", snap => {
@@ -190,12 +194,6 @@ function listenEmojis() {
         document.body.appendChild(el);
         setTimeout(() => el.remove(), 2000);
     });
-}
-
-function checkWinner(b) {
-    const l = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-    for(let a of l) if(b[a[0]] && b[a[0]]===b[a[1]] && b[a[1]]===b[a[2]]) return {w:b[a[0]], line:a};
-    return b.includes("")?null:"draw";
 }
 
 function sendMsg() {
@@ -210,9 +208,16 @@ function listenChat() {
         const d = snap.val();
         const m = document.createElement("div");
         m.innerHTML = `<b>${d.n}:</b> ${d.m}`;
-        document.getElementById("messages").appendChild(m);
-        document.getElementById("messages").scrollTop = 1000;
+        const box = document.getElementById("messages");
+        box.appendChild(m);
+        box.scrollTop = box.scrollHeight;
     });
+}
+
+function checkWinner(b) {
+    const l = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+    for(let a of l) if(b[a[0]] && b[a[0]]===b[a[1]] && b[a[1]]===b[a[2]]) return {w:b[a[0]]};
+    return b.includes("")?null:"draw";
 }
 </script>
 </body>
