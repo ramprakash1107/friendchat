@@ -1,53 +1,19 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tic Tac Toe Online</title>
 
 <style>
-body{
-  margin:0;
-  font-family:system-ui;
-  background:#000;
-  color:#fff;
-  text-align:center;
-}
-#login{ padding:20px; }
-input,button{
-  width:100%;
-  padding:14px;
-  margin:10px 0;
-  border-radius:12px;
-  border:none;
-  font-size:16px;
-}
-input{ background:#111; color:#fff; }
-button{ background:#1d9bf0; color:#fff; font-weight:bold; }
-
-#game{ display:none; padding:20px; }
-
-#status{ margin:10px 0; min-height:24px; }
-
-#board{
-  display:grid;
-  grid-template-columns:repeat(3,90px);
-  gap:10px;
-  justify-content:center;
-  margin:20px auto;
-}
-.cell{
-  width:90px;
-  height:90px;
-  background:#1e1e1e;
-  font-size:36px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  border-radius:12px;
-  cursor:pointer;
-}
-#leave{ background:#e53935; }
+body{margin:0;font-family:system-ui;background:#000;color:#fff;text-align:center}
+#login{padding:20px}
+input,button{width:100%;padding:14px;margin:10px 0;border-radius:12px;border:none}
+input{background:#111;color:#fff}
+button{background:#1d9bf0;color:#fff;font-weight:bold}
+#game{display:none;padding:20px}
+#board{display:grid;grid-template-columns:repeat(3,90px);gap:10px;justify-content:center;margin:20px auto}
+.cell{width:90px;height:90px;background:#1e1e1e;font-size:36px;display:flex;align-items:center;justify-content:center;border-radius:12px}
 </style>
 </head>
 
@@ -57,150 +23,98 @@ button{ background:#1d9bf0; color:#fff; font-weight:bold; }
   <h2>🎮 Tic Tac Toe</h2>
   <input id="name" placeholder="Your name">
   <input id="room" placeholder="Room code">
-  <button id="join">Join Game</button>
+  <button id="join">Join</button>
 </div>
 
 <div id="game">
   <div id="status"></div>
   <div id="board"></div>
-  <button id="leave">Leave Game</button>
 </div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
-import { getDatabase, ref, set, onValue, remove }
+import { getDatabase, ref, set, update, get, onValue }
 from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
 
-/* 🔥 FIREBASE CONFIG (AAPKA) */
 const firebaseConfig = {
   apiKey: "AIzaSyARuO_pN2vdYrVKYkKHHaNys7WI8HqM6I4",
   authDomain: "friendchat-43941.firebaseapp.com",
   databaseURL: "https://friendchat-43941-default-rtdb.firebaseio.com",
-  projectId: "friendchat-43941",
-  storageBucket: "friendchat-43941.firebasestorage.app",
-  messagingSenderId: "1026542245723",
-  appId: "1:1026542245723:web:b892bfcc1d2358a018ac7e"
+  projectId: "friendchat-43941"
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-/* ELEMENTS */
 const login = document.getElementById("login");
 const game = document.getElementById("game");
-const joinBtn = document.getElementById("join");
 const statusDiv = document.getElementById("status");
 const boardDiv = document.getElementById("board");
-const leaveBtn = document.getElementById("leave");
 
-/* STATE */
-let roomId="", myName="", player="";
+let roomId="", player="";
 let board=["","","","","","","","",""];
 let turn="X";
-let winner=null;
 
-/* BOARD UI */
-boardDiv.innerHTML="";
+/* UI */
 for(let i=0;i<9;i++){
-  const c=document.createElement("div");
-  c.className="cell";
-  c.onclick=()=>move(i);
-  boardDiv.appendChild(c);
+  const d=document.createElement("div");
+  d.className="cell";
+  d.onclick=()=>move(i);
+  boardDiv.appendChild(d);
 }
 
-/* JOIN GAME (NO BUG – NO RACE CONDITION) */
-joinBtn.onclick = ()=>{
-  myName = name.value.trim();
+/* JOIN (CORRECT METHOD) */
+document.getElementById("join").onclick = async ()=>{
   roomId = room.value.trim();
-  if(!myName || !roomId){
-    alert("Name aur Room code likho");
-    return;
-  }
+  if(!roomId) return alert("Room likho");
 
   const roomRef = ref(db,"ttt/"+roomId);
+  const snap = await get(roomRef);
 
-  onValue(roomRef, snap=>{
-    if(!snap.exists()){
-      // FIRST PLAYER
-      player = "X";
-      set(roomRef,{
-        board:["","","","","","","","",""],
-        turn:"X",
-        winner:null,
-        players:{ X: myName, O: "" }
+  if(!snap.exists()){
+    player="X";
+    await set(roomRef,{
+      board:["","","","","","","","",""],
+      turn:"X",
+      players:{X:true,O:false}
+    });
+  }else{
+    const d=snap.val();
+    if(!d.players.O){
+      player="O";
+      await update(roomRef,{
+        "players/O":true
       });
     }else{
-      const d = snap.val();
-      if(!d.players.O){
-        // SECOND PLAYER
-        player = "O";
-        set(roomRef,{
-          ...d,
-          players:{ ...d.players, O: myName }
-        });
-      }else{
-        alert("Room full ho chuka hai");
-        return;
-      }
+      alert("Room full");
+      return;
     }
+  }
 
-    login.style.display="none";
-    game.style.display="block";
-    statusDiv.innerText = "You are " + player;
-  },{ once:true });
+  login.style.display="none";
+  game.style.display="block";
+  statusDiv.innerText="You are "+player;
 
-  // REALTIME UPDATE
-  onValue(roomRef, snap=>{
-    if(!snap.exists()) return;
-    const d = snap.val();
-    board = d.board;
-    turn = d.turn;
-    winner = d.winner;
+  onValue(roomRef,s=>{
+    const d=s.val();
+    board=d.board;
+    turn=d.turn;
     updateUI();
   });
 };
 
 /* MOVE */
 function move(i){
-  if(board[i] || turn!==player || winner) return;
-  board[i] = player;
-  winner = checkWinner();
-  turn = player==="X" ? "O" : "X";
-  set(ref(db,"ttt/"+roomId),{ board, turn, winner });
+  if(board[i] || turn!==player) return;
+  board[i]=player;
+  turn = player==="X"?"O":"X";
+  update(ref(db,"ttt/"+roomId),{board,turn});
 }
 
-/* WIN CHECK */
-function checkWinner(){
-  const w=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-  for(const [a,b,c] of w){
-    if(board[a] && board[a]===board[b] && board[a]===board[c]){
-      return board[a];
-    }
-  }
-  if(board.every(x=>x)) return "draw";
-  return null;
-}
-
-/* UI */
 function updateUI(){
-  document.querySelectorAll(".cell").forEach((c,i)=>{
-    c.innerText = board[i];
-  });
-
-  if(winner==="draw"){
-    statusDiv.innerText="🤝 Draw";
-  }else if(winner){
-    statusDiv.innerText = (winner===player) ? "🏆 You Win" : "❌ You Lose";
-  }else{
-    statusDiv.innerText = (turn===player) ? "Your Turn" : "Opponent Turn";
-  }
+  document.querySelectorAll(".cell").forEach((c,i)=>c.innerText=board[i]);
+  statusDiv.innerText = turn===player?"Your turn":"Opponent turn";
 }
-
-/* LEAVE */
-leaveBtn.onclick = ()=>{
-  remove(ref(db,"ttt/"+roomId));
-  location.reload();
-};
 </script>
 
 </body>
