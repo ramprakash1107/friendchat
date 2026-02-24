@@ -8,59 +8,50 @@
 <style>
 body{
   margin:0;
+  font-family:system-ui;
   background:#000;
   color:#fff;
-  font-family:system-ui;
   text-align:center;
 }
-#joinBox{padding:30px}
 input,button{
-  width:100%;
-  padding:14px;
-  margin:10px 0;
-  border-radius:12px;
+  width:80%;
+  padding:15px;
+  font-size:18px;
+  border-radius:10px;
   border:none;
-  font-size:16px;
+  margin:10px 0;
 }
-input{background:#111;color:#fff}
-button{background:#1d9bf0;color:#fff;font-weight:bold}
-
+button{background:#1d9bf0;color:#fff}
 #game{display:none}
-#status{margin:15px;font-size:18px}
-
-#board{
+.grid{
   display:grid;
-  grid-template-columns:repeat(3,90px);
+  grid-template-columns:repeat(3,100px);
   gap:10px;
   justify-content:center;
-  margin:20px auto;
 }
 .cell{
-  width:90px;
-  height:90px;
-  background:#222;
-  font-size:36px;
+  width:100px;height:100px;
+  background:#111;
+  font-size:40px;
   display:flex;
   align-items:center;
   justify-content:center;
-  border-radius:12px;
-  cursor:pointer;
 }
 </style>
 </head>
 
 <body>
 
-<h2>🎮 Tic Tac Toe</h2>
-
-<div id="joinBox">
-  <input id="room" placeholder="Room code">
-  <button onclick="joinRoom()">Join Room</button>
+<div id="join">
+  <h2>Join Room</h2>
+  <input id="room" placeholder="Room ID (1111)">
+  <button onclick="joinRoom()">Join</button>
+  <p id="status"></p>
 </div>
 
 <div id="game">
-  <div id="status"></div>
-  <div id="board"></div>
+  <h2 id="role"></h2>
+  <div class="grid" id="grid"></div>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -75,70 +66,65 @@ firebase.initializeApp({
 });
 
 const db = firebase.database();
-let roomId="", player="", board=[], turn="";
-
-const boardDiv=document.getElementById("board");
-const statusDiv=document.getElementById("status");
-
-/* create board */
-for(let i=0;i<9;i++){
-  const c=document.createElement("div");
-  c.className="cell";
-  c.onclick=()=>play(i);
-  boardDiv.appendChild(c);
-}
+let roomId, mySymbol;
 
 function joinRoom(){
-  roomId=document.getElementById("room").value.trim();
-  if(!roomId){ alert("Room code likho"); return; }
+  roomId = room.value;
+  if(!roomId) return;
 
-  const ref=db.ref("ttt/"+roomId);
+  const ref = db.ref("rooms/"+roomId);
 
-  ref.once("value").then(snap=>{
+  ref.once("value", snap=>{
     if(!snap.exists()){
-      player="X";
+      mySymbol = "X";
       ref.set({
+        players:1,
         board:["","","","","","","","",""],
-        turn:"X",
-        players:{X:true,O:false}
+        turn:"X"
       });
     }else{
-      const d=snap.val();
-      if(d.players.O){
-        alert("Room full");
-        return;
-      }
-      player="O";
-      ref.child("players/O").set(true);
+      mySymbol = "O";
+      ref.update({players:2});
     }
 
-    document.getElementById("joinBox").style.display="none";
-    document.getElementById("game").style.display="block";
+    startGame();
+  });
+}
 
-    ref.on("value", s=>{
-      const d=s.val();
-      board=d.board;
-      turn=d.turn;
-      updateUI();
+function startGame(){
+  join.style.display="none";
+  game.style.display="block";
+  role.innerText = "You are "+mySymbol;
+
+  const grid = document.getElementById("grid");
+  grid.innerHTML="";
+
+  for(let i=0;i<9;i++){
+    const c = document.createElement("div");
+    c.className="cell";
+    c.onclick=()=>move(i);
+    grid.appendChild(c);
+  }
+
+  db.ref("rooms/"+roomId).on("value",snap=>{
+    const d=snap.val();
+    if(!d) return;
+    document.querySelectorAll(".cell").forEach((c,i)=>{
+      c.innerText=d.board[i];
     });
   });
 }
 
-function play(i){
-  if(board[i]!=="" || turn!==player) return;
-  board[i]=player;
-  turn = player==="X" ? "O" : "X";
-  db.ref("ttt/"+roomId).update({board,turn});
-}
-
-function updateUI(){
-  document.querySelectorAll(".cell").forEach((c,i)=>{
-    c.innerText=board[i];
+function move(i){
+  const ref=db.ref("rooms/"+roomId);
+  ref.once("value",snap=>{
+    const d=snap.val();
+    if(d.board[i]=="" && d.turn==mySymbol){
+      d.board[i]=mySymbol;
+      d.turn=mySymbol=="X"?"O":"X";
+      ref.update(d);
+    }
   });
-  statusDiv.innerText =
-    (turn===player)
-    ? "Your Turn ("+player+")"
-    : "Opponent Turn";
 }
 </script>
 
