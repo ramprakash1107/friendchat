@@ -7,81 +7,113 @@
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 <style>
 :root { --primary: #00d2ff; --bg: #050505; --cell: #1a1a1a; --win: #00ff88; --me: #1d9bf0; --other: #333; }
-body { background: var(--bg); color: #fff; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0; overflow: hidden; height: 100vh; }
-.container { display: flex; flex-direction: column; height: 100vh; max-width: 420px; margin: auto; }
+body { background: var(--bg); color: #fff; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0; height: 100vh; overflow-y: auto; }
+.container { display: flex; flex-direction: column; max-width: 420px; margin: auto; min-height: 100vh; }
 
-/* Header Branding */
-.header { padding: 15px; border-bottom: 1px solid #333; background: #000; text-align: center; }
-.brand { font-size: 24px; font-weight: 900; background: linear-gradient(to right, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-transform: uppercase; letter-spacing: 2px; }
+/* Header Branding - Fixed */
+.header { padding: 15px; background: #000; text-align: center; border-bottom: 2px solid #222; position: sticky; top: 0; z-index: 1000; }
+.brand-link { color: #fff; text-decoration: none; font-size: 20px; font-weight: bold; letter-spacing: 1px; }
+.brand-link:hover { color: var(--primary); }
 
-/* Stats Bar */
-.stats { display: flex; justify-content: space-around; padding: 8px; background: #111; font-size: 13px; border-bottom: 1px solid #222; }
+/* Game Stats */
+.stats-bar { display: flex; justify-content: space-around; padding: 10px; background: #111; font-size: 13px; border-bottom: 1px solid #333; }
 
-/* Tic Tac Toe Board */
-#board { display: grid; grid-template-columns: repeat(3, 90px); gap: 10px; justify-content: center; margin: 15px auto; }
-.cell { width: 90px; height: 90px; background: var(--cell); border-radius: 15px; font-size: 45px; display: flex; align-items: center; justify-content: center; border: 2px solid #333; transition: 0.3s; }
-.cell:active { transform: scale(0.9); }
+/* Board Style */
+#board { display: grid; grid-template-columns: repeat(3, 90px); gap: 12px; justify-content: center; margin: 20px auto; }
+.cell { width: 90px; height: 90px; background: var(--cell); border-radius: 12px; font-size: 45px; display: flex; align-items: center; justify-content: center; border: 1px solid #333; transition: 0.2s; cursor: pointer; }
+.cell:active { transform: scale(0.95); background: #222; }
 
-/* Chat Left/Right Style */
-#messages { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 8px; background: rgba(255,255,255,0.02); }
-.msg { max-width: 75%; padding: 8px 12px; border-radius: 15px; font-size: 14px; position: relative; word-wrap: break-word; }
-.msg b { display: block; font-size: 10px; margin-bottom: 2px; opacity: 0.7; }
-.me { align-self: flex-end; background: var(--me); color: white; border-bottom-right-radius: 2px; text-align: right; }
-.other { align-self: flex-start; background: var(--other); color: white; border-bottom-left-radius: 2px; text-align: left; }
+/* Emoji Animation */
+.emoji-bar { display: flex; justify-content: center; gap: 20px; padding: 10px; }
+.emoji-btn { font-size: 28px; cursor: pointer; background: none; border: none; transition: 0.3s; }
+.emoji-btn:hover { transform: translateY(-5px); }
 
-/* Winner Overlay */
-#winnerOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 10000; text-align: center; }
-#winnerName { font-size: 50px; font-weight: 900; margin-bottom: 20px; text-shadow: 0 0 20px var(--win); animation: glow 1s infinite alternate; }
-@keyframes glow { from { transform: scale(1); } to { transform: scale(1.1); } }
+.floating-emoji { position: fixed; bottom: 50px; font-size: 50px; z-index: 9999; animation: emojiFloat 2.5s ease-in forwards; pointer-events: none; }
+@keyframes emojiFloat { 0% { transform: translateY(0) scale(0.5); opacity: 0; } 20% { opacity: 1; } 100% { transform: translateY(-500px) rotate(20deg) scale(1.5); opacity: 0; } }
 
-.emoji-row { display: flex; justify-content: center; gap: 15px; padding: 10px; background: #000; }
-.chat-input { display: flex; padding: 10px; background: #111; border-top: 1px solid #333; }
-.chat-input input { flex: 1; background: #000; border: 1px solid #444; color: #fff; padding: 10px; border-radius: 8px; outline: none; }
+/* Chat Bubbles (Left/Right) */
+#messages { height: 130px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding: 15px; background: rgba(255,255,255,0.03); margin: 10px; border-radius: 15px; }
+.msg { max-width: 80%; padding: 10px 14px; border-radius: 18px; font-size: 13px; line-height: 1.4; }
+.me { align-self: flex-end; background: var(--me); border-bottom-right-radius: 2px; text-align: right; }
+.other { align-self: flex-start; background: var(--other); border-bottom-left-radius: 2px; }
+
+/* Credits & Info */
+.info-box { padding: 20px; font-size: 12px; color: #666; text-align: left; background: #080808; border-top: 1px solid #222; }
+.credit-line { text-align: center; padding: 15px; font-size: 14px; color: #aaa; border-top: 1px solid #222; margin-top: auto; }
+
+/* Winner Overlay Change */
+#winnerOverlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 2000; }
+#winnerMsg { font-size: 40px; font-weight: 900; color: var(--win); text-align: center; animation: winnerPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+@keyframes winnerPop { 0% { transform: scale(0); } 100% { transform: scale(1); } }
+
 .hidden { display: none; }
+.btn-invite { background: #e1306c; color: white; padding: 10px 20px; border-radius: 25px; border: none; font-weight: bold; margin: 10px; cursor: pointer; }
 </style>
 </head>
 <body>
 
 <div id="winnerOverlay">
-    <div style="color:var(--primary); font-size: 20px;">🏆 MATCH FINISHED 🏆</div>
-    <div id="winnerName">PLAYER WON!</div>
-    <button onclick="restartMatch()" style="padding: 12px 30px; border-radius: 25px; border: none; background: var(--win); color: #000; font-weight: bold; cursor: pointer;">PLAY AGAIN</button>
+    <div id="winnerMsg">CONGRATULATIONS!</div>
+    <br><br>
+    <button onclick="restartMatch()" style="padding: 15px 40px; border-radius: 30px; border:none; background:var(--primary); color:#000; font-weight:bold; font-size:18px;">PLAY AGAIN</button>
 </div>
 
 <div class="container">
-    <div id="homeScreen" style="padding: 60px 20px; text-align: center;">
-        <div class="brand">RP GUPTA 07</div>
-        <div style="background:#111; padding:25px; border-radius:20px; border: 1px solid #333; margin-top:40px;">
-            <input id="userName" style="width:90%; padding:15px; margin-bottom:15px; border-radius:10px; border:none; background:#000; color:#fff; text-align:center;" placeholder="Enter Your Name">
-            <button onclick="createRoom()" style="width:95%; padding:15px; background:var(--primary); border:none; border-radius:10px; font-weight:bold; color:#000;">CREATE ROOM</button>
-            <p style="margin:15px; opacity:0.3;">— OR —</p>
-            <input id="joinCode" style="width:90%; padding:15px; margin-bottom:15px; border-radius:10px; border:none; background:#000; color:#fff; text-align:center;" placeholder="5-Digit Code">
-            <button onclick="joinExistingRoom()" style="width:95%; padding:15px; background:#222; color:#fff; border:1px solid #444; border-radius:10px;">JOIN ROOM</button>
+    <div id="homeScreen" style="padding: 40px 20px; text-align: center;">
+        <h1 style="margin: 0; letter-spacing: 2px;">RP GUPTA 07</h1>
+        <p style="color:#555; font-size:14px; margin-bottom: 30px;">Official Multiplayer Arena</p>
+        
+        <div style="background:#111; padding:30px; border-radius:25px; border:1px solid #222;">
+            <input id="userName" style="width:100%; padding:15px; border-radius:12px; border:none; background:#000; color:#fff; box-sizing:border-box; text-align:center;" placeholder="Enter Your Name">
+            <br><br>
+            <button onclick="createRoom()" style="width:100%; padding:15px; border-radius:12px; border:none; background:var(--primary); color:#000; font-weight:bold;">CREATE ROOM</button>
+            <div style="margin: 15px; color:#444;">OR</div>
+            <input id="joinCode" style="width:100%; padding:15px; border-radius:12px; border:none; background:#000; color:#fff; box-sizing:border-box; text-align:center;" placeholder="Enter 5-Digit Room Code">
+            <br><br>
+            <button onclick="joinExistingRoom()" style="width:100%; padding:15px; border-radius:12px; border:1px solid #444; background:#222; color:#fff;">JOIN ROOM</button>
         </div>
+        <br>
+        <a href="https://www.instagram.com/rp_gupta_07" target="_blank" style="color:#e1306c; text-decoration:none; font-weight:bold;">Follow @rp_gupta_07 on Instagram</a>
     </div>
 
     <div id="gameScreen" class="hidden">
         <div class="header">
-            <div class="brand">RP GUPTA 07</div>
+            <a href="https://www.instagram.com/rp_gupta_07" target="_blank" class="brand-link">RP GUPTA 07</a>
         </div>
-        <div class="stats">
-            <span>ROOM: <b id="displayRoomCode" style="color:var(--primary)">00000</b></span>
+        
+        <div class="stats-bar">
+            <span>Room: <b id="displayRoomCode" style="color:var(--primary)">-----</b></span>
             <span id="status" style="color:var(--win); font-weight:bold;">YOUR TURN</span>
         </div>
 
         <div id="board"></div>
 
-        <div class="emoji-row">
-            <button style="background:none; border:none; font-size:24px;" onclick="sendEmoji('😂')">😂</button>
-            <button style="background:none; border:none; font-size:24px;" onclick="sendEmoji('🔥')">🔥</button>
-            <button style="background:none; border:none; font-size:24px;" onclick="sendEmoji('😠')">😠</button>
-            <button style="background:none; border:none; font-size:24px;" onclick="sendEmoji('😎')">😎</button>
+        <div style="text-align: center;">
+            <button class="btn-invite" onclick="inviteFriend()">Invite Friend on Instagram</button>
+        </div>
+
+        <div class="emoji-bar">
+            <button class="emoji-btn" onclick="sendEmoji('😂')">😂</button>
+            <button class="emoji-btn" onclick="sendEmoji('🔥')">🔥</button>
+            <button class="emoji-btn" onclick="sendEmoji('😠')">😠</button>
+            <button class="emoji-btn" onclick="sendEmoji('😎')">😎</button>
         </div>
 
         <div id="messages"></div>
-        <div class="chat-input">
-            <input id="msgInput" placeholder="Type a message...">
-            <button onclick="sendMsg()" style="background:var(--primary); border:none; margin-left:8px; border-radius:8px; padding:0 15px; color:#000;">➤</button>
+        <div style="display:flex; padding: 10px; background:#111;">
+            <input id="msgInput" style="flex:1; padding:10px; border-radius:10px; border:none; background:#000; color:#fff;" placeholder="Type message...">
+            <button onclick="sendMsg()" style="background:var(--primary); border:none; margin-left:10px; padding:10px 20px; border-radius:10px;">Send</button>
+        </div>
+
+        <div class="info-box">
+            <b>Game Rules:</b><br>
+            • Pehla player jo 3 cells line mein layega wo jitega.<br>
+            • Match khatam hote hi chat delete ho jati hai.<br>
+            • Developed by: <b>RP GUPTA 07</b>
+        </div>
+
+        <div class="credit-line">
+            Website Game by <a href="https://www.instagram.com/rp_gupta_07" target="_blank" style="color:var(--primary); text-decoration:none;">RP GUPTA 07</a>
         </div>
     </div>
 </div>
@@ -90,6 +122,7 @@ body { background: var(--bg); color: #fff; font-family: 'Segoe UI', sans-serif; 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
 <script>
+// FIREBASE CONFIG
 const firebaseConfig = {
   apiKey: "AIzaSyARuO_pN2vdYrVKYkKHHaNys7WI8HqM6I4",
   authDomain: "friendchat-43941.firebaseapp.com",
@@ -120,7 +153,7 @@ function createRoom() {
 function joinExistingRoom() {
     myName = document.getElementById("userName").value.trim();
     myRoomId = document.getElementById("joinCode").value.trim();
-    if(!myName || !myRoomId) return alert("Enter details!");
+    if(!myName || !myRoomId) return alert("Enter all details!");
     initRoom("O");
 }
 
@@ -154,19 +187,27 @@ function listenGame() {
             boardDiv.children[i].innerText = v;
             boardDiv.children[i].style.color = (v==='X') ? '#00d2ff' : '#ff4b2b';
         });
-        
         const w = checkWinner(g.board);
         if(w) {
-            const winnerText = w==="draw" ? "MATCH DRAW!" : (w.w==="X"?g.players.X:g.players.O) + " JEET GAYA!";
-            document.getElementById("winnerName").innerText = winnerText;
+            const winnerText = w==="draw" ? "GAME DRAW!" : (w.w==="X"?g.players.X:g.players.O) + " WON!";
+            document.getElementById("winnerMsg").innerText = winnerText;
             document.getElementById("winnerOverlay").style.display = "flex";
-            if(w!=="draw") {
-                confetti({ particleCount: 200, spread: 80, origin: { y: 0.6 } });
-            }
+            if(w!=="draw") confetti({ particleCount: 250, spread: 90, origin: { y: 0.5 } });
         } else {
             document.getElementById("winnerOverlay").style.display = "none";
             document.getElementById("status").innerText = g.turn === mySymbol ? "YOUR TURN" : "WAITING...";
         }
+    });
+}
+
+function inviteFriend() {
+    const msg = `Hey! Come play Tic-Tac-Toe with me. Room Code: ${myRoomId}. Join here: ${window.location.href}`;
+    const instaUrl = `https://www.instagram.com/reels/create/`; // Opens Instagram
+    
+    // Copy room code to clipboard
+    navigator.clipboard.writeText(msg).then(() => {
+        alert("Invite Link & Room Code Copied! Now paste it in Instagram DM of your friend.");
+        window.open(instaUrl, '_blank');
     });
 }
 
@@ -190,12 +231,11 @@ function listenEmojis() {
     emojiRef.on("value", snap => {
         const d = snap.val(); if(!d) return;
         const el = document.createElement("div");
-        el.style.position = "fixed"; el.style.bottom = "100px";
-        el.style.fontSize = "50px"; el.innerText = d.emoji;
+        el.className = "floating-emoji";
+        el.innerText = d.emoji;
         el.style.left = Math.random() * 80 + "%";
-        el.style.animation = "floatUp 2s forwards";
         document.body.appendChild(el);
-        setTimeout(() => el.remove(), 2000);
+        setTimeout(() => el.remove(), 2500);
     });
 }
 
@@ -227,4 +267,3 @@ function checkWinner(b) {
 </script>
 </body>
 </html>
-
