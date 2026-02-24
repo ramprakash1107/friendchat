@@ -18,7 +18,7 @@ input,button{
   margin:5px;
   border-radius:6px;
 }
-button{cursor:pointer}
+button{cursor:pointer; background: #1d9bf0; color: white; border: none;}
 .hidden{display:none}
 
 #board{
@@ -35,6 +35,7 @@ button{cursor:pointer}
   display:flex;
   align-items:center;
   justify-content:center;
+  border: 1px solid #333;
 }
 
 #chatBox{
@@ -42,17 +43,19 @@ button{cursor:pointer}
   margin:10px auto;
   background:#111;
   border-radius:8px;
-  padding:5px;
+  padding:10px;
 }
 #messages{
   height:120px;
   overflow-y:auto;
   text-align:left;
   font-size:14px;
+  border-bottom: 1px solid #333;
+  margin-bottom: 5px;
 }
 .msg{margin:4px}
-.me{color:#1d9bf0}
-.other{color:#fff}
+.me{color:#1d9bf0; font-weight: bold;}
+.other{color:#00ff00}
 </style>
 </head>
 
@@ -61,7 +64,7 @@ button{cursor:pointer}
 <h2>🎮 Tic Tac Toe Online</h2>
 
 <div id="joinBox">
-  <input id="nameInput" placeholder="Your name">
+  <input id="nameInput" placeholder="Aapka Naam">
   <br>
   <input id="roomInput" placeholder="5 digit room code">
   <br>
@@ -72,34 +75,42 @@ button{cursor:pointer}
 
 <div id="board" class="hidden"></div>
 
-<button id="restartBtn" class="hidden" onclick="restart()">Restart</button>
+<button id="restartBtn" class="hidden" onclick="restart()">Restart Game</button>
 
-<!-- CHAT -->
 <div id="chatBox" class="hidden">
   <div id="messages"></div>
-  <input id="chatInput" placeholder="Message...">
+  <input id="chatInput" style="width:70%" placeholder="Message...">
   <button onclick="sendMsg()">Send</button>
 </div>
 
-<!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
 <script>
-// 🔴 APNA FIREBASE CONFIG YAHI PASTE KARO
-firebase.initializeApp({
-  apiKey: "API_KEY",
-  authDomain: "PROJECT.firebaseapp.com",
-  databaseURL: "https://PROJECT-default-rtdb.firebaseio.com",
-  projectId: "PROJECT"
-});
+// ✅ AAPKA FIREBASE CONFIG YAHA ADD HO GAYA HAI
+const firebaseConfig = {
+  apiKey: "AIzaSyARuO_pN2vdYrVKYkKHHaNys7WI8HqM6I4",
+  authDomain: "friendchat-43941.firebaseapp.com",
+  databaseURL: "https://friendchat-43941-default-rtdb.firebaseio.com",
+  projectId: "friendchat-43941",
+  storageBucket: "friendchat-43941.firebasestorage.app",
+  messagingSenderId: "1026542245723",
+  appId: "1:1026542245723:web:b892bfcc1d2358a018ac7e",
+  measurementId: "G-HT3W2WJW5H"
+};
 
+firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
 let roomId, mySymbol, myName, gameRef, chatRef;
 
-/* BOARD CREATE */
 const boardDiv=document.getElementById("board");
+const statusText=document.getElementById("status");
+const joinBox=document.getElementById("joinBox");
+const chatBox=document.getElementById("chatBox");
+const restartBtn=document.getElementById("restartBtn");
+
+/* BOARD CREATE */
 for(let i=0;i<9;i++){
   const d=document.createElement("div");
   d.className="cell";
@@ -108,11 +119,11 @@ for(let i=0;i<9;i++){
 }
 
 function joinRoom(){
-  myName = nameInput.value.trim();
-  roomId = roomInput.value.trim();
+  myName = document.getElementById("nameInput").value.trim();
+  roomId = document.getElementById("roomInput").value.trim();
 
-  if(!myName){ alert("Name likho"); return; }
-  if(roomId.length!==5){ alert("5 digit room code"); return; }
+  if(!myName){ alert("Naam likhna zaruri hai"); return; }
+  if(roomId.length < 1){ alert("Room code likho"); return; }
 
   gameRef = db.ref("rooms/"+roomId+"/game");
   chatRef = db.ref("rooms/"+roomId+"/chat");
@@ -130,8 +141,8 @@ function joinRoom(){
       mySymbol="O";
       g.players.O=myName;
       gameRef.update({players:g.players});
-    }else{
-      alert("Room full");
+    }else if(g.players.X !== myName && g.players.O !== myName){
+      alert("Room full hai!");
       return;
     }
 
@@ -153,12 +164,12 @@ function listenGame(){
       boardDiv.children[i].innerText=v;
     });
 
-    status.innerText =
+    statusText.innerText =
       g.turn===mySymbol ? "👉 Aapki baari" : "⏳ Opponent ki baari";
 
     const w=winner(g.board);
     if(w){
-      status.innerText = w==="draw" ? "🤝 Draw" : "🏆 Winner: "+w;
+      statusText.innerText = w==="draw" ? "🤝 Draw ho gaya!" : "🏆 Winner: "+ (w === "X" ? g.players.X : g.players.O);
       restartBtn.classList.remove("hidden");
     }
   });
@@ -167,7 +178,7 @@ function listenGame(){
 function move(i){
   gameRef.once("value", snap=>{
     const g=snap.val();
-    if(g.turn!==mySymbol) return;
+    if(!g || g.turn!==mySymbol || winner(g.board)) return;
     if(g.board[i]!=="" ) return;
 
     g.board[i]=mySymbol;
@@ -186,6 +197,7 @@ function restart(){
 
 /* CHAT */
 function sendMsg(){
+  const chatInput = document.getElementById("chatInput");
   const text=chatInput.value.trim();
   if(!text) return;
   chatRef.push({
@@ -197,17 +209,17 @@ function sendMsg(){
 }
 
 function listenChat(){
+  const messagesDiv = document.getElementById("messages");
   chatRef.limitToLast(50).on("child_added", snap=>{
     const m=snap.val();
     const d=document.createElement("div");
     d.className="msg "+(m.name===myName?"me":"other");
     d.innerText=m.name+": "+m.msg;
-    messages.appendChild(d);
-    messages.scrollTop=messages.scrollHeight;
+    messagesDiv.appendChild(d);
+    messagesDiv.scrollTop=messagesDiv.scrollHeight;
   });
 }
 
-/* WIN LOGIC */
 function winner(b){
   const w=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
   for(let a of w){
@@ -218,3 +230,4 @@ function winner(b){
 </script>
 </body>
 </html>
+
