@@ -1,118 +1,202 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Multiplayer Guessing Game</title>
-    <style>
-        body { font-family: sans-serif; background: #0b0e11; color: #fff; text-align: center; margin: 0; padding: 20px; }
-        .card { background: #1c2128; padding: 20px; border-radius: 15px; max-width: 400px; margin: auto; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
-        h2 { color: #1d9bf0; }
-        input { width: 80%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px solid #333; background: #0d1117; color: #fff; text-align: center; }
-        button { width: 85%; padding: 12px; background: #1d9bf0; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        button:hover { background: #1a8cd8; }
-        #gameArea { display: none; }
-        .log { margin-top: 20px; height: 150px; overflow-y: auto; background: #0d1117; padding: 10px; border-radius: 8px; font-size: 14px; text-align: left; }
-        .status { margin: 15px 0; font-weight: bold; color: #ffad1f; }
-        #credit { font-size: 12px; color: #555; margin-top: 10px; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Tic Tac Toe Online</title>
+
+<style>
+body{
+  margin:0;
+  font-family:system-ui;
+  background:#000;
+  color:#fff;
+  text-align:center;
+}
+#login{ padding:20px; }
+input,button{
+  width:100%;
+  padding:14px;
+  margin:10px 0;
+  border-radius:12px;
+  border:none;
+  font-size:16px;
+}
+input{ background:#111; color:#fff; }
+button{ background:#1d9bf0; color:#fff; font-weight:bold; }
+
+#game{ display:none; padding:20px; }
+
+#status{ margin:10px 0; font-size:16px; min-height:24px; }
+
+#board{
+  display:grid;
+  grid-template-columns:repeat(3,90px);
+  gap:10px;
+  justify-content:center;
+  margin:20px auto;
+}
+.cell{
+  width:90px;
+  height:90px;
+  background:#1e1e1e;
+  font-size:36px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:12px;
+  cursor:pointer;
+}
+
+#restart{ background:#00c853; }
+#leave{ background:#e53935; }
+</style>
 </head>
+
 <body>
 
-    <div class="card" id="loginBox">
-        <h2>🎮 Multiplayer Guess</h2>
-        <div id="credit">Game by @rp_gupta_07</div>
-        <input type="text" id="username" placeholder="Apna Naam Likho">
-        <input type="text" id="roomcode" placeholder="Room Code (e.g. 777)">
-        <button onclick="startApp()">Game Join Karein</button>
-    </div>
+<div id="login">
+  <h2>🎮 Tic Tac Toe</h2>
+  <input id="room" placeholder="Room code">
+  <button id="join">Join Game</button>
+</div>
 
-    <div class="card" id="gameArea">
-        <h3 id="roomDisplay"></h3>
-        <p>1 se 100 ke beech ka number guess karo!</p>
-        <div class="status" id="hint">Waiting for moves...</div>
-        <input type="number" id="guessInput" placeholder="Number daalein">
-        <button onclick="sendGuess()">Guess!</button>
-        
-        <div class="log" id="gameLog"></div>
-        <button onclick="location.reload()" style="background:#e53935; margin-top:10px;">Leave Game</button>
-    </div>
+<div id="game">
+  <div id="status"></div>
+  <div id="board"></div>
+  <button id="restart">Restart</button>
+  <button id="leave">Leave</button>
+</div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
-        import { getDatabase, ref, set, onValue, push, remove } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
+import { getDatabase, ref, set, onValue, remove }
+from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
 
-        // Aapke purane chat app ki Firebase details
-        const firebaseConfig = {
-            apiKey: "AIzaSyARuO_pN2vdYrVKYkKHHaNys7WI8HqM6I4",
-            authDomain: "friendchat-43941.firebaseapp.com",
-            databaseURL: "https://friendchat-43941-default-rtdb.firebaseio.com",
-            projectId: "friendchat-43941",
-            storageBucket: "friendchat-43941.firebasestorage.app",
-            messagingSenderId: "1026542245723",
-            appId: "1:1026542245723:web:b892bfcc1d2358a018ac7e"
-        };
+/* 🔥 AAPKA FIREBASE CONFIG */
+const firebaseConfig = {
+  apiKey: "AIzaSyARuO_pN2vdYrVKYkKHHaNys7WI8HqM6I4",
+  authDomain: "friendchat-43941.firebaseapp.com",
+  databaseURL: "https://friendchat-43941-default-rtdb.firebaseio.com",
+  projectId: "friendchat-43941",
+  storageBucket: "friendchat-43941.firebasestorage.app",
+  messagingSenderId: "1026542245723",
+  appId: "1:1026542245723:web:b892bfcc1d2358a018ac7e"
+};
 
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
 
-        let user, room, targetNumber;
+/* ELEMENTS */
+const login = document.getElementById("login");
+const game = document.getElementById("game");
+const boardDiv = document.getElementById("board");
+const statusDiv = document.getElementById("status");
+const joinBtn = document.getElementById("join");
+const restartBtn = document.getElementById("restart");
+const leaveBtn = document.getElementById("leave");
 
-        window.startApp = () => {
-            user = document.getElementById('username').value.trim();
-            room = document.getElementById('roomcode').value.trim();
-            if(!user || !room) return alert("Naam aur Room Code zaroori hai!");
+/* STATE */
+let roomId="", player="";
+let board=["","","","","","","","",""];
+let turn="X";
+let winner=null;
 
-            document.getElementById('loginBox').style.display = 'none';
-            document.getElementById('gameArea').style.display = 'block';
-            document.getElementById('roomDisplay').innerText = "Room: " + room;
+/* BOARD UI */
+boardDiv.innerHTML="";
+for(let i=0;i<9;i++){
+  const c=document.createElement("div");
+  c.className="cell";
+  c.onclick=()=>move(i);
+  boardDiv.appendChild(c);
+}
 
-            // Setup Game: Agar room naya hai toh secret number generate karo
-            const gameRef = ref(db, `games/${room}/config`);
-            onValue(gameRef, (snapshot) => {
-                if (!snapshot.exists()) {
-                    set(gameRef, { target: Math.floor(Math.random() * 100) + 1 });
-                } else {
-                    targetNumber = snapshot.val().target;
-                }
-            }, { onlyOnce: false });
+/* JOIN GAME */
+joinBtn.onclick=()=>{
+  roomId = room.value.trim();
+  if(!roomId) return alert("Room code likho");
 
-            listenForGuesses();
-        };
+  const roomRef = ref(db,"ttt/"+roomId);
 
-        window.sendGuess = () => {
-            const val = parseInt(document.getElementById('guessInput').value);
-            if(!val) return;
+  onValue(roomRef,snap=>{
+    if(!snap.exists()){
+      player="X";
+      set(roomRef,{board,turn,winner:null});
+    }else{
+      player="O";
+    }
+  },{once:true});
 
-            let hint = "";
-            if(val < targetNumber) hint = "Low! ⬆️";
-            else if(val > targetNumber) hint = "High! ⬇️";
-            else hint = "WON! 🎉";
+  onValue(roomRef,snap=>{
+    if(!snap.exists()) return;
+    const d=snap.val();
+    board=d.board;
+    turn=d.turn;
+    winner=d.winner;
+    updateUI();
+  });
 
-            push(ref(db, `games/${room}/moves`), { user, val, hint });
-            document.getElementById('guessInput').value = "";
-        };
+  login.style.display="none";
+  game.style.display="block";
+  statusDiv.innerText="You are "+player;
+};
 
-        function listenForGuesses() {
-            onValue(ref(db, `games/${room}/moves`), (snapshot) => {
-                const log = document.getElementById('gameLog');
-                const hintDiv = document.getElementById('hint');
-                log.innerHTML = "";
-                
-                if (snapshot.exists()) {
-                    const data = snapshot.val();
-                    Object.values(data).reverse().forEach(move => {
-                        const p = document.createElement('p');
-                        p.innerHTML = `<b>${move.user}:</b> ${move.val} (${move.hint})`;
-                        log.appendChild(p);
+/* MOVE */
+function move(i){
+  if(board[i] || turn!==player || winner) return;
+  board[i]=player;
+  winner = checkWinner();
+  turn = player==="X"?"O":"X";
+  set(ref(db,"ttt/"+roomId),{board,turn,winner});
+}
 
-                        if(move.hint === "WON! 🎉") {
-                            hintDiv.innerHTML = `<span style="color:#4BB543">${move.user} Jeet Gaya! No: ${move.val}</span>`;
-                        }
-                    });
-                }
-            });
-        }
-    </script>
+/* CHECK WINNER */
+function checkWinner(){
+  const w=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+  for(const [a,b,c] of w){
+    if(board[a] && board[a]===board[b] && board[a]===board[c]){
+      return board[a];
+    }
+  }
+  if(board.every(x=>x)) return "draw";
+  return null;
+}
+
+/* UPDATE UI */
+function updateUI(){
+  document.querySelectorAll(".cell").forEach((c,i)=>{
+    c.innerText=board[i];
+  });
+
+  if(winner==="draw"){
+    statusDiv.innerText="🤝 Match Draw";
+  }else if(winner){
+    statusDiv.innerText = (winner===player)
+      ? "🏆 You Win!"
+      : "❌ You Lose";
+  }else{
+    statusDiv.innerText = turn===player
+      ? "Your turn ("+player+")"
+      : "Opponent turn";
+  }
+}
+
+/* RESTART */
+restartBtn.onclick=()=>{
+  if(player!=="X") return alert("Restart sirf Player X karega");
+  board=["","","","","","","","",""];
+  turn="X";
+  winner=null;
+  set(ref(db,"ttt/"+roomId),{board,turn,winner});
+};
+
+/* LEAVE */
+leaveBtn.onclick=()=>{
+  remove(ref(db,"ttt/"+roomId));
+  location.reload();
+};
+</script>
+
 </body>
 </html>
