@@ -28,7 +28,14 @@ button{ background:#1d9bf0; color:#fff; font-weight:bold; }
 
 #game{ display:none; padding:20px; }
 
-#status{ margin:10px 0; font-size:16px; min-height:24px; }
+#top{
+  display:flex;
+  justify-content:space-between;
+  font-size:14px;
+  margin-bottom:10px;
+}
+
+#status{ margin:10px 0; min-height:24px; }
 
 #board{
   display:grid;
@@ -58,16 +65,28 @@ button{ background:#1d9bf0; color:#fff; font-weight:bold; }
 
 <div id="login">
   <h2>🎮 Tic Tac Toe</h2>
+  <input id="name" placeholder="Your name">
   <input id="room" placeholder="Room code">
   <button id="join">Join Game</button>
 </div>
 
 <div id="game">
+  <div id="top">
+    <div id="players"></div>
+    <div id="score"></div>
+  </div>
+
   <div id="status"></div>
   <div id="board"></div>
-  <button id="restart">Restart</button>
+
+  <button id="restart">Next Round</button>
   <button id="leave">Leave</button>
 </div>
+
+<!-- 🔊 Sounds -->
+<audio id="tap" src="https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3"></audio>
+<audio id="win" src="https://assets.mixkit.co/active_storage/sfx/2019/2019-preview.mp3"></audio>
+<audio id="draw" src="https://assets.mixkit.co/active_storage/sfx/2020/2020-preview.mp3"></audio>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
@@ -89,22 +108,28 @@ const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
 /* ELEMENTS */
+const joinBtn = document.getElementById("join");
 const login = document.getElementById("login");
 const game = document.getElementById("game");
 const boardDiv = document.getElementById("board");
 const statusDiv = document.getElementById("status");
-const joinBtn = document.getElementById("join");
+const playersDiv = document.getElementById("players");
+const scoreDiv = document.getElementById("score");
 const restartBtn = document.getElementById("restart");
 const leaveBtn = document.getElementById("leave");
 
-/* STATE */
-let roomId="", player="";
-let board=["","","","","","","","",""];
-let turn="X";
-let winner=null;
+const tapSound = document.getElementById("tap");
+const winSound = document.getElementById("win");
+const drawSound = document.getElementById("draw");
 
-/* BOARD UI */
-boardDiv.innerHTML="";
+/* STATE */
+let roomId="", myName="", player="";
+let board=["","","","","","","","",""];
+let turn="X", winner=null;
+let players={X:"",O:""};
+let score={X:0,O:0};
+
+/* BOARD */
 for(let i=0;i<9;i++){
   const c=document.createElement("div");
   c.className="cell";
@@ -112,19 +137,24 @@ for(let i=0;i<9;i++){
   boardDiv.appendChild(c);
 }
 
-/* JOIN GAME */
+/* JOIN */
 joinBtn.onclick=()=>{
+  myName = name.value.trim();
   roomId = room.value.trim();
-  if(!roomId) return alert("Room code likho");
+  if(!myName || !roomId) return alert("Name aur Room code likho");
 
   const roomRef = ref(db,"ttt/"+roomId);
 
   onValue(roomRef,snap=>{
     if(!snap.exists()){
       player="X";
-      set(roomRef,{board,turn,winner:null});
+      players.X=myName;
+      set(roomRef,{board,turn,winner,players,score});
     }else{
       player="O";
+      players = snap.val().players;
+      players.O=myName;
+      set(roomRef,{...snap.val(),players});
     }
   },{once:true});
 
@@ -134,24 +164,31 @@ joinBtn.onclick=()=>{
     board=d.board;
     turn=d.turn;
     winner=d.winner;
+    players=d.players;
+    score=d.score;
     updateUI();
   });
 
   login.style.display="none";
   game.style.display="block";
-  statusDiv.innerText="You are "+player;
 };
 
 /* MOVE */
 function move(i){
   if(board[i] || turn!==player || winner) return;
   board[i]=player;
+  tapSound.play();
   winner = checkWinner();
+  if(winner && winner!=="draw"){
+    score[winner]++;
+    winSound.play();
+  }
+  if(winner==="draw") drawSound.play();
   turn = player==="X"?"O":"X";
-  set(ref(db,"ttt/"+roomId),{board,turn,winner});
+  set(ref(db,"ttt/"+roomId),{board,turn,winner,players,score});
 }
 
-/* CHECK WINNER */
+/* CHECK */
 function checkWinner(){
   const w=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
   for(const [a,b,c] of w){
@@ -163,32 +200,25 @@ function checkWinner(){
   return null;
 }
 
-/* UPDATE UI */
+/* UI */
 function updateUI(){
-  document.querySelectorAll(".cell").forEach((c,i)=>{
-    c.innerText=board[i];
-  });
+  document.querySelectorAll(".cell").forEach((c,i)=>c.innerText=board[i]);
 
-  if(winner==="draw"){
-    statusDiv.innerText="🤝 Match Draw";
-  }else if(winner){
-    statusDiv.innerText = (winner===player)
-      ? "🏆 You Win!"
-      : "❌ You Lose";
-  }else{
-    statusDiv.innerText = turn===player
-      ? "Your turn ("+player+")"
-      : "Opponent turn";
-  }
+  playersDiv.innerText = `${players.X||"X"} ❌ vs ⭕ ${players.O||"O"}`;
+  scoreDiv.innerText = `${score.X} : ${score.O}`;
+
+  if(winner==="draw") statusDiv.innerText="🤝 Draw";
+  else if(winner) statusDiv.innerText=`🏆 ${players[winner]} Wins`;
+  else statusDiv.innerText = turn===player ? "Your Turn" : "Opponent Turn";
 }
 
-/* RESTART */
+/* NEXT ROUND */
 restartBtn.onclick=()=>{
-  if(player!=="X") return alert("Restart sirf Player X karega");
+  if(player!=="X") return;
   board=["","","","","","","","",""];
   turn="X";
   winner=null;
-  set(ref(db,"ttt/"+roomId),{board,turn,winner});
+  set(ref(db,"ttt/"+roomId),{board,turn,winner,players,score});
 };
 
 /* LEAVE */
