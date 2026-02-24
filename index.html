@@ -13,6 +13,7 @@ body{
   color:#fff;
   text-align:center;
 }
+h1{margin-top:20px}
 #login{padding:20px}
 input,button{
   width:100%;
@@ -24,7 +25,10 @@ input,button{
 }
 input{background:#111;color:#fff}
 button{background:#1d9bf0;color:#fff;font-weight:bold}
+
 #game{display:none}
+#status{margin:10px;font-size:18px}
+
 #board{
   display:grid;
   grid-template-columns:repeat(3,90px);
@@ -48,23 +52,23 @@ button{background:#1d9bf0;color:#fff;font-weight:bold}
 
 <body>
 
+<h1>🎮 Tic Tac Toe</h1>
+
 <div id="login">
-  <h2>🎮 Tic Tac Toe</h2>
-  <input id="room" placeholder="Room code (same dono phone me)">
-  <button onclick="join()">Join Game</button>
+  <input id="room" placeholder="Room code (same dono phone)">
+  <button onclick="joinGame()">Join Game</button>
 </div>
 
 <div id="game">
-  <h3 id="status"></h3>
+  <div id="status"></div>
   <div id="board"></div>
 </div>
 
-<!-- Firebase COMPAT SDK (MOST STABLE) -->
+<!-- Firebase (STABLE COMPAT VERSION) -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
 <script>
-/* 🔥 Firebase config */
 firebase.initializeApp({
   apiKey: "AIzaSyARuO_pN2vdYrVKYkKHHaNys7WI8HqM6I4",
   authDomain: "friendchat-43941.firebaseapp.com",
@@ -74,25 +78,25 @@ firebase.initializeApp({
 
 const db = firebase.database();
 
-let roomId="", player="", board=[], turn="X";
-
-/* UI board */
+let roomId="", player="", board=[], turn="";
 const boardDiv=document.getElementById("board");
+const statusDiv=document.getElementById("status");
+
+/* Create board */
 for(let i=0;i<9;i++){
-  const d=document.createElement("div");
-  d.className="cell";
-  d.onclick=()=>play(i);
-  boardDiv.appendChild(d);
+  const c=document.createElement("div");
+  c.className="cell";
+  c.onclick=()=>move(i);
+  boardDiv.appendChild(c);
 }
 
-/* JOIN — SIMPLE + GUARANTEED */
-function join(){
+function joinGame(){
   roomId=document.getElementById("room").value.trim();
   if(!roomId){ alert("Room code likho"); return; }
 
   const ref=db.ref("ttt/"+roomId);
 
-  ref.once("value", snap=>{
+  ref.once("value").then(snap=>{
     if(!snap.exists()){
       player="X";
       ref.set({
@@ -102,14 +106,16 @@ function join(){
       });
     }else{
       const d=snap.val();
-      if(d.players.O){ alert("Room full"); return; }
+      if(d.players.O){
+        alert("Room full");
+        return;
+      }
       player="O";
       ref.child("players/O").set(true);
     }
 
     document.getElementById("login").style.display="none";
     document.getElementById("game").style.display="block";
-    document.getElementById("status").innerText="You are "+player;
 
     ref.on("value", s=>{
       const d=s.val();
@@ -120,21 +126,19 @@ function join(){
   });
 }
 
-/* PLAY */
-function play(i){
-  if(board[i] || turn!==player) return;
+function move(i){
+  if(board[i]!=="" || turn!==player) return;
   board[i]=player;
-  turn=player==="X"?"O":"X";
+  turn = player==="X" ? "O" : "X";
   db.ref("ttt/"+roomId).update({board,turn});
 }
 
-/* UI */
 function updateUI(){
   document.querySelectorAll(".cell").forEach((c,i)=>{
     c.innerText=board[i];
   });
-  document.getElementById("status").innerText=
-    (turn===player)?"Your Turn":"Opponent Turn";
+  statusDiv.innerText =
+    (turn===player) ? "Your Turn ("+player+")" : "Opponent Turn";
 }
 </script>
 
