@@ -2,65 +2,82 @@
 <html lang="hi">
 <head>
 <meta charset="UTF-8">
-<title>Pro Tic-Tac-Toe Online</title>
+<title>Tic-Tac-Toe Pro | By RP GUPTA</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>
-:root { --primary: #1d9bf0; --bg: #0a0a0a; --cell: #1a1a1a; --win: #00ff88; }
-body { background: var(--bg); color: #fff; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 20px; }
-.container { max-width: 400px; margin: auto; }
-input { width: 80%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px solid #333; background: #111; color: #fff; }
-button { padding: 12px 25px; border-radius: 8px; border: none; background: var(--primary); color: #fff; font-weight: bold; cursor: pointer; transition: 0.3s; }
-button:hover { opacity: 0.8; transform: scale(1.05); }
+:root { --primary: #1d9bf0; --bg: #050505; --cell: #151515; --win: #00ff88; --msg-me: #1d9bf0; --msg-other: #333; }
+body { background: var(--bg); color: #fff; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 10px; display: flex; justify-content: center; }
+.container { width: 100%; max-width: 380px; text-align: center; }
 
-#scoreboard { display: flex; justify-content: space-around; margin: 20px 0; background: #111; padding: 10px; border-radius: 10px; border: 1px solid #222; }
-.score-box { text-align: center; }
-.score-val { font-size: 24px; color: var(--primary); }
+/* Branding Style */
+.dev-by { font-size: 12px; color: #888; text-decoration: none; display: block; margin-bottom: 5px; }
+.insta-link { color: #e1306c; font-weight: bold; text-decoration: none; border: 1px solid #e1306c; padding: 4px 10px; border-radius: 20px; font-size: 13px; }
 
-#board { display: grid; grid-template-columns: repeat(3, 100px); gap: 10px; justify-content: center; margin: 20px auto; }
-.cell { width: 100px; height: 100px; background: var(--cell); border-radius: 12px; font-size: 50px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; border: 2px solid transparent; }
-.cell:hover { background: #222; }
-.cell.win-cell { background: rgba(0, 255, 136, 0.2); border-color: var(--win); color: var(--win); animation: pulse 1s infinite; }
+h2 { margin: 10px 0; font-size: 22px; background: linear-gradient(to right, #fff, var(--primary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
-@keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+input { width: 85%; padding: 10px; margin: 8px 0; border-radius: 8px; border: 1px solid #222; background: #111; color: #fff; }
+button { padding: 10px 20px; border-radius: 8px; border: none; background: var(--primary); color: #fff; font-weight: bold; cursor: pointer; }
 
-#chatBox { background: #111; border-radius: 12px; padding: 15px; margin-top: 20px; border: 1px solid #222; }
-#messages { height: 150px; overflow-y: auto; text-align: left; font-size: 14px; margin-bottom: 10px; padding-right: 5px; }
-.msg { margin-bottom: 8px; padding: 5px 10px; border-radius: 5px; background: #1a1a1a; }
-.me { border-left: 3px solid var(--primary); }
-.other { border-left: 3px solid #ff4444; }
+#scoreboard { display: flex; justify-content: space-around; margin: 15px 0; background: #111; padding: 8px; border-radius: 12px; border: 1px solid #222; font-size: 14px; }
+.score-val { font-size: 20px; color: var(--primary); font-weight: bold; }
+
+#board { display: grid; grid-template-columns: repeat(3, 90px); gap: 8px; justify-content: center; margin: 15px auto; }
+.cell { width: 90px; height: 90px; background: var(--cell); border-radius: 10px; font-size: 40px; display: flex; align-items: center; justify-content: center; transition: 0.2s; border: 1px solid #222; }
+.win-cell { border-color: var(--win); color: var(--win); box-shadow: 0 0 15px rgba(0,255,136,0.3); }
+
+/* Compact Chat Style (Left/Right) */
+#chatContainer { background: #111; border-radius: 15px; padding: 10px; margin-top: 15px; border: 1px solid #222; }
+#messages { height: 130px; overflow-y: auto; display: flex; flex-direction: column; padding: 5px; }
+.msg { max-width: 75%; padding: 6px 12px; border-radius: 15px; margin: 3px 0; font-size: 13px; line-height: 1.4; word-wrap: break-word; }
+.msg b { font-size: 10px; display: block; opacity: 0.7; }
+.me { align-self: flex-end; background: var(--msg-me); color: white; border-bottom-right-radius: 2px; text-align: right; }
+.other { align-self: flex-start; background: var(--msg-other); color: white; border-bottom-left-radius: 2px; text-align: left; }
+
+.chat-input-area { display: flex; gap: 5px; margin-top: 8px; }
+.chat-input-area input { margin: 0; font-size: 13px; padding: 8px; }
+.chat-input-area button { padding: 8px 15px; font-size: 13px; }
+
 .hidden { display: none; }
 </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>🎮 Multi-Player Pro</h2>
+    <a href="https://www.instagram.com/rp_gupta_07?igsh=MWVvcHQ5YmF4NmlycQ==" target="_blank" class="dev-by">Developed by @rp_gupta_07</a>
+    <h2>🎮 Tic-Tac-Toe Online</h2>
 
     <div id="joinBox">
-        <input id="nameInput" placeholder="Aapka Sahi Naam">
-        <input id="roomInput" placeholder="Room Code (e.g. 10101)">
-        <br>
-        <button onclick="joinRoom()">Dost se Khelein</button>
+        <p style="font-size: 13px; color: #888;">Multiplayer Game Banaya Hai <br> RP Gupta Ne</p>
+        <input id="nameInput" placeholder="Aapka Naam">
+        <input id="roomInput" placeholder="Room Code (5 digits)">
+        <br><br>
+        <button onclick="joinRoom()">Dost Ko Challenge Karein</button>
+        <br><br>
+        <a href="https://www.instagram.com/rp_gupta_07?igsh=MWVvcHQ5YmF4NmlycQ==" target="_blank" class="insta-link">Follow me on Instagram</a>
     </div>
 
     <div id="gameArea" class="hidden">
         <div id="scoreboard">
-            <div class="score-box"><div id="p1Name">P1</div><div id="p1Score" class="score-val">0</div></div>
-            <div class="score-box">Vs</div>
-            <div class="score-box"><div id="p2Name">P2</div><div id="p2Score" class="score-val">0</div></div>
+            <div><span id="p1Name">P1</span><br><span id="p1Score" class="score-val">0</span></div>
+            <div style="align-self:center; font-weight:bold; color:#444;">VS</div>
+            <div><span id="p2Name">P2</span><br><span id="p2Score" class="score-val">0</span></div>
         </div>
         
-        <h3 id="status">Waiting...</h3>
+        <h4 id="status" style="margin:5px 0; color:var(--primary);">Waiting...</h4>
+        
         <div id="board"></div>
-        <button id="restartBtn" class="hidden" onclick="restart()">Naya Match</button>
+        
+        <button id="restartBtn" class="hidden" onclick="restart()" style="margin-bottom:10px;">Naya Match</button>
 
-        <div id="chatBox">
+        <div id="chatContainer">
             <div id="messages"></div>
-            <div style="display:flex; gap:5px;">
-                <input id="chatInput" style="margin:0; flex:1;" placeholder="Taunt maaro...">
+            <div class="chat-input-area">
+                <input id="chatInput" placeholder="Taunt maaro...">
                 <button onclick="sendMsg()">Send</button>
             </div>
         </div>
+        <br>
+        <a href="https://www.instagram.com/rp_gupta_07?igsh=MWVvcHQ5YmF4NmlycQ==" target="_blank" class="dev-by" style="color:var(--primary)">Click to Follow Developer @rp_gupta_07</a>
     </div>
 </div>
 
@@ -68,6 +85,7 @@ button:hover { opacity: 0.8; transform: scale(1.05); }
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
 <script>
+// ✅ AAPKA FIREBASE CONFIG
 const firebaseConfig = {
   apiKey: "AIzaSyARuO_pN2vdYrVKYkKHHaNys7WI8HqM6I4",
   authDomain: "friendchat-43941.firebaseapp.com",
@@ -80,9 +98,8 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
-let roomId, mySymbol, myName, gameRef, chatRef, scores = {X:0, O:0};
+let roomId, mySymbol, myName, gameRef, chatRef;
 
-// Board Create
 const boardDiv = document.getElementById("board");
 for(let i=0; i<9; i++) {
     const d = document.createElement("div");
@@ -125,29 +142,27 @@ function listenGame() {
         const g = snap.val();
         if(!g) return;
         
-        // Update Board
         g.board.forEach((v, i) => {
             boardDiv.children[i].innerText = v;
             boardDiv.children[i].classList.remove("win-cell");
         });
 
-        // Update Scores & Names
-        document.getElementById("p1Name").innerText = g.players.X || "Waiting...";
-        document.getElementById("p2Name").innerText = g.players.O || "Waiting...";
+        document.getElementById("p1Name").innerText = g.players.X || "X";
+        document.getElementById("p2Name").innerText = g.players.O || "O";
         document.getElementById("p1Score").innerText = g.scores?.X || 0;
         document.getElementById("p2Score").innerText = g.scores?.O || 0;
 
         const wData = checkWinner(g.board);
         if(wData) {
             if(wData === "draw") {
-                document.getElementById("status").innerText = "🤝 Draw!";
+                document.getElementById("status").innerText = "🤝 Match Draw!";
             } else {
                 document.getElementById("status").innerText = "🏆 " + (wData.w === "X" ? g.players.X : g.players.O) + " Jeet Gaya!";
                 wData.line.forEach(idx => boardDiv.children[idx].classList.add("win-cell"));
             }
             document.getElementById("restartBtn").classList.remove("hidden");
         } else {
-            document.getElementById("status").innerText = (g.turn === mySymbol) ? "👉 Aapki Baari" : "⏳ Intezar karein...";
+            document.getElementById("status").innerText = (g.turn === mySymbol) ? "👉 Aapki Baari" : "⏳ " + (g.turn === 'X' ? g.players.X : g.players.O) + " ki baari...";
             document.getElementById("restartBtn").classList.add("hidden");
         }
     });
@@ -170,10 +185,7 @@ function move(i) {
 }
 
 function restart() {
-    gameRef.once("value", snap => {
-        const g = snap.val();
-        gameRef.update({ board: Array(9).fill(""), turn: "X" });
-    });
+    gameRef.update({ board: Array(9).fill(""), turn: "X" });
 }
 
 function checkWinner(b) {
@@ -196,8 +208,9 @@ function listenChat() {
     chatRef.limitToLast(20).on("child_added", snap => {
         const m = snap.val();
         const d = document.createElement("div");
-        d.className = "msg " + (m.name === myName ? "me" : "other");
-        d.innerHTML = `<b>${m.name}:</b> ${m.msg}`;
+        const isMe = m.name === myName;
+        d.className = "msg " + (isMe ? "me" : "other");
+        d.innerHTML = `<b>${m.name}</b>${m.msg}`;
         msgDiv.appendChild(d);
         msgDiv.scrollTop = msgDiv.scrollHeight;
     });
