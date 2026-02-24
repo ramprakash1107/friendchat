@@ -2,86 +2,85 @@
 <html lang="hi">
 <head>
 <meta charset="UTF-8">
-<title>RP GUPTA | Official Game</title>
+<title>RP GUPTA | Pro Gamer Edition</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
 <style>
-:root { --primary: #1d9bf0; --bg: #000; --cell: #111; --win: #00ff88; --msg-me: #1d9bf0; --msg-other: #222; }
-body { background: var(--bg); color: #fff; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0; overflow-x: hidden; }
+:root { --primary: #00d2ff; --secondary: #3a7bd5; --bg: #080808; --cell: #121212; --win: #00ff88; --text: #ffffff; }
+body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 0; display: flex; justify-content: center; }
 
-/* Sticky Header - Score fixed rahega */
-.header-fixed { position: sticky; top: 0; background: var(--bg); z-index: 100; padding: 10px; border-bottom: 1px solid #222; }
+.container { width: 100%; max-width: 420px; min-height: 100vh; display: flex; flex-direction: column; }
 
-.container { width: 100%; max-width: 400px; margin: auto; padding-bottom: 20px; }
+/* Fixed Header */
+.header-fixed { position: sticky; top: 0; background: rgba(8, 8, 8, 0.9); backdrop-filter: blur(10px); z-index: 100; padding: 15px; border-bottom: 1px solid #222; text-align: center; }
+.dev-brand { font-size: 14px; background: linear-gradient(to right, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 800; text-decoration: none; text-transform: uppercase; }
 
-.dev-brand { font-size: 14px; color: var(--primary); font-weight: bold; text-decoration: none; letter-spacing: 1px; }
-.insta-btn { background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); color: white; padding: 5px 15px; border-radius: 20px; text-decoration: none; font-size: 12px; display: inline-block; margin-top: 5px; }
+#scoreboard { display: flex; justify-content: space-between; align-items: center; background: #111; padding: 15px 25px; border-radius: 20px; margin-top: 10px; border: 1px solid #333; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+.score-item { text-align: center; }
+.score-val { font-size: 28px; font-weight: 900; color: var(--primary); }
+.player-name { font-size: 12px; color: #888; text-transform: uppercase; letter-spacing: 1px; }
 
-#scoreboard { display: flex; justify-content: space-around; background: #111; padding: 12px; border-radius: 15px; margin-top: 10px; border: 1px solid #333; }
-.score-val { font-size: 24px; color: var(--primary); font-weight: bold; }
+/* Game Board */
+#board { display: grid; grid-template-columns: repeat(3, 100px); gap: 12px; justify-content: center; margin: 25px auto; padding: 10px; }
+.cell { width: 100px; height: 100px; background: var(--cell); border-radius: 18px; font-size: 55px; font-weight: 300; display: flex; align-items: center; justify-content: center; border: 1px solid #222; transition: all 0.2s ease; cursor: pointer; box-shadow: inset 0 0 10px rgba(255,255,255,0.02); }
+.cell:active { transform: scale(0.95); }
+.win-cell { border-color: var(--win); color: var(--win); background: rgba(0, 255, 136, 0.1); box-shadow: 0 0 20px rgba(0, 255, 136, 0.2); }
 
-#board { display: grid; grid-template-columns: repeat(3, 100px); gap: 10px; justify-content: center; margin: 20px auto; }
-.cell { width: 100px; height: 100px; background: var(--cell); border-radius: 15px; font-size: 50px; display: flex; align-items: center; justify-content: center; border: 1px solid #222; transition: 0.3s; }
-.win-cell { border-color: var(--win); color: var(--win); background: rgba(0, 255, 136, 0.15); animation: winGlow 1s infinite alternate; }
+/* Modern Chat */
+#chatSection { flex-grow: 1; padding: 10px 20px; display: flex; flex-direction: column; }
+#messages { height: 160px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; margin-bottom: 10px; padding: 5px; }
+.msg { max-width: 75%; padding: 10px 14px; border-radius: 20px; font-size: 14px; color: #fff; line-height: 1.4; }
+.me { align-self: flex-end; background: linear-gradient(135deg, var(--primary), var(--secondary)); border-bottom-right-radius: 4px; }
+.other { align-self: flex-start; background: #222; border-bottom-left-radius: 4px; border: 1px solid #333; }
 
-@keyframes winGlow { from { box-shadow: 0 0 5px var(--win); } to { box-shadow: 0 0 20px var(--win); } }
+.input-area { display: flex; gap: 10px; background: #1a1a1a; padding: 10px 15px; border-radius: 30px; border: 1px solid #333; }
+.input-area input { background: transparent; border: none; color: #fff; flex: 1; outline: none; font-size: 15px; }
+.send-btn { background: var(--primary); border: none; color: #000; width: 35px; height: 35px; border-radius: 50%; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 
-/* Chat Bubbles */
-#chatSection { padding: 15px; }
-#messages { height: 150px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
-.msg { max-width: 70%; padding: 8px 12px; border-radius: 18px; font-size: 14px; position: relative; line-height: 1.4; }
-.me { align-self: flex-end; background: var(--msg-me); border-bottom-right-radius: 2px; }
-.other { align-self: flex-start; background: var(--msg-other); border-bottom-left-radius: 2px; }
-
-.input-group { display: flex; gap: 10px; background: #111; padding: 8px; border-radius: 25px; border: 1px solid #333; }
-.input-group input { background: transparent; border: none; color: #fff; flex: 1; padding-left: 10px; outline: none; }
-.input-group button { background: var(--primary); border: none; color: white; width: 35px; height: 35px; border-radius: 50%; cursor: pointer; }
-
-#joinBox { padding: 50px 20px; }
-.login-input { width: 80%; padding: 15px; border-radius: 30px; border: 1px solid #333; background: #111; color: #fff; text-align: center; font-size: 16px; margin-bottom: 20px; }
-.start-btn { width: 85%; padding: 15px; border-radius: 30px; background: var(--primary); color: white; font-weight: bold; border: none; font-size: 16px; cursor: pointer; }
+/* Login */
+#joinBox { padding: 80px 30px; text-align: center; }
+.login-input { width: 100%; padding: 16px; border-radius: 15px; border: 1px solid #333; background: #111; color: #fff; font-size: 16px; margin-bottom: 20px; box-sizing: border-box; }
+.start-btn { width: 100%; padding: 16px; border-radius: 15px; background: linear-gradient(to right, var(--primary), var(--secondary)); color: #000; font-weight: 800; border: none; font-size: 16px; letter-spacing: 1px; }
 
 .hidden { display: none; }
+#restartBtn { background: #fff; color: #000; padding: 10px 25px; border-radius: 25px; font-weight: bold; border: none; margin-bottom: 15px; cursor: pointer; }
 </style>
 </head>
 <body>
 
 <div class="container">
     <div id="joinBox">
-        <h1 style="margin-bottom: 5px;">RP GUPTA</h1>
-        <p style="color:#666; margin-top:0;">Official Gaming Portal</p>
-        <input id="nameInput" class="login-input" placeholder="Enter Your Name">
-        <br>
-        <button onclick="joinRoom()" class="start-btn">PLAY NOW</button>
+        <h1 style="font-size: 35px; margin-bottom: 5px; letter-spacing: -1px;">RP GUPTA</h1>
+        <p style="color: #555; margin-bottom: 40px;">THE ELITE GAMING ARENA</p>
+        <input id="nameInput" class="login-input" placeholder="Your Name">
+        <button onclick="joinRoom()" class="start-btn">ENTER ARENA</button>
         <br><br>
-        <a href="https://www.instagram.com/rp_gupta_07?igsh=MWVvcHQ5YmF4NmlycQ==" target="_blank" class="insta-btn">Follow @rp_gupta_07</a>
+        <a href="https://www.instagram.com/rp_gupta_07" target="_blank" style="color:#e1306c; text-decoration:none; font-size:13px; font-weight:bold;">FOLLOW DEVELOPER @rp_gupta_07</a>
     </div>
 
     <div id="gameArea" class="hidden">
         <div class="header-fixed">
-            <a href="https://www.instagram.com/rp_gupta_07?igsh=MWVvcHQ5YmF4NmlycQ==" target="_blank" class="dev-brand">DEV BY RP GUPTA</a>
+            <a href="https://www.instagram.com/rp_gupta_07" target="_blank" class="dev-brand">RP GUPTA OFFICIAL</a>
             <div id="scoreboard">
-                <div><small id="p1Name">Player 1</small><br><span id="p1Score" class="score-val">0</span></div>
-                <div style="font-size: 20px; align-self: center; opacity: 0.2;">|</div>
-                <div><small id="p2Name">Player 2</small><br><span id="p2Score" class="score-val">0</span></div>
+                <div class="score-item"><div class="player-name" id="p1Name">Player 1</div><div id="p1Score" class="score-val">0</div></div>
+                <div style="font-weight: 900; opacity: 0.1; font-size: 20px;">VS</div>
+                <div class="score-item"><div class="player-name" id="p2Name">Player 2</div><div id="p2Score" class="score-val">0</div></div>
             </div>
-            <h4 id="status" style="margin: 8px 0 0 0; color: var(--primary); font-size: 14px;">Connecting...</h4>
+            <p id="status" style="margin: 12px 0 0 0; font-size: 13px; font-weight: bold; color: var(--primary); letter-spacing: 1px;"></p>
         </div>
 
         <div id="board"></div>
         
         <div style="text-align: center;">
-            <button id="restartBtn" class="hidden" onclick="restart()" style="background:#222; color:#fff; padding:8px 20px; border-radius:20px; border:1px solid #444; margin-bottom:10px;">New Match</button>
+            <button id="restartBtn" class="hidden" onclick="restart()">NEXT ROUND</button>
         </div>
 
         <div id="chatSection">
             <div id="messages"></div>
-            <div class="input-group">
-                <input id="chatInput" placeholder="Send a message...">
-                <button onclick="sendMsg()">➤</button>
+            <div class="input-area">
+                <input id="chatInput" placeholder="Type a message...">
+                <button onclick="sendMsg()" class="send-btn">➤</button>
             </div>
         </div>
-        
-        <p style="font-size: 10px; color: #444; margin-top: 20px;">© 2026 RP GUPTA. All Rights Reserved.</p>
     </div>
 </div>
 
@@ -101,7 +100,7 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
-const ROOM_ID = "PRO_GAMER_ZONE"; // Hidden Fixed Room
+const ROOM_ID = "RP_ULTIMATE_ZONE"; 
 let mySymbol, myName, gameRef, chatRef;
 
 const boardDiv = document.getElementById("board");
@@ -123,7 +122,7 @@ function joinRoom() {
         let g = snap.val();
         if(!g || !g.players) {
             mySymbol = "X";
-            gameRef.set({ board: Array(9).fill(""), turn: "X", players: {X: myName}, scores: {X:0, O:0} });
+            gameRef.set({ board: Array(9).fill(""), turn: "X", lastStarter: "X", players: {X: myName}, scores: {X:0, O:0} });
         } else if(!g.players.O && g.players.X !== myName) {
             mySymbol = "O";
             g.players.O = myName;
@@ -145,6 +144,7 @@ function listenGame() {
         g.board.forEach((v, i) => {
             boardDiv.children[i].innerText = v;
             boardDiv.children[i].classList.remove("win-cell");
+            boardDiv.children[i].style.color = (v === 'X') ? 'var(--primary)' : '#ff4b2b';
         });
         document.getElementById("p1Name").innerText = g.players?.X || "Waiting...";
         document.getElementById("p2Name").innerText = g.players?.O || "Waiting...";
@@ -153,11 +153,11 @@ function listenGame() {
 
         const wData = checkWinner(g.board);
         if(wData) {
-            document.getElementById("status").innerText = wData === "draw" ? "GAME DRAW!" : (wData.w === "X" ? g.players.X : g.players.O) + " WON!";
+            document.getElementById("status").innerText = wData === "draw" ? "MATCH DRAW!" : (wData.w === "X" ? g.players.X : g.players.O) + " WON!";
             if(wData.line) wData.line.forEach(idx => boardDiv.children[idx].classList.add("win-cell"));
             document.getElementById("restartBtn").classList.remove("hidden");
         } else {
-            document.getElementById("status").innerText = (g.turn === mySymbol) ? "YOUR TURN" : "OPPONENT'S TURN...";
+            document.getElementById("status").innerText = (g.turn === mySymbol) ? "YOUR MOVE" : "WAITING FOR OPPONENT...";
             document.getElementById("restartBtn").classList.add("hidden");
         }
     });
@@ -168,7 +168,7 @@ function move(i) {
         const g = snap.val();
         if(!g || g.turn !== mySymbol || g.board[i] !== "" || checkWinner(g.board)) return;
         g.board[i] = mySymbol;
-        g.turn = mySymbol === "X" ? "O" : "X";
+        g.turn = (mySymbol === "X") ? "O" : "X";
         if(checkWinner(g.board) && checkWinner(g.board) !== "draw") {
             if(!g.scores) g.scores = {X:0, O:0};
             g.scores[mySymbol]++;
@@ -178,8 +178,17 @@ function move(i) {
 }
 
 function restart() {
-    gameRef.update({ board: Array(9).fill(""), turn: "X" });
-    chatRef.remove();
+    gameRef.once("value", snap => {
+        const g = snap.val();
+        // Alternating Turn Logic: Jo pichli baar shuru kiya tha, uske ulta shuru hoga
+        const nextStarter = (g.lastStarter === "X") ? "O" : "X";
+        gameRef.update({ 
+            board: Array(9).fill(""), 
+            turn: nextStarter,
+            lastStarter: nextStarter
+        });
+        chatRef.remove();
+    });
 }
 
 function checkWinner(b) {
@@ -202,8 +211,7 @@ function listenChat() {
     chatRef.on("child_added", snap => {
         const m = snap.val();
         const d = document.createElement("div");
-        const isMe = m.name === myName;
-        d.className = "msg " + (isMe ? "me" : "other");
+        d.className = "msg " + (m.name === myName ? "me" : "other");
         d.innerHTML = m.msg;
         msgDiv.appendChild(d);
         msgDiv.scrollTop = msgDiv.scrollHeight;
