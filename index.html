@@ -105,9 +105,9 @@ input {
 <div class="bg-glow"></div>
 
 <div id="adminPanel">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; border-bottom: 1px solid #333; padding-bottom:10px;">
         <h2 style="color:var(--primary); margin:0;">MASTER ADMIN</h2>
-        <button onclick="location.reload()" style="background:red; color:#fff; border:none; padding:10px; border-radius:8px; cursor:pointer;">EXIT</button>
+        <button onclick="location.reload()" style="background:red; color:#fff; border:none; padding:10px; border-radius:8px; cursor:pointer; font-weight:bold;">EXIT DASHBOARD</button>
     </div>
     <div id="activeRoomsList"></div>
 </div>
@@ -119,7 +119,7 @@ input {
     </div>
 </div>
 
-<div class="container" id="mainGameContainer">
+<div class="container" id="mainGameUI">
     <div id="loginScreen" class="screen">
         <h1 class="hero-title">ULTIMATE</h1>
         <h1 class="hero-title" style="color:var(--primary); -webkit-text-fill-color: var(--primary); margin-top: -10px;">ARENA PRO</h1>
@@ -140,7 +140,9 @@ input {
                 <button class="btn-main" style="background:#fff; color:#000;" onclick="joinRoom()">JOIN SQUAD</button>
             </div>
         </div>
-        <div style="text-align:center;"><a href="https://www.instagram.com/rp_gupta_07" style="color:var(--primary); text-decoration:none; font-weight:bold;">@rp_gupta_07</a></div>
+        <div style="text-align:center; margin-top:10px;">
+            <a href="https://www.instagram.com/rp_gupta_07" style="color:var(--primary); text-decoration:none; font-weight:bold;">@rp_gupta_07</a>
+        </div>
     </div>
 
     <div id="gameScreen" class="hidden" style="display:flex; flex-direction:column; height: 100%;">
@@ -193,36 +195,52 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
+// --- SOUNDS SYSTEM ---
+const sounds = {
+    click: new Audio("https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3"),
+    move: new Audio("https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3"),
+    win: new Audio("https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3"),
+    msg: new Audio("https://assets.mixkit.co/active_storage/sfx/2357/2357-preview.mp3"),
+    emoji: new Audio("https://assets.mixkit.co/active_storage/sfx/2019/2019-preview.mp3")
+};
+
+function playSfx(name) { sounds[name].currentTime = 0; sounds[name].play().catch(() => {}); }
+
 let myRoomId, myName, mySymbol, gameRef, chatRef, emojiRef, gridSize = 3, isRobot = false;
 
 function setGrid(s) {
     gridSize = s;
+    playSfx('click');
     document.querySelectorAll('.grid-btn').forEach(b => b.classList.remove('active'));
     document.getElementById('g'+s).classList.add('active');
 }
 
 function createRoom() {
-    let n = document.getElementById("userName").value.trim();
-    if(n === "RP_ADMIN_7") { openAdmin(); return; }
-    myName = n || "Player X";
+    let name = document.getElementById("userName").value.trim();
+    if (name === "RP_ADMIN_7") { openAdminPanel(); return; }
+    playSfx('click');
+    myName = name || "Player X";
     myRoomId = Math.floor(1000 + Math.random()*8999).toString();
     db.ref("rooms/" + myRoomId).remove().then(() => setupGame("X"));
 }
 
 function startRobot() {
+    playSfx('click');
     isRobot = true; myName = document.getElementById("userName").value.trim() || "Player";
     myRoomId = "BOT_" + Date.now();
     db.ref("rooms/" + myRoomId).remove().then(() => setupGame("X"));
 }
 
 function joinRoom() {
+    playSfx('click');
     myName = document.getElementById("userName").value.trim() || "Player O";
     myRoomId = document.getElementById("joinCode").value.trim();
-    if(myRoomId) setupGame("O");
+    if (myRoomId) setupGame("O");
 }
 
 function startGlobal() {
-    myName = document.getElementById("userName").value.trim() || "Global Player";
+    playSfx('click');
+    myName = document.getElementById("userName").value.trim() || "Player";
     db.ref("global_waiting").once("value", snap => {
         let w = snap.val();
         if(w) { myRoomId = w.room; db.ref("global_waiting").remove(); setupGame("O"); }
@@ -275,13 +293,20 @@ function listenGame() {
         document.getElementById("p2Score").innerText = g.scores.O;
         document.getElementById("p1Box").className = "score-box " + (g.turn === "X" ? "active-turn" : "");
         document.getElementById("p2Box").className = "score-box " + (g.turn === "O" ? "active-turn" : "");
+        
         g.board.forEach((v, i) => { 
             const c = board.children[i];
-            if(c) { c.innerText = v; c.style.color = v === 'X' ? 'var(--primary)' : 'var(--accent)'; }
+            if(c && c.innerText !== v) {
+                c.innerText = v;
+                c.style.color = v === 'X' ? 'var(--primary)' : 'var(--accent)';
+                if(v !== "") playSfx('move');
+            }
         });
+
         const winData = checkWinner(g.board, g.size);
         if(winData) {
             if(winData !== "draw") {
+                playSfx('win');
                 winData.line.forEach(idx => board.children[idx].classList.add("winner-cell"));
                 setTimeout(() => {
                     document.getElementById("winnerName").innerText = (winData.w === "X" ? g.players.X : g.players.O).toUpperCase();
@@ -351,6 +376,7 @@ function checkWinner(b, size) {
 }
 
 function restartMatch() {
+    playSfx('click');
     gameRef.once("value", snap => {
         const g = snap.val();
         let nextStarter = g.lastStarter === "X" ? "O" : "X";
@@ -358,28 +384,29 @@ function restartMatch() {
     });
 }
 
-function exitArena() { if(confirm("Exit and Delete Arena?")) { db.ref("rooms/" + myRoomId).remove().then(() => location.reload()); } }
-function sendMsg() { const i = document.getElementById("msgInput"); if(i.value.trim()){ chatRef.push({ n: myName, m: i.value }); i.value = ""; } }
+function exitArena() { if(confirm("Exit and Delete?")) { db.ref("rooms/" + myRoomId).remove().then(() => location.reload()); } }
+function sendMsg() { const i = document.getElementById("msgInput"); if(i.value.trim()){ chatRef.push({ n: myName, m: i.value }); i.value = ""; playSfx('msg'); } }
 function listenChat() { chatRef.on("child_added", snap => { const d = snap.val(); const m = document.createElement("div"); m.className = "msg " + (d.n === myName ? "me" : "other"); m.innerHTML = `<b style="font-size:8px; opacity:0.5; display:block;">${d.n}</b>${d.m}`; document.getElementById("messages").appendChild(m); document.getElementById("messages").scrollTop = 10000; }); }
-function sendEmoji(e) { emojiRef.set({ emoji: e, t: Date.now() }); }
+function sendEmoji(e) { emojiRef.set({ emoji: e, t: Date.now() }); playSfx('emoji'); }
 function listenEmojis() { emojiRef.on("value", snap => { const d = snap.val(); if(!d) return; const el = document.createElement("div"); el.style.position = "fixed"; el.style.bottom = "150px"; el.style.fontSize = "60px"; el.innerText = d.emoji; el.style.left = Math.random() * 60 + 20 + "%"; el.animate([{transform:'translateY(0)', opacity:1},{transform:'translateY(-400px)', opacity:0}], 1200); document.body.appendChild(el); setTimeout(()=>el.remove(), 1200); }); }
 
-// ADMIN LOGIC
-function openAdmin() {
-    document.getElementById("mainGameContainer").style.display = "none";
+// --- MASTER ADMIN PANEL LOGIC ---
+function openAdminPanel() {
+    document.getElementById("mainGameUI").style.display = "none";
     document.getElementById("adminPanel").style.display = "block";
     db.ref("rooms").on("value", snap => {
-        const list = document.getElementById("activeRoomsList"); list.innerHTML = "";
-        const rooms = snap.val(); if(!rooms) return;
+        const list = document.getElementById("activeRoomsList");
+        list.innerHTML = "";
+        const rooms = snap.val();
+        if(!rooms) { list.innerHTML = "<p style='text-align:center; color:#555;'>No Active Arenas</p>"; return; }
         for(let rid in rooms) {
-            let rd = rooms[rid]; let ps = rd.game ? rd.game.players : {X:'?', O:'?'}; let ms = rd.chat ? Object.values(rd.chat) : [];
-            let card = document.createElement("div"); card.className = "room-card";
-            card.innerHTML = `<div><b>ARENA ID: ${rid}</b></div><div>${ps.X} vs ${ps.O}</div><div class="admin-chat-box">${ms.map(m=>`<div><b>${m.n}:</b> ${m.m}</div>`).join('')}</div><button onclick="db.ref('rooms/${rid}').remove()" style="width:100%; padding:5px; background:red; border:none; margin-top:5px; color:#fff; cursor:pointer;">TERMINATE</button>`;
-            list.appendChild(card);
-        }
-    });
-}
-</script>
-</body>
-        </html>
-            
+            let rd = rooms[rid];
+            let ps = rd.game ? rd.game.players : {X:'?', O:'?'};
+            let ms = rd.chat ? Object.values(rd.chat) : [];
+            let card = document.createElement("div");
+            card.className = "room-card";
+            card.innerHTML = `
+                <div style="font-weight:bold; color:var(--primary); border-bottom:1px solid #222; padding-bottom:5px;">ARENA ID: ${rid}</div>
+                <div style="font-size:11px; margin:5px 0; color:#00ff88;">${ps.X} (X) VS ${ps.O} (O)</div>
+                <div class="admin-chat-box">${ms.map(m=>`<div><b>${m.n}:</b> ${m.m}</div>`).join('')}</div>
+                <butt
