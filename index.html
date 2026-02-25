@@ -70,10 +70,9 @@ input {
 .cell { 
     background: var(--card); border-radius: 12px; display: flex; 
     align-items: center; justify-content: center; font-weight: 900; 
-    cursor: pointer; border: 1px solid rgba(255,255,255,0.05); transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    cursor: pointer; border: 1px solid rgba(255,255,255,0.05); transition: 0.2s ease-in-out;
 }
 
-/* winning animation */
 .cell.winner-cell {
     background: var(--win) !important;
     color: #000 !important;
@@ -113,7 +112,6 @@ input {
     padding: 6px 12px; border-radius: 5px; font-size: 10px; font-weight: 900; cursor: pointer;
 }
 
-/* Scoreboard */
 .scoreboard {
     display: flex; justify-content: center; gap: 30px; margin-bottom: 10px;
     background: rgba(255,255,255,0.05); padding: 10px; border-radius: 15px; width: 100%;
@@ -144,9 +142,9 @@ input {
         <div class="ring"></div>
     </div>
     <div class="winner-content">
-        <div style="letter-spacing: 4px; color: #888; font-size: 12px; font-weight: bold;">VICTORY DECLARED</div>
+        <div style="letter-spacing: 4px; color: #888; font-size: 12px; font-weight: bold;">MATCH FINISHED</div>
         <h1 id="winnerName" style="font-size: 50px; margin: 15px 0; color: var(--win); text-shadow: 0 0 40px var(--win);">ROBOT</h1>
-        <button onclick="restartMatch()" class="btn-main btn-primary" style="width: 220px; border-radius: 15px; font-size: 16px;">NEXT ROUND</button>
+        <button onclick="restartMatch()" class="btn-main btn-primary" style="width: 220px; border-radius: 15px; font-size: 16px;">PLAY AGAIN</button>
     </div>
 </div>
 
@@ -155,7 +153,7 @@ input {
         <div style="text-align: center; margin-bottom: 20px;">
             <h1 class="hero-title">ULTIMATE</h1>
             <h1 class="hero-title" style="color:var(--primary); -webkit-text-fill-color: var(--primary); margin-top: -10px;">ARENA PRO</h1>
-            <p style="color:#555; font-size:10px; letter-spacing: 1px;">CREATED BY @RP_GUPTA_07</p>
+            <p style="color:#555; font-size:10px; letter-spacing: 1px;">DEVELOPED BY @RP_GUPTA_07</p>
         </div>
 
         <input id="userName" placeholder="ENTER PLAYER NAME">
@@ -168,7 +166,7 @@ input {
 
         <button class="btn-main btn-primary" onclick="createRoom()">CREATE ARENA</button>
         <button class="btn-main" style="background:var(--secondary); color:#fff;" onclick="startGlobal()">GLOBAL BATTLE</button>
-        <button class="btn-main btn-outline" onclick="startRobot()">SOLO VS ROBOT</button>
+        <button class="btn-main btn-outline" onclick="startRobot()">EXPERT ROBOT (SOLO)</button>
 
         <div style="margin: 10px 0; width: 100%; height: 1px; background: rgba(255,255,255,0.05);"></div>
         
@@ -189,7 +187,6 @@ input {
         </div>
 
         <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10px;">
-            
             <div class="scoreboard">
                 <div class="score-box">
                     <div id="p1Name" class="score-label">Player X</div>
@@ -239,7 +236,6 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
 let myRoomId, myName, mySymbol, gameRef, chatRef, emojiRef, gridSize = 3, isRobot = false;
-let scores = {X: 0, O: 0};
 
 function setGrid(s) {
     gridSize = s;
@@ -255,7 +251,7 @@ function startRobot() {
 
 function startGlobal() {
     myName = document.getElementById("userName").value.trim();
-    if(!myName) return alert("Pehle name likho!");
+    if(!myName) return alert("Enter Name!");
     db.ref("global_waiting").once("value", snap => {
         let waiting = snap.val();
         if(waiting) { myRoomId = waiting.room; db.ref("global_waiting").remove(); setupGame("O"); }
@@ -265,7 +261,7 @@ function startGlobal() {
 
 function createRoom() {
     myName = document.getElementById("userName").value.trim();
-    if(!myName) return alert("Naam likhiye!");
+    if(!myName) return alert("Enter Name!");
     myRoomId = Math.floor(1000 + Math.random()*8999).toString();
     setupGame("X");
 }
@@ -273,7 +269,7 @@ function createRoom() {
 function joinRoom() {
     myName = document.getElementById("userName").value.trim();
     myRoomId = document.getElementById("joinCode").value.trim();
-    if(!myName || !myRoomId) return alert("Details bharo!");
+    if(!myName || !myRoomId) return alert("Fill details!");
     setupGame("O");
 }
 
@@ -284,21 +280,21 @@ function setupGame(sym) {
     emojiRef = db.ref("rooms/" + myRoomId + "/emojis");
 
     if(sym === "X") {
-        gameRef.set({ board: Array(gridSize*gridSize).fill(""), turn: "X", size: gridSize, scores: {X:0, O:0}, players: {X: myName, O: isRobot ? "ROBOT" : "WAITING..."} });
+        gameRef.set({ board: Array(gridSize*gridSize).fill(""), turn: "X", size: gridSize, scores: {X:0, O:0}, players: {X: myName, O: isRobot ? "EXPERT ROBOT" : "WAITING..."} });
     } else {
         gameRef.child("players/O").set(myName);
     }
 
     document.getElementById("loginScreen").classList.add("hidden");
     document.getElementById("gameScreen").classList.remove("hidden");
-    document.getElementById("displayRoomCode").innerText = isRobot ? "BOT" : myRoomId;
+    document.getElementById("displayRoomCode").innerText = isRobot ? "SOLO" : myRoomId;
     createBoard(); listenGame(); listenChat(); listenEmojis();
 }
 
 function createBoard() {
     const board = document.getElementById("board");
     board.innerHTML = "";
-    let cellSize = gridSize === 3 ? 90 : gridSize === 5 ? 60 : 42;
+    let cellSize = gridSize === 3 ? 90 : gridSize === 5 ? 60 : 44;
     board.style.gridTemplateColumns = `repeat(${gridSize}, ${cellSize}px)`;
     for(let i=0; i < gridSize * gridSize; i++) {
         const cell = document.createElement("div");
@@ -314,7 +310,6 @@ function listenGame() {
     gameRef.on("value", snap => {
         const g = snap.val(); if(!g) return;
         
-        // Update Scoreboard UI
         document.getElementById("p1Name").innerText = g.players.X;
         document.getElementById("p2Name").innerText = g.players.O;
         document.getElementById("p1Score").innerText = g.scores.X;
@@ -332,23 +327,21 @@ function listenGame() {
         const winData = checkWinner(g.board, g.size);
         if(winData) {
             if(winData !== "draw") {
-                // Winning line animation
                 winData.line.forEach(idx => document.getElementById("board").children[idx].classList.add("winner-cell"));
-                
                 let winName = (winData.w === "X" ? g.players.X : g.players.O).toUpperCase();
                 setTimeout(() => {
                     document.getElementById("winnerName").innerText = winName;
                     document.getElementById("winnerOverlay").style.display = "flex";
                     if(winData.w === mySymbol) confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
-                }, 1000);
+                }, 800);
             } else {
                 document.getElementById("winnerName").innerText = "DRAW!";
                 document.getElementById("winnerOverlay").style.display = "flex";
             }
         } else {
             document.getElementById("winnerOverlay").style.display = "none";
-            document.getElementById("status").innerText = g.turn === mySymbol ? "YOUR TURN" : (isRobot && g.turn === "O" ? "BOT THINKING..." : "WAITING...");
-            if(isRobot && g.turn === "O") setTimeout(smartBot, 700);
+            document.getElementById("status").innerText = g.turn === mySymbol ? "YOUR TURN" : (isRobot && g.turn === "O" ? "ROBOT THINKING..." : "OPPONENT TURN");
+            if(isRobot && g.turn === "O") setTimeout(expertSmartBot, 600);
         }
     });
 }
@@ -358,40 +351,59 @@ function move(i) {
         const g = snap.val();
         if(!g || g.turn !== mySymbol || g.board[i] !== "" || checkWinner(g.board, g.size)) return;
         g.board[i] = mySymbol;
-        
         let updateData = { board: g.board, turn: mySymbol === "X" ? "O" : "X" };
-        
         const winCheck = checkWinner(g.board, g.size);
-        if(winCheck && winCheck !== "draw") {
-            g.scores[winCheck.w]++;
-            updateData.scores = g.scores;
-        }
+        if(winCheck && winCheck !== "draw") { g.scores[winCheck.w]++; updateData.scores = g.scores; }
         gameRef.update(updateData);
     });
 }
 
-function smartBot() {
+// --- NEW EXPERT AI LOGIC ---
+function expertSmartBot() {
     gameRef.once("value", snap => {
         const g = snap.val(); if(!g || g.turn !== "O") return;
         let b = [...g.board], s = g.size, moveIdx = -1;
-        // 1. Win
-        for(let i=0; i<b.length; i++) { if(b[i]===""){ b[i]="O"; if(checkWinner(b,s)){ moveIdx=i; break; } b[i]=""; } }
-        // 2. Block
-        if(moveIdx===-1){ for(let i=0; i<b.length; i++){ if(b[i]===""){ b[i]="X"; if(checkWinner(b,s)){ moveIdx=i; break; } b[i]=""; } } }
-        // 3. Random
-        if(moveIdx===-1){ let e = b.map((v,i)=>v===""?i:null).filter(v=>v!==null); moveIdx=e[Math.floor(Math.random()*e.length)]; }
-        
-        if(moveIdx!==-1){ 
-            g.board[moveIdx]="O";
-            let updateData = {board:g.board, turn:"X"};
+        let emptyIndices = b.map((v, i) => v === "" ? i : null).filter(v => v !== null);
+        if(emptyIndices.length === 0) return;
+
+        let bestScore = -Infinity;
+        emptyIndices.forEach(idx => {
+            let score = 0;
+            // 1. Win if possible
+            b[idx] = "O"; if(checkWinner(b, s)) score += 10000;
+            // 2. Block player if they win
+            b[idx] = "X"; if(checkWinner(b, s)) score += 5000;
+            // 3. Prefer center
+            let center = Math.floor((s*s)/2);
+            if(idx === center) score += 50;
+            // 4. Strategic placement (count neighbors)
+            score += evaluateSpot(b, idx, s);
+            
+            b[idx] = ""; 
+            if(score > bestScore) { bestScore = score; moveIdx = idx; }
+        });
+
+        if(moveIdx !== -1) {
+            g.board[moveIdx] = "O";
+            let updateData = {board: g.board, turn: "X"};
             const winCheck = checkWinner(g.board, g.size);
-            if(winCheck && winCheck !== "draw") {
-                g.scores.O++;
-                updateData.scores = g.scores;
-            }
+            if(winCheck && winCheck !== "draw") { g.scores.O++; updateData.scores = g.scores; }
             gameRef.update(updateData);
         }
     });
+}
+
+function evaluateSpot(board, idx, size) {
+    let score = 0;
+    const adjacent = [1, -1, size, -size, size+1, size-1, -size+1, -size-1];
+    adjacent.forEach(offset => {
+        let neighbor = idx + offset;
+        if(neighbor >= 0 && neighbor < board.length) {
+            if(board[neighbor] === "O") score += 10;
+            if(board[neighbor] === "X") score += 5;
+        }
+    });
+    return score;
 }
 
 function checkWinner(b, size) {
@@ -417,16 +429,14 @@ function checkWinner(b, size) {
     return b.includes("") ? null : "draw";
 }
 
-function exitArena() {
-    if(confirm("Game band karein?")) {
-        if(mySymbol === "X") db.ref("rooms/" + myRoomId).remove();
-        location.reload();
-    }
+function restartMatch() {
+    gameRef.once("value", snap => {
+        const g = snap.val();
+        gameRef.update({ board: Array(g.size*g.size).fill(""), turn: "X" });
+    });
 }
 
-function restartMatch() {
-    gameRef.update({ board: Array(gridSize*gridSize).fill(""), turn: "X" });
-}
+function exitArena() { if(confirm("Quit Game?")) location.reload(); }
 
 function sendMsg() {
     const i = document.getElementById("msgInput");
@@ -453,9 +463,4 @@ function listenEmojis() {
         el.style.position = "fixed"; el.style.bottom = "150px"; el.style.fontSize = "60px"; el.style.zIndex="10000";
         el.innerText = d.emoji; el.style.left = Math.random() * 60 + 20 + "%";
         el.animate([{transform:'translateY(0) scale(1)', opacity:1},{transform:'translateY(-400px) scale(1.5)', opacity:0}], 1200);
-        document.body.appendChild(el); setTimeout(()=>el.remove(), 1200);
-    });
-}
-</script>
-</body>
-                </html>
+        d
