@@ -64,8 +64,7 @@ input {
     width: 100%; padding: 15px; border-radius: 12px; border: none; font-weight: 800;
     font-size: 14px; cursor: pointer; text-transform: uppercase; margin-bottom: 10px;
 }
-.btn-primary { background: var(--primary); color: #000; }
-.btn-outline { background: transparent; border: 1px solid rgba(255,255,255,0.2); color: #fff; }
+.btn-primary { background: var(--primary); color: #000; box-shadow: 0 0 20px rgba(0, 242, 255, 0.4); }
 
 #board { display: grid; gap: 8px; margin: 15px auto; }
 .cell { 
@@ -73,31 +72,42 @@ input {
     align-items: center; justify-content: center; font-weight: 900; 
     cursor: pointer; border: 1px solid rgba(255,255,255,0.05); transition: 0.2s;
 }
-.cell:active { transform: scale(0.9); }
 
-.chat-section { 
-    height: 180px; background: rgba(0,0,0,0.95); 
-    border-top: 1px solid rgba(255,255,255,0.1); 
-    display: flex; flex-direction: column;
-    padding-bottom: max(10px, env(safe-area-inset-bottom));
-}
-#messages { flex: 1; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 5px; }
-.msg { max-width: 85%; padding: 8px 12px; border-radius: 12px; font-size: 13px; }
-.me { align-self: flex-end; background: var(--me); }
-.other { align-self: flex-start; background: var(--other); }
-
-/* Winner Animation */
+/* Winner Screen Styles (Like Screenshot) */
 #winnerOverlay { 
-    position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 9999; 
-    display: none; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(15px);
+    position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 9999; 
+    display: none; flex-direction: column; align-items: center; justify-content: center;
 }
-.winner-box { animation: winnerPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); text-align: center; }
-@keyframes winnerPop { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+.ring-container {
+    position: absolute; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; z-index: -1;
+}
+.ring {
+    position: absolute; border-radius: 50%; border: 2px solid transparent;
+    animation: rotateRing 4s linear infinite;
+}
+.ring:nth-child(1) { width: 300px; height: 300px; border-top-color: var(--primary); border-bottom-color: var(--secondary); }
+.ring:nth-child(2) { width: 350px; height: 350px; border-left-color: var(--win); border-right-color: var(--accent); animation-duration: 6s; }
+
+@keyframes rotateRing { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+.winner-content { text-align: center; z-index: 10; animation: pop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+@keyframes pop { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
 .exit-btn {
-    background: rgba(255, 0, 85, 0.1); color: var(--accent); border: 1px solid var(--accent);
-    padding: 5px 12px; border-radius: 8px; font-size: 10px; font-weight: bold; cursor: pointer;
+    background: transparent; color: var(--primary); border: 1px solid var(--primary);
+    padding: 6px 12px; border-radius: 5px; font-size: 10px; font-weight: 900; cursor: pointer;
 }
+
+.chat-section { 
+    height: 160px; background: rgba(0,0,0,0.95); 
+    border-top: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column;
+    padding-bottom: env(safe-area-inset-bottom);
+}
+#messages { flex: 1; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 5px; }
+.msg { max-width: 80%; padding: 8px 12px; border-radius: 10px; font-size: 12px; }
+.me { align-self: flex-end; background: var(--me); }
+.other { align-self: flex-start; background: var(--other); }
 
 .hidden { display: none !important; }
 </style>
@@ -107,22 +117,27 @@ input {
 <div class="bg-glow"></div>
 
 <div id="winnerOverlay">
-    <div class="winner-box">
-        <div style="letter-spacing: 5px; color: #888; font-size: 12px; margin-bottom: 10px;">MISSION ACCOMPLISHED</div>
-        <h1 id="winnerName" style="font-size: 45px; color: var(--win); text-shadow: 0 0 30px var(--win); margin: 10px 0;">WINNER</h1>
-        <button onclick="restartMatch()" class="btn-main btn-primary" style="width: 200px; margin-top: 20px;">PLAY AGAIN</button>
+    <div class="ring-container">
+        <div class="ring"></div>
+        <div class="ring"></div>
+        <div class="ring" style="width:400px; height:400px; border-top-color:#ff0055; animation-duration:8s;"></div>
+    </div>
+    <div class="winner-content">
+        <div style="letter-spacing: 4px; color: #888; font-size: 12px; font-weight: bold;">MISSION ACCOMPLISHED</div>
+        <h1 id="winnerName" style="font-size: 55px; margin: 15px 0; color: var(--win); text-shadow: 0 0 40px var(--win);">ROBOT</h1>
+        <button onclick="restartMatch()" class="btn-main btn-primary" style="width: 220px; border-radius: 15px; font-size: 16px;">PLAY AGAIN</button>
     </div>
 </div>
 
 <div class="container">
     <div id="loginScreen" class="screen">
-        <div style="margin-bottom: 20px; text-align: center;">
+        <div style="text-align: center; margin-bottom: 25px;">
             <h1 class="hero-title">ULTIMATE</h1>
             <h1 class="hero-title" style="color:var(--primary); -webkit-text-fill-color: var(--primary); margin-top: -10px;">ARENA PRO</h1>
-            <p style="color:#888; font-size:12px;">Developed by @rp_gupta_07</p>
+            <p style="color:#555; font-size:11px; letter-spacing: 1px;">BY @RP_GUPTA_07</p>
         </div>
 
-        <input id="userName" placeholder="APNA NAAM LIKHO">
+        <input id="userName" placeholder="ENTER YOUR NAME">
 
         <div class="grid-select">
             <button class="grid-btn active" id="g3" onclick="setGrid(3)">3 X 3</button>
@@ -131,24 +146,27 @@ input {
         </div>
 
         <button class="btn-main btn-primary" onclick="createRoom()">CREATE PRIVATE ARENA</button>
-        <button class="btn-main" style="background:var(--secondary); color:#fff;" onclick="startGlobal()">GLOBAL MATCH (RANDOM)</button>
-        <button class="btn-main btn-outline" onclick="startRobot()">BATTLE VS ROBOT</button>
+        <button class="btn-main" style="background:var(--secondary); color:#fff;" onclick="startGlobal()">GLOBAL BATTLE (RANDOM)</button>
+        <button class="btn-main btn-outline" onclick="startRobot()">BATTLE VS ROBOT (SMART)</button>
 
-        <div style="margin: 10px 0; color: #333; font-size: 10px; letter-spacing: 2px;">JOIN SQUAD</div>
+        <div style="margin: 15px 0; width: 100%; height: 1px; background: rgba(255,255,255,0.05);"></div>
+        
         <input id="joinCode" placeholder="ENTER ARENA CODE">
-        <button class="btn-main btn-outline" onclick="joinRoom()">JOIN BATTLE</button>
+        <button class="btn-main btn-outline" onclick="joinRoom()">JOIN SQUAD</button>
+
+        <a href="https://www.instagram.com/rp_gupta_07" target="_blank" style="margin-top:20px; text-decoration:none; color:var(--primary); font-size:11px; font-weight:bold;">FOLLOW ME ON INSTAGRAM</a>
     </div>
 
     <div id="gameScreen" class="hidden" style="display:flex; flex-direction:column; height: 100%;">
-        <div style="padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.4);">
-            <button class="exit-btn" onclick="exitArena()">EXIT ARENA</button>
-            <div id="status" style="font-weight:bold; color:var(--win); font-size:13px;">READY?</div>
-            <div style="font-size:11px; color:#555;">ID: <span id="displayRoomCode" style="color:var(--primary);">0000</span></div>
+        <div style="padding: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05);">
+            <button class="exit-btn" onclick="exitArena()">✕ EXIT ARENA</button>
+            <div id="status" style="font-weight:bold; color:var(--win); font-size:12px;">WAITING...</div>
+            <div style="font-size:10px; color:#555;">ID: <span id="displayRoomCode" style="color:var(--primary);">0000</span></div>
         </div>
 
         <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;">
             <div id="board"></div>
-            <div style="display:flex; gap:15px; background:rgba(255,255,255,0.03); padding:8px 20px; border-radius:30px;">
+            <div style="display:flex; gap:20px; background:rgba(255,255,255,0.03); padding:10px 25px; border-radius:30px;">
                 <span style="cursor:pointer; font-size:25px;" onclick="sendEmoji('😂')">😂</span>
                 <span style="cursor:pointer; font-size:25px;" onclick="sendEmoji('🔥')">🔥</span>
                 <span style="cursor:pointer; font-size:25px;" onclick="sendEmoji('💀')">💀</span>
@@ -157,9 +175,9 @@ input {
 
         <div class="chat-section">
             <div id="messages"></div>
-            <div style="display:flex; padding:10px; gap:8px;">
-                <input id="msgInput" placeholder="Send a message..." style="margin:0; flex:1; padding:12px;">
-                <button onclick="sendMsg()" style="background:var(--primary); border:none; width:50px; border-radius:12px;">➤</button>
+            <div style="display:flex; padding:8px; gap:5px;">
+                <input id="msgInput" placeholder="Write message..." style="margin:0; flex:1; padding:12px; font-size:14px;">
+                <button onclick="sendMsg()" style="background:var(--primary); border:none; width:50px; border-radius:12px; font-weight:bold; color:#000;">➤</button>
             </div>
         </div>
     </div>
@@ -190,8 +208,8 @@ function setGrid(s) {
 }
 
 function startRobot() {
-    myName = document.getElementById("userName").value.trim() || "Pro Player";
-    isRobot = true; myRoomId = "ROBOT_" + Date.now();
+    myName = document.getElementById("userName").value.trim() || "Player";
+    isRobot = true; myRoomId = "BOT_" + Date.now();
     setupGame("X");
 }
 
@@ -207,7 +225,7 @@ function startGlobal() {
 
 function createRoom() {
     myName = document.getElementById("userName").value.trim();
-    if(!myName) return alert("Naam likho!");
+    if(!myName) return alert("Naam bhariye!");
     myRoomId = Math.floor(1000 + Math.random()*8999).toString();
     setupGame("X");
 }
@@ -215,7 +233,7 @@ function createRoom() {
 function joinRoom() {
     myName = document.getElementById("userName").value.trim();
     myRoomId = document.getElementById("joinCode").value.trim();
-    if(!myName || !myRoomId) return alert("Details bharo!");
+    if(!myName || !myRoomId) return alert("Details bhariye!");
     setupGame("O");
 }
 
@@ -261,14 +279,14 @@ function listenGame() {
         });
         const win = checkWinner(g.board, g.size);
         if(win) {
-            let winText = win === "draw" ? "DRAW!" : (win.w === "X" ? g.players.X : g.players.O).toUpperCase();
-            document.getElementById("winnerName").innerText = winText;
+            let winName = win === "draw" ? "DRAW!" : (win.w === "X" ? g.players.X : g.players.O).toUpperCase();
+            document.getElementById("winnerName").innerText = winName;
             document.getElementById("winnerOverlay").style.display = "flex";
-            if(win !== "draw") confetti({ particleCount: 200, spread: 80, origin: { y: 0.6 } });
+            if(win !== "draw") confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
         } else {
             document.getElementById("winnerOverlay").style.display = "none";
-            document.getElementById("status").innerText = g.turn === mySymbol ? "YOUR TURN" : "OPPONENT'S TURN";
-            if(isRobot && g.turn === "O") setTimeout(smartBot, 600);
+            document.getElementById("status").innerText = g.turn === mySymbol ? "YOUR TURN" : (isRobot ? "BOT THINKING..." : "WAITING...");
+            if(isRobot && g.turn === "O") setTimeout(smartBot, 700);
         }
     });
 }
@@ -286,25 +304,26 @@ function smartBot() {
     gameRef.once("value", snap => {
         const g = snap.val(); if(!g || g.turn !== "O") return;
         let b = [...g.board], s = g.size, moveIdx = -1;
-        // Logic: Win > Block > Center > Random
+        // 1. Win
         for(let i=0; i<b.length; i++) { if(b[i]===""){ b[i]="O"; if(checkWinner(b,s)){ moveIdx=i; break; } b[i]=""; } }
+        // 2. Block
         if(moveIdx===-1){ for(let i=0; i<b.length; i++){ if(b[i]===""){ b[i]="X"; if(checkWinner(b,s)){ moveIdx=i; break; } b[i]=""; } } }
-        if(moveIdx===-1){ let m = Math.floor(b.length/2); if(b[m]==="") moveIdx=m; }
+        // 3. Random
         if(moveIdx===-1){ let e = b.map((v,i)=>v===""?i:null).filter(v=>v!==null); moveIdx=e[Math.floor(Math.random()*e.length)]; }
         if(moveIdx!==-1){ g.board[moveIdx]="O"; gameRef.update({board:g.board, turn:"X"}); }
     });
 }
 
 function exitArena() {
-    if(confirm("Exit game? Saara data delete ho jayega!")) {
-        db.ref("rooms/" + myRoomId).remove(); // Clears everything from Firebase
+    if(confirm("Exit Arena? Chat aur Game ka saara data delete ho jayega!")) {
+        db.ref("rooms/" + myRoomId).remove();
         location.reload();
     }
 }
 
 function restartMatch() {
     gameRef.update({ board: Array(gridSize*gridSize).fill(""), turn: "X" });
-    chatRef.remove(); // Clears chat for new round
+    chatRef.remove();
 }
 
 function sendMsg() {
@@ -318,31 +337,28 @@ function listenChat() {
         const d = snap.val();
         const m = document.createElement("div");
         m.className = "msg " + (d.n === myName ? "me" : "other");
-        m.innerHTML = `<small style="opacity:0.4; font-size:9px; display:block;">${d.n}</small>${d.m}`;
+        m.innerHTML = `<b style="font-size:8px; opacity:0.4; display:block;">${d.n}</b>${d.m}`;
         document.getElementById("messages").appendChild(m);
         document.getElementById("messages").scrollTop = 10000;
     });
-    chatRef.on("child_removed", () => document.getElementById("messages").innerHTML="");
 }
 
 function checkWinner(b, size) {
     const lines = [];
-    const winLen = 3; 
+    let winLen = 3; 
     for(let i=0; i<size; i++) {
         for(let j=0; j<=size-winLen; j++) {
-            lines.push(Array.from({length: winLen}, (_, k) => i*size + j + k)); // Rows
-            lines.push(Array.from({length: winLen}, (_, k) => (j+k)*size + i)); // Cols
+            lines.push(Array.from({length:winLen},(_,k)=> i*size+j+k));
+            lines.push(Array.from({length:winLen},(_,k)=> (j+k)*size+i));
         }
     }
     for(let r=0; r<=size-winLen; r++) {
         for(let c=0; c<=size-winLen; c++) {
-            lines.push(Array.from({length: winLen}, (_, k) => (r+k)*size + (c+k))); // Diag
-            lines.push(Array.from({length: winLen}, (_, k) => (r+k)*size + (c+winLen-1-k)));
+            lines.push(Array.from({length:winLen},(_,k)=> (r+k)*size+(c+k)));
+            lines.push(Array.from({length:winLen},(_,k)=> (r+k)*size+(c+winLen-1-k)));
         }
     }
-    for(let l of lines) {
-        if(b[l[0]] && b[l[0]] === b[l[1]] && b[l[1]] === b[l[2]]) return {w: b[l[0]]};
-    }
+    for(let l of lines) { if(b[l[0]] && b[l[0]]===b[l[1]] && b[l[1]]===b[l[2]]) return {w: b[l[0]]}; }
     return b.includes("") ? null : "draw";
 }
 
@@ -351,7 +367,7 @@ function listenEmojis() {
     emojiRef.on("value", snap => {
         const d = snap.val(); if(!d) return;
         const el = document.createElement("div");
-        el.style.position = "fixed"; el.style.bottom = "200px"; el.style.fontSize = "70px"; el.style.zIndex="100";
+        el.style.position = "fixed"; el.style.bottom = "200px"; el.style.fontSize = "70px"; el.style.zIndex="9999";
         el.innerText = d.emoji; el.style.left = Math.random() * 60 + 20 + "%";
         el.animate([{transform:'translateY(0)', opacity:1},{transform:'translateY(-500px)', opacity:0}], 1500);
         document.body.appendChild(el); setTimeout(()=>el.remove(), 1500);
