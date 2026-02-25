@@ -2,258 +2,159 @@
 <html lang="hi">
 <head>
 <meta charset="UTF-8">
-<title>@rp_gupta_07 | Elite Arena</title>
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover">
+<title>Elite Arena</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
 <style>
-:root { --primary: #00d2ff; --bg: #000; --cell: #111; --win: #00ff88; --me: #0084ff; --other: #222; }
-html, body { height: 100%; margin: 0; padding: 0; background: var(--bg); color: #fff; font-family: sans-serif; overflow: hidden; width: 100%; position: fixed; }
-
-.container { display: flex; flex-direction: column; height: 100%; max-width: 420px; margin: auto; position: relative; }
-
-/* Screens */
-.screen { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; text-align: center; }
-.hidden { display: none !important; }
-
-/* Inputs & Buttons */
-input { width: 85%; padding: 12px; margin-bottom: 10px; border-radius: 10px; border: 1px solid #333; background: #111; color: #fff; text-align: center; outline: none; }
-.btn-main { width: 90%; padding: 14px; background: var(--primary); color: #000; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
-
-/* Grid Select */
-.grid-select { display: flex; gap: 8px; margin: 15px 0; width: 90%; }
-.grid-btn { flex: 1; padding: 12px; background: #111; border: 2px solid #333; color: #fff; border-radius: 10px; font-weight: bold; cursor: pointer; }
-
-/* Game Area Layout */
-.game-top { padding: 10px; border-bottom: 1px solid #222; background: #000; width: 100%; box-sizing: border-box; }
-.arena-view { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow-y: auto; background: #000; }
-#board { display: grid; gap: 6px; margin: auto; }
-.cell { background: var(--cell); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; border: 1px solid #333; transition: 0.2s; }
-
-/* Fixed Bottom Chat */
-.chat-section { height: 160px; background: #080808; border-top: 1px solid #222; display: flex; flex-direction: column; padding-bottom: env(safe-area-inset-bottom); }
-#messages { flex: 1; overflow-y: auto; padding: 8px; display: flex; flex-direction: column; gap: 5px; }
-.msg { max-width: 80%; padding: 7px 12px; border-radius: 12px; font-size: 13px; word-wrap: break-word; }
-.msg b { display: block; font-size: 9px; opacity: 0.6; margin-bottom: 2px; }
-.me { align-self: flex-end; background: var(--me); border-bottom-right-radius: 2px; text-align: right; }
-.other { align-self: flex-start; background: var(--other); border-bottom-left-radius: 2px; text-align: left; }
-
-.input-row { display: flex; padding: 8px; background: #111; gap: 5px; }
-.input-row input { margin: 0; flex: 1; padding: 8px; text-align: left; font-size: 14px; }
-
-/* Winner Overlay */
-#winnerOverlay { position: fixed; inset: 0; background: rgba(0,0,0,0.96); z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
-#winnerName { font-size: 45px; font-weight: 900; color: var(--win); margin: 0; text-shadow: 0 0 20px var(--win); }
+:root{--p:#00d2ff;--bg:#000;--cell:#111;--win:#00ff88;}
+body{margin:0;background:#000;color:#fff;font-family:sans-serif}
+#board{display:grid;gap:6px;margin:15px auto}
+.cell{width:90px;height:90px;background:#111;border-radius:8px;
+display:flex;align-items:center;justify-content:center;
+font-size:40px;border:1px solid #333;cursor:pointer}
+.win{box-shadow:0 0 15px var(--win)}
+button,input{padding:10px;border-radius:8px;border:none}
 </style>
 </head>
+
 <body>
 
-<div id="winnerOverlay">
-    <div style="letter-spacing: 5px; color: #555; font-size: 12px;">MATCH OVER</div>
-    <h1 id="winnerName">WINNER</h1>
-    <button onclick="restartMatch()" class="btn-main" style="width: 200px; margin-top: 30px;">PLAY AGAIN</button>
+<div id="login">
+  <input id="name" placeholder="Naam"><br><br>
+  <button onclick="create()">CREATE</button>
+  <br><br>
+  <input id="code" placeholder="Room Code">
+  <button onclick="join()">JOIN</button>
 </div>
 
-<div class="container">
-    <div id="loginScreen" class="screen">
-        <h2 style="margin: 0; font-size: 28px;">BATTLE ARENA</h2>
-        <a href="https://www.instagram.com/rp_gupta_07" target="_blank" style="color:var(--primary); text-decoration:none; font-weight:bold;">@rp_gupta_07</a>
-        <br><br>
-        <input id="userName" placeholder="APNA NAAM LIKHO">
-        <div class="grid-select">
-            <button class="grid-btn" id="g3" onclick="setGrid(3)">3X3</button>
-            <button class="grid-btn" id="g5" onclick="setGrid(5)">5X5</button>
-            <button class="grid-btn" id="g7" onclick="setGrid(7)">7X7</button>
-        </div>
-        <button class="btn-main" onclick="createRoom()">CREATE GAME (AUTO)</button>
-        <div style="margin: 10px; opacity: 0.3;">OR JOIN</div>
-        <input id="joinCode" placeholder="ROOM CODE">
-        <button class="btn-main" style="background:#222; color:#fff; border:1px solid #444;" onclick="joinRoom()">JOIN GAME</button>
-    </div>
-
-    <div id="gameScreen" class="hidden" style="display:flex; flex-direction:column; height: 100%;">
-        <div class="game-top">
-            <div style="display:flex; justify-content:space-between; font-size:12px;">
-                <span>CODE: <b id="displayRoomCode" style="color:var(--primary)">00000</b></span>
-                <a href="https://www.instagram.com/rp_gupta_07" target="_blank" style="color:#e1306c; text-decoration:none; font-weight:bold;">@rp_gupta_07</a>
-            </div>
-            <div id="status" style="text-align:center; font-weight:bold; color:var(--win); margin-top:5px; font-size:14px;">WAITING...</div>
-        </div>
-
-        <div class="arena-view">
-            <div id="board"></div>
-            <div style="display:flex; gap:25px; margin-top:15px;">
-                <span style="cursor:pointer; font-size:25px;" onclick="sendEmoji('😂')">😂</span>
-                <span style="cursor:pointer; font-size:25px;" onclick="sendEmoji('🔥')">🔥</span>
-                <span style="cursor:pointer; font-size:25px;" onclick="sendEmoji('😎')">😎</span>
-            </div>
-        </div>
-
-        <div class="chat-section">
-            <div id="messages"></div>
-            <div class="input-row">
-                <input id="msgInput" placeholder="Message...">
-                <button onclick="sendMsg()" style="background:var(--primary); border:none; padding:0 15px; border-radius:8px;">➤</button>
-            </div>
-        </div>
-    </div>
+<div id="game" style="display:none;text-align:center">
+  <div>
+    CODE: <b id="room"></b>
+    <button onclick="copy()">COPY</button>
+  </div>
+  <div id="status">WAIT</div>
+  <div id="board"></div>
 </div>
+
+<audio id="moveS" src="https://assets.mixkit.co/sfx/preview/mixkit-click-1110.mp3"></audio>
+<audio id="winS" src="https://assets.mixkit.co/sfx/preview/mixkit-achievement-bell-600.mp3"></audio>
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
 <script>
-const firebaseConfig = {
-  apiKey: "AIzaSyARuO_pN2vdYrVKYkKHHaNys7WI8HqM6I4",
-  authDomain: "friendchat-43941.firebaseapp.com",
-  databaseURL: "https://friendchat-43941-default-rtdb.firebaseio.com",
-  projectId: "friendchat-43941",
-  storageBucket: "friendchat-43941.firebasestorage.app",
-  messagingSenderId: "1026542245723",
-  appId: "1:1026542245723:web:b892bfcc1d2358a018ac7e"
-};
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
+firebase.initializeApp({
+ apiKey:"AIzaSyARuO_pN2vdYrVKYkKHHaNys7WI8HqM6I4",
+ databaseURL:"https://friendchat-43941-default-rtdb.firebaseio.com"
+});
+const db=firebase.database();
 
-let myRoomId, myName, mySymbol, gameRef, chatRef, emojiRef, gridSize = 3;
+let room,my="X",name,grid=3,timer;
 
-function setGrid(s) {
-    gridSize = s;
-    document.querySelectorAll('.grid-btn').forEach(b => b.style.borderColor = '#333');
-    document.getElementById('g'+s).style.borderColor = '#00d2ff';
+function create(){
+ name=nameInput();
+ room=rand();
+ init("X");
+}
+function join(){
+ name=nameInput();
+ room=document.getElementById("code").value;
+ init("O");
+}
+function nameInput(){
+ const n=document.getElementById("name").value;
+ if(!n) alert("Naam likho");
+ return n;
+}
+function rand(){return Math.floor(10000+Math.random()*90000)}
+
+function init(sym){
+ my=sym;
+ document.getElementById("login").style.display="none";
+ document.getElementById("game").style.display="block";
+ document.getElementById("room").innerText=room;
+
+ const ref=db.ref("rooms/"+room);
+
+ if(sym==="X"){
+  ref.set({
+   size:grid,
+   board:Array(grid*grid).fill(""),
+   turn:"X",
+   players:{X:{n:name,ready:true}}
+  });
+ }else{
+  ref.child("players/O").set({n:name,ready:true});
+ }
+
+ ref.on("value",s=>{
+  const g=s.val(); if(!g) return;
+  draw(g);
+  if(g.turn===my) startTimer(ref);
+ });
+ ref.onDisconnect().remove();
 }
 
-function createRoom() {
-    myName = document.getElementById("userName").value.trim();
-    if(!myName) return alert("Naam likho!");
-    myRoomId = Math.floor(10000 + Math.random() * 90000).toString();
-    initRoom("X");
+function draw(g){
+ const b=document.getElementById("board");
+ b.innerHTML="";
+ b.style.gridTemplateColumns=`repeat(${g.size},90px)`;
+ g.board.forEach((v,i)=>{
+  const c=document.createElement("div");
+  c.className="cell";
+  c.innerText=v;
+  c.onclick=()=>move(i,g);
+  b.appendChild(c);
+ });
+ const w=winner(g.board,g.size);
+ if(w){
+  document.getElementById("status").innerText="WINNER";
+  document.getElementById("winS").play();
+  w.forEach(i=>b.children[i].classList.add("win"));
+  confetti();
+ }else{
+  document.getElementById("status").innerText=
+   g.turn===my?"YOUR TURN":"WAIT";
+ }
 }
 
-function joinRoom() {
-    myName = document.getElementById("userName").value.trim();
-    myRoomId = document.getElementById("joinCode").value.trim();
-    if(!myName || !myRoomId) return alert("Details bharo!");
-    initRoom("O");
+function move(i,g){
+ if(g.turn!==my||g.board[i]||winner(g.board,g.size))return;
+ g.board[i]=my;
+ db.ref("rooms/"+room).update({
+  board:g.board,
+  turn:my==="X"?"O":"X"
+ });
+ document.getElementById("moveS").play();
 }
 
-function initRoom(sym) {
-    mySymbol = sym;
-    gameRef = db.ref("rooms/" + myRoomId + "/game");
-    chatRef = db.ref("rooms/" + myRoomId + "/chat");
-    emojiRef = db.ref("rooms/" + myRoomId + "/emojis");
-
-    if(sym === "X") {
-        gameRef.set({ board: Array(gridSize*gridSize).fill(""), turn: "X", size: gridSize, players: {X: myName} });
-    } else {
-        gameRef.child("players/O").set(myName);
-        gameRef.once("value", snap => { gridSize = snap.val().size; createBoard(); });
-    }
-
-    document.getElementById("loginScreen").classList.add("hidden");
-    document.getElementById("gameScreen").classList.remove("hidden");
-    document.getElementById("displayRoomCode").innerText = myRoomId;
-    createBoard(); listenGame(); listenChat(); listenEmojis();
-    gameRef.onDisconnect().remove(); chatRef.onDisconnect().remove();
+function startTimer(ref){
+ clearTimeout(timer);
+ timer=setTimeout(()=>{
+  ref.child("turn").set(my==="X"?"O":"X");
+ },10000);
 }
 
-function createBoard() {
-    const board = document.getElementById("board");
-    board.innerHTML = "";
-    let cellSize = gridSize === 3 ? 95 : gridSize === 5 ? 60 : 42;
-    board.style.gridTemplateColumns = `repeat(${gridSize}, ${cellSize}px)`;
-    for(let i=0; i < gridSize * gridSize; i++) {
-        const cell = document.createElement("div");
-        cell.className = "cell";
-        cell.style.width = cellSize + "px";
-        cell.style.height = cellSize + "px";
-        cell.style.fontSize = (cellSize/1.8) + "px";
-        cell.onclick = () => move(i);
-        board.appendChild(cell);
-    }
+function copy(){
+ navigator.clipboard.writeText(room);
+ alert("Copied");
 }
 
-function listenGame() {
-    gameRef.on("value", snap => {
-        const g = snap.val(); if(!g) return;
-        g.board.forEach((v, i) => { 
-            const c = document.getElementById("board").children[i];
-            if(c) { c.innerText = v; c.style.color = v === 'X' ? '#00d2ff' : '#ff4b2b'; }
-        });
-        const win = checkWinner(g.board, g.size);
-        if(win) {
-            document.getElementById("winnerName").innerText = win === "draw" ? "DRAW!" : (win.w === "X" ? g.players.X : g.players.O).toUpperCase();
-            document.getElementById("winnerOverlay").style.display = "flex";
-            if(win !== "draw") confetti({ particleCount: 200, spread: 80, origin: { y: 0.6 } });
-        } else {
-            document.getElementById("winnerOverlay").style.display = "none";
-            document.getElementById("status").innerText = g.turn === mySymbol ? "YOUR TURN" : "WAITING...";
-        }
-    });
-}
-
-function move(i) {
-    gameRef.once("value", snap => {
-        const g = snap.val();
-        if(!g || g.turn !== mySymbol || g.board[i] !== "" || checkWinner(g.board, g.size)) return;
-        g.board[i] = mySymbol;
-        gameRef.update({ board: g.board, turn: mySymbol === "X" ? "O" : "X" });
-    });
-}
-
-function restartMatch() {
-    gameRef.update({ board: Array(gridSize*gridSize).fill(""), turn: "X" });
-    chatRef.remove();
-}
-
-function sendEmoji(e) { emojiRef.set({ emoji: e, t: Date.now() }); }
-function listenEmojis() {
-    emojiRef.on("value", snap => {
-        const d = snap.val(); if(!d) return;
-        const el = document.createElement("div");
-        el.style.position = "fixed"; el.style.bottom = "200px"; el.style.fontSize = "60px";
-        el.innerText = d.emoji; el.style.left = Math.random() * 70 + 15 + "%";
-        el.animate([{transform:'translateY(0) scale(0.5)', opacity:1},{transform:'translateY(-500px) scale(1.5)', opacity:0}], 2000);
-        document.body.appendChild(el); setTimeout(() => el.remove(), 2000);
-    });
-}
-
-function sendMsg() {
-    const i = document.getElementById("msgInput");
-    if(!i.value.trim()) return;
-    chatRef.push({ n: myName, m: i.value }); i.value = "";
-}
-
-function listenChat() {
-    chatRef.on("child_added", snap => {
-        const d = snap.val();
-        const m = document.createElement("div");
-        const isMe = d.n === myName;
-        m.className = "msg " + (isMe ? "me" : "other");
-        m.innerHTML = `<b>${d.n}</b>${d.m}`;
-        document.getElementById("messages").appendChild(m);
-        document.getElementById("messages").scrollTop = 10000;
-    });
-    chatRef.on("child_removed", () => document.getElementById("messages").innerHTML = "");
-}
-
-function checkWinner(b, size) {
-    const lines = [];
-    for(let i=0; i<size; i++) {
-        for(let j=0; j<=size-3; j++) {
-            lines.push([i*size+j, i*size+j+1, i*size+j+2]);
-            lines.push([j*size+i, (j+1)*size+i, (j+2)*size+i]);
-        }
-    }
-    for(let r=0; r<=size-3; r++) {
-        for(let c=0; c<=size-3; c++) {
-            lines.push([r*size+c, (r+1)*size+c+1, (r+2)*size+c+2]);
-            lines.push([r*size+c+2, (r+1)*size+c+1, (r+2)*size+c]);
-        }
-    }
-    for(let l of lines) {
-        if(b[l[0]] && b[l[0]] === b[l[1]] && b[l[1]] === b[l[2]]) return {w: b[l[0]]};
-    }
-    return b.includes("") ? null : "draw";
+function winner(b,s){
+ const need=s===3?3:s===5?4:5;
+ const lines=[];
+ for(let i=0;i<s;i++)
+  for(let j=0;j<=s-need;j++){
+   lines.push([...Array(need)].map((_,k)=>i*s+j+k));
+   lines.push([...Array(need)].map((_,k)=>(j+k)*s+i));
+  }
+ for(let r=0;r<=s-need;r++)
+  for(let c=0;c<=s-need;c++)
+   lines.push([...Array(need)].map((_,k)=>(r+k)*s+c+k));
+ for(let l of lines)
+  if(b[l[0]]&&l.every(i=>b[i]===b[l[0]]))return l;
+ return null;
 }
 </script>
 </body>
