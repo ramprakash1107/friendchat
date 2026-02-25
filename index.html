@@ -7,94 +7,45 @@
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 <style>
 :root { 
-    --primary: #00f2ff; 
-    --secondary: #7000ff;
-    --bg: #050505; 
-    --card: rgba(255, 255, 255, 0.05);
-    --win: #00ff88; 
-    --me: linear-gradient(135deg, #0084ff, #00c6ff);
-    --other: #2a2a2a; 
-    --accent: #ff0055;
+    --primary: #00f2ff; --secondary: #7000ff; --bg: #050505; 
+    --card: rgba(255, 255, 255, 0.05); --win: #00ff88; 
+    --me: linear-gradient(135deg, #0084ff, #00c6ff); --other: #2a2a2a; --accent: #ff0055;
 }
-
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
+body, html { margin: 0; padding: 0; height: 100%; width: 100%; background: var(--bg); color: #fff; font-family: 'Segoe UI', sans-serif; overflow: hidden; position: fixed; }
 
-body, html { 
-    margin: 0; padding: 0; height: 100%; width: 100%; 
-    background: var(--bg); color: #fff; font-family: 'Segoe UI', Roboto, sans-serif;
-    overflow: hidden; position: fixed;
-}
+.bg-glow { position: fixed; inset: 0; background: radial-gradient(circle at 50% 50%, #1a1a2e 0%, #050505 100%); z-index: -1; }
+.container { display: flex; flex-direction: column; height: 100%; max-width: 450px; margin: auto; position: relative; backdrop-filter: blur(10px); }
 
-.bg-glow {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: radial-gradient(circle at 50% 50%, #1a1a2e 0%, #050505 100%);
-    z-index: -1;
-}
+.screen { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
+.hero-title { font-size: 42px; font-weight: 900; letter-spacing: -2px; margin: 0; text-align: center; background: linear-gradient(to bottom, #fff, #aaa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
-.container { 
-    display: flex; flex-direction: column; height: 100%; max-width: 450px; 
-    margin: auto; position: relative; backdrop-filter: blur(10px);
-}
-
-.screen { 
-    flex: 1; display: flex; flex-direction: column; align-items: center; 
-    justify-content: center; padding: 20px;
-}
-
-.hero-title { 
-    font-size: 42px; font-weight: 900; letter-spacing: -2px; margin: 0; text-align: center;
-    background: linear-gradient(to bottom, #fff, #aaa); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-}
-
-input { 
-    width: 100%; padding: 18px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.08);
-    background: #15151b; color: #fff; font-size: 16px; margin-bottom: 12px;
-}
-
+input { width: 100%; padding: 18px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.08); background: #15151b; color: #fff; font-size: 16px; margin-bottom: 12px; }
 .grid-select { display: flex; gap: 8px; margin: 10px 0; width: 100%; }
-.grid-btn { 
-    flex: 1; padding: 15px; background: #1a1a20; border: 1px solid rgba(255,255,255,0.05);
-    color: #fff; border-radius: 10px; font-weight: bold; cursor: pointer; transition: 0.3s;
-}
+.grid-btn { flex: 1; padding: 15px; background: #1a1a20; border: 1px solid rgba(255,255,255,0.05); color: #fff; border-radius: 10px; font-weight: bold; cursor: pointer; }
 .grid-btn.active { background: var(--primary); color: #000; box-shadow: 0 0 15px var(--primary); }
 
-.btn-main { 
-    width: 100%; padding: 18px; border-radius: 12px; border: none; font-weight: 800;
-    font-size: 14px; cursor: pointer; text-transform: uppercase; margin-bottom: 10px; transition: 0.2s;
-}
+.btn-main { width: 100%; padding: 18px; border-radius: 12px; border: none; font-weight: 800; font-size: 14px; cursor: pointer; text-transform: uppercase; margin-bottom: 10px; transition: 0.2s; }
 .btn-primary { background: var(--primary); color: #000; }
 .btn-secondary { background: var(--secondary); color: #fff; }
-.btn-main:active { transform: scale(0.98); }
+.btn-main:active { transform: scale(0.95); }
 
-#board { display: grid; gap: 8px; margin: 15px auto; transition: 0.3s; }
-.cell { 
-    background: var(--card); border-radius: 15px; display: flex; 
-    align-items: center; justify-content: center; font-weight: 900; 
-    cursor: pointer; border: 1px solid rgba(255,255,255,0.05);
-}
+#board { display: grid; gap: 8px; margin: 15px auto; }
+.cell { background: var(--card); border-radius: 15px; display: flex; align-items: center; justify-content: center; font-weight: 900; cursor: pointer; border: 1px solid rgba(255,255,255,0.05); transition: 0.2s; }
+.cell.winner-cell { background: var(--win) !important; color: #000 !important; box-shadow: 0 0 40px var(--win); }
 
-.cell.winner-cell { background: var(--win) !important; color: #000 !important; box-shadow: 0 0 40px var(--win); transform: scale(1.05); }
-
-#winnerOverlay { 
-    position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 9999; 
-    display: none; flex-direction: column; align-items: center; justify-content: center;
-}
-
-.scoreboard {
-    display: flex; justify-content: center; gap: 30px; margin-bottom: 10px;
-    background: rgba(255,255,255,0.03); padding: 10px; border-radius: 20px; width: 100%;
-}
+#winnerOverlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; }
+.scoreboard { display: flex; justify-content: center; gap: 30px; margin-bottom: 10px; background: rgba(255,255,255,0.03); padding: 10px; border-radius: 20px; width: 100%; }
 .score-box { text-align: center; min-width: 80px; padding: 10px; border-radius: 12px; border: 1px solid transparent; }
-.active-turn { border-color: var(--primary); background: rgba(0, 242, 255, 0.05); box-shadow: 0 0 10px rgba(0,242,255,0.1); }
+.active-turn { border-color: var(--primary); background: rgba(0, 242, 255, 0.05); }
 
 .chat-section { height: 140px; background: #000; display: flex; flex-direction: column; border-top: 1px solid #111; }
 #messages { flex: 1; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 5px; }
 .msg { max-width: 85%; padding: 8px 12px; border-radius: 12px; font-size: 12px; word-wrap: break-word; }
-.me { align-self: flex-end; background: var(--me); color: white; }
-.other { align-self: flex-start; background: var(--other); color: #ccc; }
+.me { align-self: flex-end; background: var(--me); }
+.other { align-self: flex-start; background: var(--other); }
 
-/* Admin Dashboard CSS */
-#adminPanel { position: fixed; inset: 0; background: #000; z-index: 10000; padding: 20px; overflow-y: auto; display: none; }
+#adminPanel { position: fixed; inset: 0; background: #000; z-index: 10001; padding: 20px; overflow-y: auto; display: none; }
 .room-card { background: #111; border: 1px solid #222; padding: 15px; border-radius: 12px; margin-bottom: 15px; }
 .admin-chat-box { background: #050505; height: 100px; overflow-y: auto; font-size: 11px; padding: 8px; margin-top: 10px; color: #888; border-radius: 5px; }
 
@@ -102,81 +53,74 @@ input {
 </style>
 </head>
 <body>
-
 <div class="bg-glow"></div>
 
 <div id="adminPanel">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; border-bottom: 1px solid #222; padding-bottom:15px;">
-        <h2 style="color:var(--primary); margin:0; letter-spacing:1px;">MASTER ADMIN</h2>
-        <button onclick="location.reload()" style="background:#ff0055; color:#fff; border:none; padding:10px 20px; border-radius:8px; cursor:pointer; font-weight:bold;">LOGOUT</button>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; border-bottom:1px solid #333; padding-bottom:15px;">
+        <h2 style="color:var(--primary); margin:0;">MASTER ADMIN</h2>
+        <button onclick="location.reload()" style="background:red; color:white; border:none; padding:10px 20px; border-radius:8px; cursor:pointer; font-weight:bold;">EXIT</button>
     </div>
     <div id="activeRoomsList"></div>
 </div>
 
 <div id="winnerOverlay">
-    <div class="winner-content" style="text-align:center;">
-        <div style="font-size:12px; color:#555; text-transform:uppercase; letter-spacing:2px;">Victory Royale</div>
-        <h1 id="winnerName" style="font-size: 50px; color: var(--win); margin: 10px 0;">PLAYER</h1>
-        <button onclick="restartMatch()" class="btn-main btn-primary" style="width:250px; margin:auto;">PLAY AGAIN</button>
+    <div style="text-align:center;">
+        <h1 id="winnerName" style="font-size: 50px; color: var(--win); margin: 20px 0;">PLAYER</h1>
+        <button onclick="window.restartMatch()" class="btn-main btn-primary" style="width:250px; margin:auto;">NEXT ROUND</button>
     </div>
 </div>
 
-<div class="container" id="mainGameUI">
+<div class="container" id="mainUI">
     <div id="loginScreen" class="screen">
         <h1 class="hero-title">ULTIMATE</h1>
         <h1 class="hero-title" style="color:var(--primary); -webkit-text-fill-color: var(--primary); margin-top: -10px;">ARENA PRO</h1>
-        <p style="color:#444; font-size:11px; font-weight:bold; margin-top:5px;">DEV: @RP_GUPTA_07</p>
+        <p style="color:#555; font-size:11px;">CREATED BY @RP_GUPTA_07</p>
 
         <div style="width:100%; margin-top:30px;">
             <input id="userName" placeholder="ENTER YOUR NAME" autocomplete="off">
             <div class="grid-select">
-                <button class="grid-btn active" id="g3" onclick="setGrid(3)">3X3</button>
-                <button class="grid-btn" id="g5" onclick="setGrid(5)">5X5</button>
-                <button class="grid-btn" id="g7" onclick="setGrid(7)">7X7</button>
+                <button class="grid-btn active" id="g3" onclick="window.setGrid(3)">3X3</button>
+                <button class="grid-btn" id="g5" onclick="window.setGrid(5)">5X5</button>
+                <button class="grid-btn" id="g7" onclick="window.setGrid(7)">7X7</button>
             </div>
-            <button class="btn-main btn-primary" onclick="createRoom()">CREATE NEW ARENA</button>
-            <button class="btn-main btn-secondary" onclick="startGlobal()">GLOBAL MATCHMAKING</button>
-            <button class="btn-main" style="background:#fff; color:#000;" onclick="startRobot()">TRAINING VS AI</button>
-            <div style="margin:20px 0; border-top:1px solid #111; padding-top:20px;">
-                <input id="joinCode" placeholder="ENTER ARENA CODE">
-                <button class="btn-main" style="background:#222; color:#fff;" onclick="joinRoom()">JOIN PRIVATE SQUAD</button>
+            <button class="btn-main btn-primary" onclick="window.createArena()">CREATE ARENA</button>
+            <button class="btn-main btn-secondary" onclick="window.startGlobal()">GLOBAL BATTLE</button>
+            <button class="btn-main" style="background:#fff; color:#000;" onclick="window.startRobot()">SOLO VS ROBOT</button>
+            <div style="margin:20px 0;">
+                <input id="joinCode" placeholder="ARENA CODE">
+                <button class="btn-main" style="background:#222; color:#fff;" onclick="window.joinArena()">JOIN SQUAD</button>
             </div>
         </div>
+        <div style="text-align:center;"><a href="https://www.instagram.com/rp_gupta_07" style="color:var(--primary); text-decoration:none; font-weight:bold; font-size:12px;">@rp_gupta_07</a></div>
     </div>
 
     <div id="gameScreen" class="hidden" style="display:flex; flex-direction:column; height: 100%;">
-        <div style="padding: 15px; display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.3);">
-            <button onclick="exitArena()" style="background:none; border:none; color:#ff0055; font-weight:bold; cursor:pointer;">✕ LEAVE</button>
-            <div id="status" style="color:var(--primary); font-size:12px; font-weight:bold; letter-spacing:1px;">SYNCING...</div>
-            <div style="font-size:10px; color:#555;">ID: <span id="displayRoomCode" style="color:#fff;">----</span></div>
+        <div style="padding: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom:1px solid #111;">
+            <button onclick="window.exitGame()" style="background:none; border:none; color:#ff0055; font-weight:bold; cursor:pointer;">✕ EXIT</button>
+            <div id="status" style="color:var(--win); font-size:12px; font-weight:bold;">SYNCING...</div>
+            <div style="font-size:10px; color:#555;">ID: <span id="displayCode" style="color:#fff;">----</span></div>
         </div>
 
         <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10px;">
             <div class="scoreboard">
-                <div class="score-box" id="p1Box">
-                    <div id="p1Name" style="font-size:10px; color:#888;">PLAYER 1</div>
-                    <div id="p1Score" style="font-size:24px; font-weight:900;">0</div>
-                </div>
-                <div style="color:#111; font-size:24px; font-weight:900;">VS</div>
-                <div class="score-box" id="p2Box">
-                    <div id="p2Name" style="font-size:10px; color:#888;">PLAYER 2</div>
-                    <div id="p2Score" style="font-size:24px; font-weight:900;">0</div>
-                </div>
+                <div class="score-box" id="p1Box"><div id="p1Name" style="font-size:10px; color:#666;">P1</div><div id="p1Score" style="font-size:24px; font-weight:900;">0</div></div>
+                <div style="color:#111; font-size:20px; font-weight:900; align-self:center;">VS</div>
+                <div class="score-box" id="p2Box"><div id="p2Name" style="font-size:10px; color:#666;">P2</div><div id="p2Score" style="font-size:24px; font-weight:900;">0</div></div>
             </div>
             <div id="board"></div>
-            <div style="display:flex; gap:20px; background:rgba(255,255,255,0.02); padding:12px 30px; border-radius:40px; margin-top:10px;">
-                <span onclick="sendEmoji('😂')" style="cursor:pointer; font-size:24px;">😂</span>
-                <span onclick="sendEmoji('🔥')" style="cursor:pointer; font-size:24px;">🔥</span>
-                <span onclick="sendEmoji('👑')" style="cursor:pointer; font-size:24px;">👑</span>
-                <span onclick="sendEmoji('⚡')" style="cursor:pointer; font-size:24px;">⚡</span>
+            <div style="display:flex; gap:20px; background:rgba(255,255,255,0.02); padding:10px 30px; border-radius:40px; margin-top:10px;">
+                <span onclick="window.sendEmoji('😂')" style="cursor:pointer; font-size:24px;">😂</span>
+                <span onclick="window.sendEmoji('🔥')" style="cursor:pointer; font-size:24px;">🔥</span>
+                <span onclick="window.sendEmoji('👑')" style="cursor:pointer; font-size:24px;">👑</span>
+                <span onclick="window.sendEmoji('⚡')" style="cursor:pointer; font-size:24px;">⚡</span>
             </div>
         </div>
 
         <div class="chat-section">
             <div id="messages"></div>
             <div style="display:flex; padding:8px; gap:8px;">
-                <input id="msgInput" placeholder="Send a message..." style="margin:0; flex:1; padding:12px; background:#111; border:none; color:#fff; border-radius:8px;">
-                <button onclick="sendMsg()" style="background:var(--primary); width:50px; border-radius:8px; border:none; cursor:pointer; color:#000; font-weight:bold;">➤</button>
+                <input id="msgInput" placeholder="Message..." style="margin:0; flex:1; padding:12px; background:#111; border:none; color:#fff; border-radius:10px;">
+                <button onclick="window.sendMsg()" style="background:var(--primary); width:50px; border-radius:10px; border:none; cursor:pointer; color:#000;">➤</button>
             </div>
         </div>
     </div>
@@ -186,7 +130,7 @@ input {
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
 <script>
-// FIREBASE SETUP
+// --- CONFIGURATION ---
 const firebaseConfig = {
   apiKey: "AIzaSyARuO_pN2vdYrVKYkKHHaNys7WI8HqM6I4",
   databaseURL: "https://friendchat-43941-default-rtdb.firebaseio.com",
@@ -195,7 +139,7 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-// SOUNDS
+// --- SOUNDS ---
 const sounds = {
     click: new Audio("https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3"),
     move: new Audio("https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3"),
@@ -205,45 +149,47 @@ const sounds = {
 };
 function playSfx(n) { try { sounds[n].currentTime=0; sounds[n].play().catch(()=>{}); } catch(e){} }
 
+// --- GLOBAL VARIABLES ---
 let myRoomId, myName, mySymbol, gameRef, chatRef, emojiRef, gridSize = 3, isRobot = false;
 
-function setGrid(s) {
+// --- EXPOSED FUNCTIONS (Directly attached to window for reliable onclick) ---
+window.setGrid = (s) => {
     gridSize = s; playSfx('click');
     document.querySelectorAll('.grid-btn').forEach(b => b.classList.remove('active'));
     document.getElementById('g'+s).classList.add('active');
-}
+};
 
-function createRoom() {
+window.createArena = () => {
     let n = document.getElementById("userName").value.trim();
-    if(n === "RP_ADMIN_7") { openAdminPanel(); return; }
+    if(n === "RP_ADMIN_7") { window.openAdmin(); return; }
     playSfx('click');
     myName = n || "Player X";
     myRoomId = Math.floor(1000 + Math.random()*8999).toString();
-    db.ref("rooms/" + myRoomId).remove().then(() => setupGame("X"));
-}
+    db.ref("rooms/" + myRoomId).remove().then(() => window.setupGame("X"));
+};
 
-function startRobot() {
-    playSfx('click'); isRobot = true; myName = document.getElementById("userName").value.trim() || "Player";
+window.startRobot = () => {
+    playSfx('click'); isRobot = true; myName = document.getElementById("userName").value.trim() || "Master";
     myRoomId = "BOT_" + Date.now();
-    db.ref("rooms/" + myRoomId).remove().then(() => setupGame("X"));
-}
+    db.ref("rooms/" + myRoomId).remove().then(() => window.setupGame("X"));
+};
 
-function joinRoom() {
+window.joinArena = () => {
     playSfx('click'); myName = document.getElementById("userName").value.trim() || "Player O";
     myRoomId = document.getElementById("joinCode").value.trim();
-    if(myRoomId) setupGame("O");
-}
+    if(myRoomId) window.setupGame("O"); else alert("Enter Code!");
+};
 
-function startGlobal() {
-    playSfx('click'); myName = document.getElementById("userName").value.trim() || "Global Player";
+window.startGlobal = () => {
+    playSfx('click'); myName = document.getElementById("userName").value.trim() || "Global-X";
     db.ref("global_waiting").once("value", snap => {
         let w = snap.val();
-        if(w) { myRoomId = w.room; db.ref("global_waiting").remove(); setupGame("O"); }
-        else { myRoomId = Math.floor(1000 + Math.random()*8999).toString(); db.ref("global_waiting").set({room: myRoomId}); setupGame("X"); }
+        if(w) { myRoomId = w.room; db.ref("global_waiting").remove(); window.setupGame("O"); }
+        else { myRoomId = Math.floor(1000 + Math.random()*8999).toString(); db.ref("global_waiting").set({room: myRoomId}); window.setupGame("X"); }
     });
-}
+};
 
-function setupGame(sym) {
+window.setupGame = (sym) => {
     mySymbol = sym;
     gameRef = db.ref("rooms/" + myRoomId + "/game");
     chatRef = db.ref("rooms/" + myRoomId + "/chat");
@@ -260,11 +206,11 @@ function setupGame(sym) {
 
     document.getElementById("loginScreen").classList.add("hidden");
     document.getElementById("gameScreen").classList.remove("hidden");
-    document.getElementById("displayRoomCode").innerText = isRobot ? "SOLO" : myRoomId;
-    createBoard(); listenGame(); listenChat(); listenEmojis();
-}
+    document.getElementById("displayCode").innerText = isRobot ? "SOLO" : myRoomId;
+    window.createBoard(); window.listenGame(); window.listenChat(); window.listenEmojis();
+};
 
-function createBoard() {
+window.createBoard = () => {
     const bEl = document.getElementById("board");
     bEl.innerHTML = "";
     let cSize = gridSize === 3 ? 95 : gridSize === 5 ? 65 : 45;
@@ -274,12 +220,12 @@ function createBoard() {
         cell.className = "cell";
         cell.style.width = cSize + "px"; cell.style.height = cSize + "px";
         cell.style.fontSize = (cSize/1.8) + "px";
-        cell.onclick = () => move(i);
+        cell.onclick = () => window.move(i);
         bEl.appendChild(cell);
     }
-}
+};
 
-function listenGame() {
+window.listenGame = () => {
     gameRef.on("value", snap => {
         const g = snap.val(); if(!g) return;
         const bEl = document.getElementById("board");
@@ -299,7 +245,7 @@ function listenGame() {
             }
         });
 
-        let winData = checkWinner(g.board, g.size);
+        let winData = window.checkWinner(g.board, g.size);
         if(winData) {
             if(winData !== "draw") {
                 playSfx('win');
@@ -315,44 +261,44 @@ function listenGame() {
             }
         } else {
             document.getElementById("winnerOverlay").style.display = "none";
-            document.getElementById("status").innerText = g.turn === mySymbol ? "YOUR TURN" : "OPPONENT TURN";
-            if(isRobot && g.turn === "O") setTimeout(proRobot, 600);
+            document.getElementById("status").innerText = g.turn === mySymbol ? "YOUR TURN" : "WAITING...";
+            if(isRobot && g.turn === "O") setTimeout(window.proRobot, 600);
         }
     });
-}
+};
 
-function move(i) {
+window.move = (i) => {
     gameRef.once("value", snap => {
         const g = snap.val();
-        if(!g || g.turn !== mySymbol || g.board[i] !== "" || checkWinner(g.board, g.size)) return;
+        if(!g || g.turn !== mySymbol || g.board[i] !== "" || window.checkWinner(g.board, g.size)) return;
         g.board[i] = mySymbol;
         let up = { board: g.board, turn: mySymbol === "X" ? "O" : "X" };
-        let win = checkWinner(g.board, g.size);
+        let win = window.checkWinner(g.board, g.size);
         if(win && win !== "draw") { g.scores[win.w]++; up.scores = g.scores; }
         gameRef.update(up);
     });
-}
+};
 
-function proRobot() {
+window.proRobot = () => {
     gameRef.once("value", snap => {
         const g = snap.val(); if(!g || g.turn !== "O") return;
         let board = [...g.board], s = g.size, moveIdx = -1;
         let avail = board.map((v,i)=>v===""?i:null).filter(v=>v!==null);
         if(avail.length === 0) return;
         for(let sym of ["O", "X"]) {
-            for(let m of avail) { board[m] = sym; if(checkWinner(board, s)){ moveIdx = m; break; } board[m] = ""; }
+            for(let m of avail) { board[m] = sym; if(window.checkWinner(board, s)){ moveIdx = m; break; } board[m] = ""; }
             if(moveIdx !== -1) break;
         }
         if(moveIdx === -1) moveIdx = avail[Math.floor(Math.random()*avail.length)];
         g.board[moveIdx] = "O";
         let up = { board: g.board, turn: "X" };
-        let win = checkWinner(g.board, s);
+        let win = window.checkWinner(g.board, s);
         if(win && win !== "draw") { g.scores.O++; up.scores = g.scores; }
         gameRef.update(up);
     });
-}
+};
 
-function checkWinner(b, size) {
+window.checkWinner = (b, size) => {
     const lines = []; let winLen = size === 3 ? 3 : (size === 5 ? 4 : 5);
     for(let i=0; i<size; i++) {
         for(let j=0; j<=size-winLen; j++) {
@@ -368,38 +314,31 @@ function checkWinner(b, size) {
     }
     for(let l of lines) { if(b[l[0]] && l.every(idx => b[idx] === b[l[0]])) return {w: b[l[0]], line: l}; }
     return b.includes("") ? null : "draw";
-}
+};
 
-function restartMatch() {
+window.restartMatch = () => {
     playSfx('click');
     gameRef.once("value", snap => {
         const g = snap.val();
         let next = g.lastStarter === "X" ? "O" : "X";
         gameRef.update({ board: Array(gridSize*gridSize).fill(""), turn: next, lastStarter: next });
     });
-}
+};
 
-function exitArena() { if(confirm("Quit Match?")) { db.ref("rooms/" + myRoomId).remove().then(() => location.reload()); } }
-function sendMsg() { let i = document.getElementById("msgInput"); if(i.value.trim()){ chatRef.push({ n: myName, m: i.value }); i.value = ""; playSfx('msg'); } }
-function listenChat() { chatRef.on("child_added", snap => { let d = snap.val(); let m = document.createElement("div"); m.className = "msg " + (d.n === myName ? "me" : "other"); m.innerHTML = `<b style="font-size:8px; opacity:0.5; display:block;">${d.n}</b>${d.m}`; document.getElementById("messages").appendChild(m); document.getElementById("messages").scrollTop = 10000; }); }
-function sendEmoji(e) { emojiRef.set({ emoji: e, t: Date.now() }); playSfx('emoji'); }
-function listenEmojis() { emojiRef.on("value", snap => { let d = snap.val(); if(!d) return; let el = document.createElement("div"); el.style.position = "fixed"; el.style.bottom = "150px"; el.style.fontSize = "60px"; el.innerText = d.emoji; el.style.left = Math.random()*60+20+"%"; el.animate([{transform:'translateY(0)', opacity:1},{transform:'translateY(-400px)', opacity:0}], 1200); document.body.appendChild(el); setTimeout(()=>el.remove(), 1200); }); }
+window.exitGame = () => { if(confirm("Quit Match?")) { db.ref("rooms/" + myRoomId).remove().then(() => location.reload()); } };
+window.sendMsg = () => { let i = document.getElementById("msgInput"); if(i.value.trim()){ chatRef.push({ n: myName, m: i.value }); i.value = ""; playSfx('msg'); } };
+window.listenChat = () => { chatRef.on("child_added", snap => { let d = snap.val(); let m = document.createElement("div"); m.className = "msg " + (d.n === myName ? "me" : "other"); m.innerHTML = `<b style="font-size:8px; opacity:0.5; display:block;">${d.n}</b>${d.m}`; document.getElementById("messages").appendChild(m); document.getElementById("messages").scrollTop = 10000; }); };
+window.sendEmoji = (e) => { emojiRef.set({ emoji: e, t: Date.now() }); playSfx('emoji'); };
+window.listenEmojis = () => { emojiRef.on("value", snap => { let d = snap.val(); if(!d) return; let el = document.createElement("div"); el.style.position = "fixed"; el.style.bottom = "150px"; el.style.fontSize = "60px"; el.innerText = d.emoji; el.style.left = Math.random()*60+20+"%"; el.animate([{transform:'translateY(0)', opacity:1},{transform:'translateY(-400px)', opacity:0}], 1200); document.body.appendChild(el); setTimeout(()=>el.remove(), 1200); }); };
 
-// ADMIN FUNCTIONS
-function openAdminPanel() {
-    document.getElementById("mainGameUI").style.display = "none";
+window.openAdmin = () => {
+    document.getElementById("mainUI").style.display = "none";
     document.getElementById("adminPanel").style.display = "block";
     db.ref("rooms").on("value", snap => {
-        let list = document.getElementById("activeRoomsList");
-        list.innerHTML = "";
-        let rooms = snap.val();
-        if(!rooms) { list.innerHTML = "<p style='color:#444; text-align:center;'>No Live Arenas</p>"; return; }
+        let list = document.getElementById("activeRoomsList"); list.innerHTML = "";
+        let rooms = snap.val(); if(!rooms) return;
         for(let rid in rooms) {
-            let rd = rooms[rid];
-            let ps = rd.game ? rd.game.players : {X:'?', O:'?'};
-            let ms = rd.chat ? Object.values(rd.chat) : [];
-            let card = document.createElement("div");
-            card.className = "room-card";
-            card.innerHTML = `
-                <div style="font-weight:bold; color:var(--primary);">LIVE ARENA: ${rid}</div>
-        
+            let rd = rooms[rid]; let ps = rd.game ? rd.game.players : {X:'?', O:'?'}; let ms = rd.chat ? Object.values(rd.chat) : [];
+            let card = document.createElement("div"); card.className = "room-card";
+            card.innerHTML = `<div><b>ROOM: ${rid}</b></div><div style="font-size:11px;">${ps.X} VS ${ps.O}</div><div class="admin-chat-box">${ms.map(m=>`<div><b>${m.n}:</b> ${m.m}</div>`).join('')}</div><button onclick="db.ref('rooms/${rid}').remove()" style="width:100%; padding:8px; background:red; border:none; color:#fff; border-radius:8px; margin-top:10px; cursor:pointer;">TERMINATE</button>`;
+           
