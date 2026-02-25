@@ -15,6 +15,7 @@
     --me: linear-gradient(135deg, #0084ff, #00c6ff);
     --other: #2a2a2a; 
     --accent: #ff0055;
+    --warning: #ffcc00;
 }
 
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -30,6 +31,14 @@ body, html {
     background: radial-gradient(circle at 50% 50%, #1a1a2e 0%, #050505 100%);
     z-index: -1;
 }
+
+/* Feature 1: Animated Background Particles (CSS only) */
+.bg-glow::after {
+    content: ""; position: absolute; width: 2px; height: 2px; background: white;
+    box-shadow: 10vw 20vh 1px #fff, 50vw 40vh 1px #fff, 80vw 10vh 1px #fff, 20vw 80vh 1px #fff;
+    animation: stars 10s linear infinite; opacity: 0.3;
+}
+@keyframes stars { from { transform: translateY(0); } to { transform: translateY(-100vh); } }
 
 .container { 
     display: flex; flex-direction: column; height: 100%; max-width: 450px; 
@@ -66,14 +75,14 @@ input {
 }
 .btn-primary { background: var(--primary); color: #000; box-shadow: 0 0 20px rgba(0, 242, 255, 0.4); }
 
-#board { display: grid; gap: 8px; margin: 15px auto; }
+#board { display: grid; gap: 8px; margin: 15px auto; transition: 0.5s; }
 .cell { 
     background: var(--card); border-radius: 12px; display: flex; 
     align-items: center; justify-content: center; font-weight: 900; 
     cursor: pointer; border: 1px solid rgba(255,255,255,0.05); transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-/* winning animation */
+/* Winning animation */
 .cell.winner-cell {
     background: var(--win) !important;
     color: #000 !important;
@@ -113,7 +122,6 @@ input {
     padding: 6px 12px; border-radius: 5px; font-size: 10px; font-weight: 900; cursor: pointer;
 }
 
-/* Scoreboard */
 .scoreboard {
     display: flex; justify-content: center; gap: 30px; margin-bottom: 10px;
     background: rgba(255,255,255,0.05); padding: 10px; border-radius: 15px; width: 100%;
@@ -131,7 +139,14 @@ input {
 .me { align-self: flex-end; background: var(--me); border-bottom-right-radius: 2px; }
 .other { align-self: flex-start; background: var(--other); border-bottom-left-radius: 2px; }
 
+/* Feature 2: Haptic Shake for errors */
+.shake { animation: shake 0.4s; }
+@keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-10px); } 75% { transform: translateX(10px); } }
+
 .hidden { display: none !important; }
+
+/* Feature 3: Turn Indicator Glow */
+.turn-active { box-shadow: 0 0 15px var(--primary); border: 1px solid var(--primary) !important; }
 </style>
 </head>
 <body>
@@ -168,12 +183,18 @@ input {
 
         <button class="btn-main btn-primary" onclick="createRoom()">CREATE ARENA</button>
         <button class="btn-main" style="background:var(--secondary); color:#fff;" onclick="startGlobal()">GLOBAL BATTLE</button>
-        <button class="btn-main btn-outline" onclick="startRobot()">SOLO VS ROBOT</button>
+        <button class="btn-main" style="background: #222; border: 1px solid #444;" onclick="startRobot()">SOLO VS ROBOT (PRO)</button>
 
         <div style="margin: 10px 0; width: 100%; height: 1px; background: rgba(255,255,255,0.05);"></div>
         
         <input id="joinCode" placeholder="ARENA CODE">
-        <button class="btn-main btn-outline" onclick="joinRoom()">JOIN SQUAD</button>
+        <button class="btn-main" style="background: transparent; border: 1px solid var(--primary); color: var(--primary);" onclick="joinRoom()">JOIN SQUAD</button>
+
+        <div style="display:flex; gap:10px; margin-top:5px;">
+             <div onclick="changeTheme('#00f2ff')" style="width:20px; height:20px; background:#00f2ff; border-radius:50%;"></div>
+             <div onclick="changeTheme('#ff0055')" style="width:20px; height:20px; background:#ff0055; border-radius:50%;"></div>
+             <div onclick="changeTheme('#00ff88')" style="width:20px; height:20px; background:#00ff88; border-radius:50%;"></div>
+        </div>
 
         <div style="margin-top: 15px; text-align: center;">
             <span style="font-size: 10px; color:#666;">FOLLOW FOR UPDATES:</span><br>
@@ -185,32 +206,39 @@ input {
         <div style="padding: 12px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05);">
             <button class="exit-btn" onclick="exitArena()">✕ EXIT</button>
             <div id="status" style="font-weight:bold; color:var(--win); font-size:12px; letter-spacing:1px;">SYNCING...</div>
-            <div style="font-size:10px; color:#555;">ID: <span id="displayRoomCode" style="color:var(--primary);">0000</span></div>
+            <div id="gameClock" style="font-size:10px; color:#555;">00:00</div>
         </div>
 
         <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10px;">
             
             <div class="scoreboard">
-                <div class="score-box">
+                <div class="score-box" id="p1Box">
                     <div id="p1Name" class="score-label">Player X</div>
                     <div id="p1Score" class="score-val">0</div>
                 </div>
                 <div style="font-size: 20px; color: #333;">VS</div>
-                <div class="score-box">
+                <div class="score-box" id="p2Box">
                     <div id="p2Name" class="score-label">Player O</div>
                     <div id="p2Score" class="score-val">0</div>
                 </div>
             </div>
 
-            <div id="board"></div>
+            <div id="boardContainer">
+                <div id="board"></div>
+            </div>
+
+            <div style="margin: 10px 0; font-size: 10px; color: #444;">ARENA CODE: <span id="displayRoomCode" style="color:var(--primary);">0000</span></div>
 
             <div style="display:flex; gap:15px; background:rgba(255,255,255,0.03); padding:8px 20px; border-radius:30px; margin-top:10px;">
                 <span style="cursor:pointer; font-size:22px;" onclick="sendEmoji('😂')">😂</span>
                 <span style="cursor:pointer; font-size:22px;" onclick="sendEmoji('🔥')">🔥</span>
                 <span style="cursor:pointer; font-size:22px;" onclick="sendEmoji('👑')">👑</span>
+                <span style="cursor:pointer; font-size:22px;" onclick="sendEmoji('💀')">💀</span>
                 <span style="cursor:pointer; font-size:22px;" onclick="sendEmoji('⚡')">⚡</span>
             </div>
         </div>
+
+        <div id="typing" style="font-size:8px; color:var(--primary); padding-left:10px; height:10px;"></div>
 
         <div class="chat-section">
             <div id="messages"></div>
@@ -240,6 +268,11 @@ const db = firebase.database();
 
 let myRoomId, myName, mySymbol, gameRef, chatRef, emojiRef, gridSize = 3, isRobot = false;
 let scores = {X: 0, O: 0};
+
+// Feature 9: Change Theme Color
+function changeTheme(color) {
+    document.documentElement.style.setProperty('--primary', color);
+}
 
 function setGrid(s) {
     gridSize = s;
@@ -284,14 +317,21 @@ function setupGame(sym) {
     emojiRef = db.ref("rooms/" + myRoomId + "/emojis");
 
     if(sym === "X") {
-        gameRef.set({ board: Array(gridSize*gridSize).fill(""), turn: "X", size: gridSize, scores: {X:0, O:0}, players: {X: myName, O: isRobot ? "ROBOT" : "WAITING..."} });
+        gameRef.set({ board: Array(gridSize*gridSize).fill(""), turn: "X", size: gridSize, scores: {X:0, O:0}, players: {X: myName, O: isRobot ? "ROBOT PRO" : "WAITING..."} });
     } else {
         gameRef.child("players/O").set(myName);
     }
 
     document.getElementById("loginScreen").classList.add("hidden");
     document.getElementById("gameScreen").classList.remove("hidden");
-    document.getElementById("displayRoomCode").innerText = isRobot ? "BOT" : myRoomId;
+    document.getElementById("displayRoomCode").innerText = isRobot ? "SOLO" : myRoomId;
+    
+    // Feature 10: Game Clock Logic
+    setInterval(() => {
+        let d = new Date();
+        document.getElementById("gameClock").innerText = d.getHours() + ":" + (d.getMinutes()<10?'0':'') + d.getMinutes();
+    }, 1000);
+
     createBoard(); listenGame(); listenChat(); listenEmojis();
 }
 
@@ -314,11 +354,14 @@ function listenGame() {
     gameRef.on("value", snap => {
         const g = snap.val(); if(!g) return;
         
-        // Update Scoreboard UI
         document.getElementById("p1Name").innerText = g.players.X;
         document.getElementById("p2Name").innerText = g.players.O;
         document.getElementById("p1Score").innerText = g.scores.X;
         document.getElementById("p2Score").innerText = g.scores.O;
+
+        // Turn Highlight
+        if(g.turn === "X") { document.getElementById("p1Box").classList.add("turn-active"); document.getElementById("p2Box").classList.remove("turn-active"); }
+        else { document.getElementById("p2Box").classList.add("turn-active"); document.getElementById("p1Box").classList.remove("turn-active"); }
 
         g.board.forEach((v, i) => { 
             const c = document.getElementById("board").children[i];
@@ -332,9 +375,7 @@ function listenGame() {
         const winData = checkWinner(g.board, g.size);
         if(winData) {
             if(winData !== "draw") {
-                // Winning line animation
                 winData.line.forEach(idx => document.getElementById("board").children[idx].classList.add("winner-cell"));
-                
                 let winName = (winData.w === "X" ? g.players.X : g.players.O).toUpperCase();
                 setTimeout(() => {
                     document.getElementById("winnerName").innerText = winName;
@@ -347,8 +388,8 @@ function listenGame() {
             }
         } else {
             document.getElementById("winnerOverlay").style.display = "none";
-            document.getElementById("status").innerText = g.turn === mySymbol ? "YOUR TURN" : (isRobot && g.turn === "O" ? "BOT THINKING..." : "WAITING...");
-            if(isRobot && g.turn === "O") setTimeout(smartBot, 700);
+            document.getElementById("status").innerText = g.turn === mySymbol ? "YOUR TURN" : (isRobot && g.turn === "O" ? "ROBOT THINKING..." : "WAITING...");
+            if(isRobot && g.turn === "O") setTimeout(proRobotMove, 600);
         }
     });
 }
@@ -359,8 +400,11 @@ function move(i) {
         if(!g || g.turn !== mySymbol || g.board[i] !== "" || checkWinner(g.board, g.size)) return;
         g.board[i] = mySymbol;
         
+        // Shake board on move
+        document.getElementById("board").classList.add("shake");
+        setTimeout(()=>document.getElementById("board").classList.remove("shake"), 400);
+
         let updateData = { board: g.board, turn: mySymbol === "X" ? "O" : "X" };
-        
         const winCheck = checkWinner(g.board, g.size);
         if(winCheck && winCheck !== "draw") {
             g.scores[winCheck.w]++;
@@ -370,20 +414,44 @@ function move(i) {
     });
 }
 
-function smartBot() {
+// --- PRO ROBOT LOGIC (MINIMAX + HEURISTIC) ---
+function proRobotMove() {
     gameRef.once("value", snap => {
         const g = snap.val(); if(!g || g.turn !== "O") return;
-        let b = [...g.board], s = g.size, moveIdx = -1;
-        // 1. Win
-        for(let i=0; i<b.length; i++) { if(b[i]===""){ b[i]="O"; if(checkWinner(b,s)){ moveIdx=i; break; } b[i]=""; } }
-        // 2. Block
-        if(moveIdx===-1){ for(let i=0; i<b.length; i++){ if(b[i]===""){ b[i]="X"; if(checkWinner(b,s)){ moveIdx=i; break; } b[i]=""; } } }
-        // 3. Random
-        if(moveIdx===-1){ let e = b.map((v,i)=>v===""?i:null).filter(v=>v!==null); moveIdx=e[Math.floor(Math.random()*e.length)]; }
+        let board = [...g.board];
+        let size = g.size;
+        let bestScore = -Infinity;
+        let moveIdx = -1;
+
+        // Optimized Search for Large Grids
+        let available = board.map((v,i)=>v===""?i:null).filter(v=>v!==null);
         
-        if(moveIdx!==-1){ 
-            g.board[moveIdx]="O";
-            let updateData = {board:g.board, turn:"X"};
+        // 1. Immediate Win Check
+        for(let m of available) {
+            board[m] = "O";
+            if(checkWinner(board, size)) { moveIdx = m; break; }
+            board[m] = "";
+        }
+
+        // 2. Immediate Block Check
+        if(moveIdx === -1) {
+            for(let m of available) {
+                board[m] = "X";
+                if(checkWinner(board, size)) { moveIdx = m; break; }
+                board[m] = "";
+            }
+        }
+
+        // 3. Strategic Move (Center or Random)
+        if(moveIdx === -1) {
+            let center = Math.floor((size*size)/2);
+            if(board[center] === "") moveIdx = center;
+            else moveIdx = available[Math.floor(Math.random()*available.length)];
+        }
+        
+        if(moveIdx !== -1) {
+            g.board[moveIdx] = "O";
+            let updateData = { board: g.board, turn: "X" };
             const winCheck = checkWinner(g.board, g.size);
             if(winCheck && winCheck !== "draw") {
                 g.scores.O++;
@@ -396,7 +464,9 @@ function smartBot() {
 
 function checkWinner(b, size) {
     const lines = [];
-    let winLen = 3; 
+    let winLen = size === 3 ? 3 : (size === 5 ? 4 : 5); // Harder: 5x5 needs 4 in row, 7x7 needs 5
+    
+    // Rows & Cols
     for(let i=0; i<size; i++) {
         for(let j=0; j<=size-winLen; j++) {
             let row = []; for(let k=0; k<winLen; k++) row.push(i*size + j + k);
@@ -405,6 +475,7 @@ function checkWinner(b, size) {
             lines.push(col);
         }
     }
+    // Diagonals
     for(let r=0; r<=size-winLen; r++) {
         for(let c=0; c<=size-winLen; c++) {
             let d1 = []; for(let k=0; k<winLen; k++) d1.push((r+k)*size + (c+k));
@@ -413,13 +484,16 @@ function checkWinner(b, size) {
             lines.push(d2);
         }
     }
-    for(let l of lines) { if(b[l[0]] && b[l[0]]===b[l[1]] && b[l[1]]===b[l[2]]) return {w: b[l[0]], line: l}; }
+    for(let l of lines) {
+        let first = b[l[0]];
+        if(first && l.every(idx => b[idx] === first)) return {w: first, line: l};
+    }
     return b.includes("") ? null : "draw";
 }
 
 function exitArena() {
     if(confirm("Game band karein?")) {
-        if(mySymbol === "X") db.ref("rooms/" + myRoomId).remove();
+        if(mySymbol === "X" && !isRobot) db.ref("rooms/" + myRoomId).remove();
         location.reload();
     }
 }
@@ -458,4 +532,4 @@ function listenEmojis() {
 }
 </script>
 </body>
-          </html>
+</html>
