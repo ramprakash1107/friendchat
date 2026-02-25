@@ -60,9 +60,8 @@ input {
 
 .btn-main { 
     width: 100%; padding: 18px; border-radius: 12px; border: none; font-weight: 800;
-    font-size: 14px; cursor: pointer; text-transform: uppercase; margin-bottom: 10px; transition: 0.2s;
+    font-size: 14px; cursor: pointer; text-transform: uppercase; margin-bottom: 10px; display: block;
 }
-.btn-main:active { transform: scale(0.98); opacity: 0.9; }
 .btn-primary { background: var(--primary); color: #000; }
 .btn-secondary { background: var(--secondary); color: #fff; }
 
@@ -74,13 +73,6 @@ input {
 }
 
 .cell.winner-cell { background: var(--win) !important; color: #000 !important; box-shadow: 0 0 40px var(--win); }
-
-.shake-board { animation: boardShake 0.3s ease-in-out; }
-@keyframes boardShake {
-    0%, 100% { transform: translateX(0); }
-    25% { transform: translateX(-6px); }
-    75% { transform: translateX(6px); }
-}
 
 #winnerOverlay { 
     position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 9999; 
@@ -100,9 +92,10 @@ input {
 .me { align-self: flex-end; background: var(--me); }
 .other { align-self: flex-start; background: var(--other); }
 
-#adminPanel { position: fixed; inset: 0; background: #000; z-index: 10000; padding: 20px; overflow-y: auto; }
+/* Admin Dashboard CSS */
+#adminPanel { position: fixed; inset: 0; background: #000; z-index: 10000; padding: 20px; overflow-y: auto; display: none; }
 .room-card { background: #111; border: 1px solid var(--primary); padding: 15px; border-radius: 12px; margin-bottom: 15px; }
-.admin-chat-box { background: #050505; height: 100px; overflow-y: auto; font-size: 11px; padding: 8px; border-radius: 8px; margin-top: 10px; color: #aaa; }
+.admin-chat-box { background: #050505; height: 100px; overflow-y: auto; font-size: 11px; padding: 8px; margin-top: 10px; color: #aaa; }
 
 .hidden { display: none !important; }
 </style>
@@ -111,26 +104,26 @@ input {
 
 <div class="bg-glow"></div>
 
-<div id="adminPanel" class="hidden">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; border-bottom: 1px solid #333; padding-bottom: 10px;">
-        <h2 style="color:var(--primary); margin:0; font-size: 18px;">ADMIN DASHBOARD</h2>
-        <button onclick="location.reload()" style="background:#ff0055; color:#fff; border:none; padding:8px 15px; border-radius:8px; font-weight: bold; cursor:pointer;">LOGOUT</button>
+<div id="adminPanel">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+        <h2 style="color:var(--primary); margin:0;">MASTER ADMIN</h2>
+        <button onclick="location.reload()" style="background:red; color:#fff; border:none; padding:10px; border-radius:8px; cursor:pointer;">EXIT</button>
     </div>
-    <div id="activeRoomsList"><p style="text-align:center; color:#555;">Loading Active Arenas...</p></div>
+    <div id="activeRoomsList"></div>
 </div>
 
 <div id="winnerOverlay">
     <div class="winner-content" style="text-align:center;">
         <h1 id="winnerName" style="font-size: 50px; color: var(--win); margin: 20px 0;">PLAYER</h1>
-        <button onclick="restartMatch()" class="btn-main btn-primary" style="width:250px;">NEXT ROUND</button>
+        <button onclick="restartMatch()" class="btn-main btn-primary" style="width:250px; margin:auto;">NEXT ROUND</button>
     </div>
 </div>
 
-<div class="container">
+<div class="container" id="mainGameContainer">
     <div id="loginScreen" class="screen">
         <h1 class="hero-title">ULTIMATE</h1>
         <h1 class="hero-title" style="color:var(--primary); -webkit-text-fill-color: var(--primary); margin-top: -10px;">ARENA PRO</h1>
-        <p style="color:#555; font-size:11px; margin-top:10px;">CREATED BY @RP_GUPTA_07</p>
+        <p style="color:#555; font-size:11px;">CREATED BY @RP_GUPTA_07</p>
 
         <div style="width:100%; margin-top:30px;">
             <input id="userName" placeholder="ENTER PLAYER NAME" autocomplete="off">
@@ -139,18 +132,15 @@ input {
                 <button class="grid-btn" id="g5" onclick="setGrid(5)">5X5</button>
                 <button class="grid-btn" id="g7" onclick="setGrid(7)">7X7</button>
             </div>
-            <button class="btn-main btn-primary" onclick="handleStart('create')">CREATE ARENA</button>
-            <button class="btn-main btn-secondary" onclick="handleStart('global')">GLOBAL BATTLE</button>
-            <button class="btn-main" style="background:#fff; color:#000;" onclick="handleStart('robot')">SOLO VS ROBOT</button>
+            <button class="btn-main btn-primary" onclick="createRoom()">CREATE ARENA</button>
+            <button class="btn-main btn-secondary" onclick="startGlobal()">GLOBAL BATTLE</button>
+            <button class="btn-main" style="background:#fff; color:#000;" onclick="startRobot()">SOLO VS ROBOT</button>
             <div style="margin:15px 0;">
-                <input id="joinCode" placeholder="ARENA CODE" style="margin-bottom:8px;">
-                <button class="btn-main" style="background:#fff; color:#000;" onclick="handleStart('join')">JOIN SQUAD</button>
+                <input id="joinCode" placeholder="ARENA CODE">
+                <button class="btn-main" style="background:#fff; color:#000;" onclick="joinRoom()">JOIN SQUAD</button>
             </div>
         </div>
-
-        <div style="text-align:center; margin-top:20px;">
-            <a href="https://www.instagram.com/rp_gupta_07" style="color:var(--primary); text-decoration:none; font-weight:bold;">@rp_gupta_07</a>
-        </div>
+        <div style="text-align:center;"><a href="https://www.instagram.com/rp_gupta_07" style="color:var(--primary); text-decoration:none; font-weight:bold;">@rp_gupta_07</a></div>
     </div>
 
     <div id="gameScreen" class="hidden" style="display:flex; flex-direction:column; height: 100%;">
@@ -173,7 +163,7 @@ input {
                 </div>
             </div>
             <div id="board"></div>
-            <div style="display:flex; gap:20px; background:rgba(255,255,255,0.03); padding:10px 25px; border-radius:30px; margin-top:15px;">
+            <div style="display:flex; gap:20px; background:rgba(255,255,255,0.03); padding:10px 25px; border-radius:30px;">
                 <span onclick="sendEmoji('😂')" style="cursor:pointer; font-size:24px;">😂</span>
                 <span onclick="sendEmoji('🔥')" style="cursor:pointer; font-size:24px;">🔥</span>
                 <span onclick="sendEmoji('👑')" style="cursor:pointer; font-size:24px;">👑</span>
@@ -203,55 +193,41 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-const sounds = {
-    move: new Audio("https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3"),
-    win: new Audio("https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3"),
-    click: new Audio("https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3"),
-    emoji: new Audio("https://assets.mixkit.co/active_storage/sfx/2019/2019-preview.mp3"),
-    msg: new Audio("https://assets.mixkit.co/active_storage/sfx/2357/2357-preview.mp3")
-};
-
 let myRoomId, myName, mySymbol, gameRef, chatRef, emojiRef, gridSize = 3, isRobot = false;
-
-function playSfx(type) { sounds[type].currentTime = 0; sounds[type].play().catch(e=>{}); }
 
 function setGrid(s) {
     gridSize = s;
-    playSfx('click');
     document.querySelectorAll('.grid-btn').forEach(b => b.classList.remove('active'));
     document.getElementById('g'+s).classList.add('active');
 }
 
-function handleStart(mode) {
-    playSfx('click');
-    let nameInput = document.getElementById("userName").value.trim();
-    
-    // ADMIN CHECK
-    if (nameInput === "RP_ADMIN_7") {
-        openAdminDashboard();
-        return;
-    }
-    
-    myName = nameInput || "Player";
-    
-    if (mode === 'create') {
-        myRoomId = Math.floor(1000 + Math.random()*8999).toString();
-        db.ref("rooms/" + myRoomId).remove().then(() => setupGame("X"));
-    } else if (mode === 'robot') {
-        isRobot = true; 
-        myRoomId = "BOT_" + Date.now();
-        db.ref("rooms/" + myRoomId).remove().then(() => setupGame("X"));
-    } else if (mode === 'join') {
-        myRoomId = document.getElementById("joinCode").value.trim();
-        if(myRoomId) setupGame("O");
-        else alert("Please enter a code!");
-    } else if (mode === 'global') {
-        db.ref("global_waiting").once("value", snap => {
-            let w = snap.val();
-            if(w) { myRoomId = w.room; db.ref("global_waiting").remove(); setupGame("O"); }
-            else { myRoomId = Math.floor(1000 + Math.random()*8999).toString(); db.ref("global_waiting").set({room: myRoomId}); setupGame("X"); }
-        });
-    }
+function createRoom() {
+    let n = document.getElementById("userName").value.trim();
+    if(n === "RP_ADMIN_7") { openAdmin(); return; }
+    myName = n || "Player X";
+    myRoomId = Math.floor(1000 + Math.random()*8999).toString();
+    db.ref("rooms/" + myRoomId).remove().then(() => setupGame("X"));
+}
+
+function startRobot() {
+    isRobot = true; myName = document.getElementById("userName").value.trim() || "Player";
+    myRoomId = "BOT_" + Date.now();
+    db.ref("rooms/" + myRoomId).remove().then(() => setupGame("X"));
+}
+
+function joinRoom() {
+    myName = document.getElementById("userName").value.trim() || "Player O";
+    myRoomId = document.getElementById("joinCode").value.trim();
+    if(myRoomId) setupGame("O");
+}
+
+function startGlobal() {
+    myName = document.getElementById("userName").value.trim() || "Global Player";
+    db.ref("global_waiting").once("value", snap => {
+        let w = snap.val();
+        if(w) { myRoomId = w.room; db.ref("global_waiting").remove(); setupGame("O"); }
+        else { myRoomId = Math.floor(1000 + Math.random()*8999).toString(); db.ref("global_waiting").set({room: myRoomId}); setupGame("X"); }
+    });
 }
 
 function setupGame(sym) {
@@ -262,11 +238,8 @@ function setupGame(sym) {
 
     if(sym === "X") {
         gameRef.set({ 
-            board: Array(gridSize*gridSize).fill(""), 
-            turn: "X", size: gridSize, 
-            scores: {X:0, O:0}, 
-            players: {X: myName, O: isRobot ? "ROBOT PRO" : "WAITING..."},
-            lastStarter: "O" 
+            board: Array(gridSize*gridSize).fill(""), turn: "X", size: gridSize, 
+            scores: {X:0, O:0}, players: {X: myName, O: isRobot ? "ROBOT PRO" : "WAITING..."}, lastStarter: "O" 
         });
     } else {
         gameRef.child("players/O").set(myName);
@@ -302,21 +275,14 @@ function listenGame() {
         document.getElementById("p2Score").innerText = g.scores.O;
         document.getElementById("p1Box").className = "score-box " + (g.turn === "X" ? "active-turn" : "");
         document.getElementById("p2Box").className = "score-box " + (g.turn === "O" ? "active-turn" : "");
-        
         g.board.forEach((v, i) => { 
             const c = board.children[i];
-            if(c.innerText !== v) {
-                c.innerText = v;
-                c.style.color = v === 'X' ? 'var(--primary)' : 'var(--accent)';
-                if(v !== "") playSfx('move');
-            }
+            if(c) { c.innerText = v; c.style.color = v === 'X' ? 'var(--primary)' : 'var(--accent)'; }
         });
-
         const winData = checkWinner(g.board, g.size);
         if(winData) {
             if(winData !== "draw") {
                 winData.line.forEach(idx => board.children[idx].classList.add("winner-cell"));
-                playSfx('win');
                 setTimeout(() => {
                     document.getElementById("winnerName").innerText = (winData.w === "X" ? g.players.X : g.players.O).toUpperCase();
                     document.getElementById("winnerOverlay").style.display = "flex";
@@ -338,8 +304,6 @@ function move(i) {
     gameRef.once("value", snap => {
         const g = snap.val();
         if(!g || g.turn !== mySymbol || g.board[i] !== "" || checkWinner(g.board, g.size)) return;
-        document.getElementById("board").classList.add("shake-board");
-        setTimeout(() => document.getElementById("board").classList.remove("shake-board"), 300);
         g.board[i] = mySymbol;
         let updateData = { board: g.board, turn: mySymbol === "X" ? "O" : "X" };
         const winCheck = checkWinner(g.board, g.size);
@@ -369,12 +333,11 @@ function proRobot() {
 }
 
 function checkWinner(b, size) {
-    const lines = [];
-    let winLen = size === 3 ? 3 : (size === 5 ? 4 : 5);
+    const lines = []; let winLen = size === 3 ? 3 : (size === 5 ? 4 : 5);
     for(let i=0; i<size; i++) {
         for(let j=0; j<=size-winLen; j++) {
             let r = []; for(let k=0; k<winLen; k++) r.push(i*size + j + k); lines.push(r);
-            let col = []; for(let k=0; k<winLen; k++) col.push((j+k)*size + i); lines.push(col);
+            let c = []; for(let k=0; k<winLen; k++) c.push((j+k)*size + i); lines.push(c);
         }
     }
     for(let r=0; r<=size-winLen; r++) {
@@ -388,56 +351,35 @@ function checkWinner(b, size) {
 }
 
 function restartMatch() {
-    playSfx('click');
     gameRef.once("value", snap => {
         const g = snap.val();
-        Array.from(document.querySelectorAll('.cell')).forEach(c => c.classList.remove('winner-cell'));
         let nextStarter = g.lastStarter === "X" ? "O" : "X";
         gameRef.update({ board: Array(gridSize*gridSize).fill(""), turn: nextStarter, lastStarter: nextStarter });
     });
 }
 
-function exitArena() {
-    if(confirm("Exit and Delete Arena Data?")) {
-        db.ref("rooms/" + myRoomId).remove().then(() => location.reload());
-    }
-}
+function exitArena() { if(confirm("Exit and Delete Arena?")) { db.ref("rooms/" + myRoomId).remove().then(() => location.reload()); } }
+function sendMsg() { const i = document.getElementById("msgInput"); if(i.value.trim()){ chatRef.push({ n: myName, m: i.value }); i.value = ""; } }
+function listenChat() { chatRef.on("child_added", snap => { const d = snap.val(); const m = document.createElement("div"); m.className = "msg " + (d.n === myName ? "me" : "other"); m.innerHTML = `<b style="font-size:8px; opacity:0.5; display:block;">${d.n}</b>${d.m}`; document.getElementById("messages").appendChild(m); document.getElementById("messages").scrollTop = 10000; }); }
+function sendEmoji(e) { emojiRef.set({ emoji: e, t: Date.now() }); }
+function listenEmojis() { emojiRef.on("value", snap => { const d = snap.val(); if(!d) return; const el = document.createElement("div"); el.style.position = "fixed"; el.style.bottom = "150px"; el.style.fontSize = "60px"; el.innerText = d.emoji; el.style.left = Math.random() * 60 + 20 + "%"; el.animate([{transform:'translateY(0)', opacity:1},{transform:'translateY(-400px)', opacity:0}], 1200); document.body.appendChild(el); setTimeout(()=>el.remove(), 1200); }); }
 
-function sendMsg() {
-    const i = document.getElementById("msgInput");
-    if(!i.value.trim()) return;
-    chatRef.push({ n: myName, m: i.value }); i.value = "";
-    playSfx('msg');
-}
-
-function listenChat() {
-    chatRef.on("child_added", snap => {
-        const d = snap.val();
-        const m = document.createElement("div");
-        m.className = "msg " + (d.n === myName ? "me" : "other");
-        m.innerHTML = `<b style="font-size:8px; opacity:0.5; display:block;">${d.n}</b>${d.m}`;
-        document.getElementById("messages").appendChild(m);
-        document.getElementById("messages").scrollTop = 10000;
-        if(d.n !== myName) playSfx('msg');
+// ADMIN LOGIC
+function openAdmin() {
+    document.getElementById("mainGameContainer").style.display = "none";
+    document.getElementById("adminPanel").style.display = "block";
+    db.ref("rooms").on("value", snap => {
+        const list = document.getElementById("activeRoomsList"); list.innerHTML = "";
+        const rooms = snap.val(); if(!rooms) return;
+        for(let rid in rooms) {
+            let rd = rooms[rid]; let ps = rd.game ? rd.game.players : {X:'?', O:'?'}; let ms = rd.chat ? Object.values(rd.chat) : [];
+            let card = document.createElement("div"); card.className = "room-card";
+            card.innerHTML = `<div><b>ARENA ID: ${rid}</b></div><div>${ps.X} vs ${ps.O}</div><div class="admin-chat-box">${ms.map(m=>`<div><b>${m.n}:</b> ${m.m}</div>`).join('')}</div><button onclick="db.ref('rooms/${rid}').remove()" style="width:100%; padding:5px; background:red; border:none; margin-top:5px; color:#fff; cursor:pointer;">TERMINATE</button>`;
+            list.appendChild(card);
+        }
     });
 }
-
-function sendEmoji(e) { emojiRef.set({ emoji: e, t: Date.now() }); playSfx('emoji'); }
-function listenEmojis() {
-    emojiRef.on("value", snap => {
-        const d = snap.val(); if(!d) return;
-        const el = document.createElement("div");
-        el.style.position = "fixed"; el.style.bottom = "150px"; el.style.fontSize = "60px";
-        el.innerText = d.emoji; el.style.left = Math.random() * 60 + 20 + "%";
-        el.animate([{transform:'translateY(0)', opacity:1},{transform:'translateY(-400px)', opacity:0}], 1200);
-        document.body.appendChild(el); setTimeout(()=>el.remove(), 1200);
-    });
-}
-
-// ADMIN DASHBOARD
-function openAdminDashboard() {
-    document.getElementById("loginScreen").classList.add("hidden");
-    document.getElementById("adminPanel").classList.remove("hidden");
-    db.ref("rooms").on("value", (snap) => {
-        const list = document.getElementById("activeRoomsList");
-        list.innerHTML 
+</script>
+</body>
+        </html>
+            
