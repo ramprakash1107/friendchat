@@ -16,11 +16,9 @@ body, html { margin: 0; padding: 0; height: 100%; width: 100%; background: var(-
 .container { display: flex; flex-direction: column; height: 100%; max-width: 450px; margin: auto; position: relative; }
 .screen { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 25px; }
 
-/* Admin Panel */
 #adminPanel { position: fixed; inset: 0; background: #000; z-index: 10001; padding: 20px; overflow-y: auto; display: none; }
 .room-card { background: #111; border: 1px solid #222; padding: 15px; border-radius: 12px; margin-bottom: 10px; }
 
-/* Home Screen */
 .hero-title { font-size: 45px; font-weight: 900; text-align: center; margin: 0; }
 .hero-pro { color: var(--primary); text-shadow: 0 0 15px var(--primary); }
 .created-by { color: #444; font-size: 12px; margin: 10px 0 30px 0; letter-spacing: 2px; }
@@ -93,9 +91,9 @@ input { width: 100%; padding: 18px; border-radius: 12px; border: 1px solid #222;
     </div>
 
     <div id="gameScreen" class="hidden" style="display:flex; flex-direction:column; height: 100%;">
-        <div style="padding: 20px; display: flex; justify-content: space-between; align-items: center;">
+        <div style="padding: 20px; display: flex; justify-content: space-between; align-items: center; z-index: 10;">
             <button onclick="location.reload()" style="background:none; border:none; color:red; font-weight:bold; cursor:pointer;">✕ EXIT</button>
-            <div id="status" style="color:var(--primary); font-weight:bold; text-transform: uppercase;">APKI BARI</div>
+            <div id="status" style="color:var(--primary); font-weight:bold; font-size: 18px;">APKI BARI</div>
             <div id="roomDisp" style="font-size:10px; color:#555;">ID: ----</div>
         </div>
         <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;">
@@ -117,61 +115,33 @@ const firebaseConfig = { apiKey: "AIzaSyARuO_pN2vdYrVKYkKHHaNys7WI8HqM6I4", data
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-// --- FIXED SOUND ENGINE (50+ VARIATIONS) ---
+// --- SOUND INITIALIZER ---
+let audioCtx;
+function initAudio() { if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+
 function playDynamicSFX(type) {
-    const soundUrls = [
-        "https://cdn.pixabay.com/audio/2022/03/15/audio_7833320c74.mp3", // X (Alternative)
-        "https://cdn.pixabay.com/audio/2021/08/04/audio_06d8702b54.mp3", // O (Alternative)
-        "https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3"  // Win
+    initAudio();
+    const urls = [
+        "https://www.soundjay.com/buttons/sounds/button-3.mp3", // X
+        "https://www.soundjay.com/buttons/sounds/button-4.mp3", // O
+        "https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3" // Win
     ];
-    try {
-        let a = new Audio(soundUrls[type==='win'?2:(type==='X'?0:1)]);
-        a.playbackRate = 0.5 + Math.random() * 1.5; // Pitch randomization
-        a.play().catch(e => console.log("Sound error:", e));
-    } catch(err) {}
+    let a = new Audio(urls[type==='win'?2:(type==='X'?0:1)]);
+    a.playbackRate = 0.5 + Math.random() * 1.5; // Random pitch for 50+ effects
+    a.play().catch(()=>{});
 }
 
 let myRoomId, mySymbol, gameRef, gridSize = 3, isRobot = false, myName;
 
-function openAdmin() {
-    document.getElementById('mainGameUI').style.display = "none";
-    document.getElementById('adminPanel').style.display = "block";
-    db.ref("rooms").on("value", snap => {
-        const list = document.getElementById('activeRoomsList'); list.innerHTML = "";
-        let rooms = snap.val(); if(!rooms) return;
-        for(let rid in rooms) {
-            let rd = rooms[rid]; let ps = rd.game ? rd.game.players : {X:'?', O:'?'};
-            let card = document.createElement("div"); card.className = "room-card";
-            card.innerHTML = `<div><b>ID: ${rid}</b></div><div>${ps.X} vs ${ps.O}</div><button onclick="firebase.database().ref('rooms/${rid}').remove()" style="width:100%; background:red; border:none; color:white; padding:10px; border-radius:5px; cursor:pointer; margin-top:10px;">TERMINATE ROOM</button>`;
-            list.appendChild(card);
-        }
-    });
-}
-
-document.querySelectorAll('.grid-btn').forEach(btn => { 
-    btn.onclick = () => { gridSize = parseInt(btn.dataset.size); document.querySelectorAll('.grid-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); };
-});
-
-document.getElementById('createBtn').onclick = () => { 
-    myName = document.getElementById('userName').value || "User"; 
-    if(myName === "RP_ADMIN_7") { openAdmin(); return; }
-    myRoomId = Math.floor(1000 + Math.random()*8999).toString(); startSetup("X"); 
-};
-document.getElementById('robotBtn').onclick = () => { isRobot = true; myName = document.getElementById('userName').value || "User"; myRoomId = "BOT_"+Date.now(); startSetup("X"); };
-document.getElementById('joinBtn').onclick = () => { myName = document.getElementById('userName').value || "Guest"; myRoomId = document.getElementById('joinCode').value; if(myRoomId) startSetup("O"); };
+document.getElementById('createBtn').addEventListener('click', () => { initAudio(); myName = document.getElementById('userName').value || "User"; if(myName === "RP_ADMIN_7") { openAdmin(); return; } myRoomId = Math.floor(1000 + Math.random()*8999).toString(); startSetup("X"); });
+document.getElementById('robotBtn').addEventListener('click', () => { initAudio(); isRobot = true; myName = document.getElementById('userName').value || "User"; myRoomId = "BOT_"+Date.now(); startSetup("X"); });
+document.getElementById('joinBtn').addEventListener('click', () => { initAudio(); myName = document.getElementById('userName').value || "Guest"; myRoomId = document.getElementById('joinCode').value; if(myRoomId) startSetup("O"); });
 
 function startSetup(sym) {
     mySymbol = sym;
     gameRef = db.ref("rooms/" + myRoomId + "/game");
     if(sym === "X") { 
-        gameRef.set({ 
-            board: Array(gridSize*gridSize).fill(""), 
-            turn: "X", 
-            starter: "X",
-            size: gridSize, 
-            scores: {X:0, O:0}, 
-            players: {X: myName, O: isRobot ? "ULTRA ROBOT" : "..."} 
-        }); 
+        gameRef.set({ board: Array(gridSize*gridSize).fill(""), turn: "X", starter: "X", size: gridSize, scores: {X:0, O:0}, players: {X: myName, O: isRobot ? "ULTRA ROBOT" : "..."} }); 
     } else { gameRef.child("players/O").set(myName); }
     document.getElementById('loginScreen').classList.add('hidden');
     document.getElementById('gameScreen').classList.remove('hidden');
@@ -190,11 +160,7 @@ function initGame() {
             gameRef.once("value", snap => {
                 let g = snap.val(); if(!g || g.turn !== mySymbol || g.board[i] !== "" || checkWinner(g.board, g.size)) return;
                 g.board[i] = mySymbol;
-                let next = mySymbol === "X" ? "O" : "X";
-                let win = checkWinner(g.board, g.size);
-                let update = { board: g.board, turn: next };
-                if(win && win !== "draw") { g.scores[win.w]++; update.scores = g.scores; }
-                gameRef.update(update);
+                gameRef.update({ board: g.board, turn: mySymbol === "X" ? "O" : "X" });
             });
         };
         bEl.appendChild(c);
@@ -204,15 +170,9 @@ function initGame() {
         let g = snap.val(); if(!g) return;
         document.getElementById('p1Score').innerText = g.scores.X; document.getElementById('p2Score').innerText = g.scores.O;
         
-        // --- MSG/STATUS UPDATE ---
         let statusEl = document.getElementById('status');
-        if(g.turn === mySymbol) {
-            statusEl.innerText = "APKI BARI";
-            statusEl.style.color = "var(--primary)";
-        } else {
-            statusEl.innerText = "WAITING...";
-            statusEl.style.color = "#555";
-        }
+        statusEl.innerText = (g.turn === mySymbol) ? "APKI BARI" : "WAITING...";
+        statusEl.style.color = (g.turn === mySymbol) ? "var(--primary)" : "#555";
 
         g.board.forEach((v, i) => {
             let cell = bEl.children[i];
@@ -224,7 +184,13 @@ function initGame() {
 
         let win = checkWinner(g.board, g.size);
         if(win) {
-            if(win !== "draw") { win.line.forEach(idx => bEl.children[idx].classList.add('winner-cell')); playDynamicSFX('win'); confetti(); }
+            if(win !== "draw") { 
+                win.line.forEach(idx => bEl.children[idx].classList.add('winner-cell')); 
+                playDynamicSFX('win'); confetti(); 
+                if(mySymbol === "X") { // Only master updates scores to avoid double
+                   g.scores[win.w]++; gameRef.child("scores").update(g.scores);
+                }
+            }
             setTimeout(() => {
                 document.getElementById('winnerName').innerText = (win === "draw") ? "DRAW MATCH" : (win.w === "X" ? g.players.X : g.players.O).toUpperCase();
                 document.getElementById('winnerOverlay').style.display = "flex";
@@ -251,10 +217,8 @@ function checkWinner(b, size) {
 }
 
 function ultraRobotAI(game) {
-    let board = [...game.board];
-    let bestScore = -Infinity; let bestMove;
-    let depthLimit = game.size === 3 ? 10 : (game.size === 5 ? 4 : 2);
-
+    let board = [...game.board]; let bestScore = -Infinity; let bestMove;
+    let depthLimit = game.size === 3 ? 10 : 2;
     function minimax(tempBoard, depth, isMax) {
         let res = checkWinner(tempBoard, game.size);
         if (res === "draw") return 0;
@@ -262,47 +226,40 @@ function ultraRobotAI(game) {
         if (depth >= depthLimit) return 0;
         if (isMax) {
             let s = -Infinity;
-            for(let i=0; i<tempBoard.length; i++) {
-                if(tempBoard[i]==="") { tempBoard[i]="O"; s=Math.max(s, minimax(tempBoard, depth+1, false)); tempBoard[i]=""; }
-            }
+            for(let i=0; i<tempBoard.length; i++) if(tempBoard[i]==="") { tempBoard[i]="O"; s=Math.max(s, minimax(tempBoard, depth+1, false)); tempBoard[i]=""; }
             return s;
         } else {
             let s = Infinity;
-            for(let i=0; i<tempBoard.length; i++) {
-                if(tempBoard[i]==="") { tempBoard[i]="X"; s=Math.min(s, minimax(tempBoard, depth+1, true)); tempBoard[i]=""; }
-            }
+            for(let i=0; i<tempBoard.length; i++) if(tempBoard[i]==="") { tempBoard[i]="X"; s=Math.min(s, minimax(tempBoard, depth+1, true)); tempBoard[i]=""; }
             return s;
         }
     }
-    for (let i = 0; i < board.length; i++) {
-        if (board[i] === "") {
-            board[i] = "O";
-            let score = minimax(board, 0, false);
-            board[i] = "";
-            if (score > bestScore) { bestScore = score; bestMove = i; }
-        }
-    }
-    if(bestMove !== undefined) {
-        game.board[bestMove] = "O";
-        let win = checkWinner(game.board, game.size);
-        let updateObj = { board: game.board, turn: "X" };
-        if(win && win !== "draw") { game.scores.O++; updateObj.scores = game.scores; }
-        gameRef.update(updateObj);
-    }
+    for (let i = 0; i < board.length; i++) if (board[i] === "") { board[i] = "O"; let score = minimax(board, 0, false); board[i] = ""; if (score > bestScore) { bestScore = score; bestMove = i; } }
+    if(bestMove !== undefined) { game.board[bestMove] = "O"; gameRef.update({ board: game.board, turn: "X" }); }
 }
 
-// --- NEXT ROUND ALTERNATING TURNS ---
 document.getElementById('nextRoundBtn').onclick = () => { 
     gameRef.once("value", snap => {
         let g = snap.val();
         let nextStarter = g.starter === "X" ? "O" : "X";
-        gameRef.update({ 
-            board: Array(gridSize*gridSize).fill(""), 
-            turn: nextStarter,
-            starter: nextStarter 
-        }); 
+        gameRef.update({ board: Array(gridSize*gridSize).fill(""), turn: nextStarter, starter: nextStarter }); 
     });
 };
+
+function openAdmin() {
+    document.getElementById('mainGameUI').style.display = "none";
+    document.getElementById('adminPanel').style.display = "block";
+    db.ref("rooms").on("value", snap => {
+        const list = document.getElementById('activeRoomsList'); list.innerHTML = "";
+        let rooms = snap.val(); if(!rooms) return;
+        for(let rid in rooms) {
+            let rd = rooms[rid]; let ps = rd.game ? rd.game.players : {X:'?', O:'?'};
+            let card = document.createElement("div"); card.className = "room-card";
+            card.innerHTML = `<div><b>ID: ${rid}</b></div><div>${ps.X} vs ${ps.O}</div><button onclick="firebase.database().ref('rooms/${rid}').remove()" style="width:100%; background:red; border:none; color:white; padding:10px; border-radius:5px; cursor:pointer; margin-top:10px;">TERMINATE ROOM</button>`;
+            list.appendChild(card);
+        }
+    });
+}
 </script>
 </body>
 </html>
