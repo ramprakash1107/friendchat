@@ -31,9 +31,8 @@ input { width: 100%; padding: 18px; border-radius: 12px; border: 1px solid #222;
 .grid-btn { flex: 1; padding: 15px; background: #111; border: 1px solid #222; color: #fff; border-radius: 12px; font-weight: bold; cursor: pointer; }
 .grid-btn.active { background: var(--primary); color: #000; box-shadow: 0 0 15px var(--primary); }
 
-/* Board */
 #board { display: grid; gap: 10px; margin: 20px auto; }
-.cell { background: #0f0f0f; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-weight: 900; cursor: pointer; border: 1px solid rgba(255,255,255,0.05); }
+.cell { background: #0f0f0f; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-weight: 900; cursor: pointer; border: 1px solid rgba(255,255,255,0.05); transition: 0.1s; }
 
 .winner-cell { 
     background: rgba(0, 255, 136, 0.2) !important; 
@@ -54,9 +53,7 @@ input { width: 100%; padding: 18px; border-radius: 12px; border: 1px solid #222;
 .winner-card {
     background: rgba(255, 255, 255, 0.05); padding: 40px; border-radius: 30px;
     border: 1px solid rgba(255,255,255,0.1); text-align: center;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.5); animation: zoomIn 0.5s ease forwards;
 }
-@keyframes zoomIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
 .hidden { display: none !important; }
 </style>
@@ -73,7 +70,7 @@ input { width: 100%; padding: 18px; border-radius: 12px; border: 1px solid #222;
 
 <div id="winnerOverlay">
     <div class="winner-card">
-        <h1 id="winnerName" style="font-size: 48px; margin: 10px 0; color: var(--win); text-shadow: 0 0 20px var(--win);">CHAMPION</h1>
+        <h1 id="winnerName" style="font-size: 40px; color: var(--win); text-shadow: 0 0 20px var(--win);">CHAMPION</h1>
         <button id="nextRoundBtn" class="btn-main btn-cyan" style="width:200px; margin-top: 20px;">NEXT ROUND</button>
     </div>
 </div>
@@ -120,20 +117,19 @@ const firebaseConfig = { apiKey: "AIzaSyARuO_pN2vdYrVKYkKHHaNys7WI8HqM6I4", data
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-// --- 50+ DYNAMIC SOUND EFFECTS ENGINE ---
+// --- 50+ DYNAMIC SOUND EFFECTS ---
 function playDynamicSFX(type) {
-    let baseLinks = [
+    const urls = [
         "https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3", // X
         "https://assets.mixkit.co/active_storage/sfx/2572/2572-preview.mp3", // O
         "https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3"  // Win
     ];
-    let audio = new Audio(baseLinks[type==='win'?2:(type==='X'?0:1)]);
-    // Generating 50+ variations by changing pitch & speed on every move
-    audio.playbackRate = 0.6 + (Math.random() * 1.4); 
-    audio.play().catch(()=>{});
+    let a = new Audio(urls[type==='win'?2:(type==='X'?0:1)]);
+    a.playbackRate = 0.5 + Math.random() * 1.5; // Pitch randomization for 50 variations
+    a.play().catch(()=>{});
 }
 
-let myRoomId, mySymbol, gameRef, gridSize = 3, isRobot = false, myName, lastWinner = "X";
+let myRoomId, mySymbol, gameRef, gridSize = 3, isRobot = false, myName;
 
 function openAdmin() {
     document.getElementById('mainGameUI').style.display = "none";
@@ -165,8 +161,16 @@ document.getElementById('joinBtn').onclick = () => { myName = document.getElemen
 function startSetup(sym) {
     mySymbol = sym;
     gameRef = db.ref("rooms/" + myRoomId + "/game");
-    if(sym === "X") { gameRef.set({ board: Array(gridSize*gridSize).fill(""), turn: "X", size: gridSize, scores: {X:0, O:0}, players: {X: myName, O: isRobot ? "ULTRA ROBOT" : "..."} }); }
-    else { gameRef.child("players/O").set(myName); }
+    if(sym === "X") { 
+        gameRef.set({ 
+            board: Array(gridSize*gridSize).fill(""), 
+            turn: "X", 
+            starter: "X", // Tracking who started the round
+            size: gridSize, 
+            scores: {X:0, O:0}, 
+            players: {X: myName, O: isRobot ? "ULTRA ROBOT" : "..."} 
+        }); 
+    } else { gameRef.child("players/O").set(myName); }
     document.getElementById('loginScreen').classList.add('hidden');
     document.getElementById('gameScreen').classList.remove('hidden');
     document.getElementById('roomDisp').innerText = "ID: " + (isRobot ? "BOT" : myRoomId);
@@ -187,7 +191,7 @@ function initGame() {
                 let next = mySymbol === "X" ? "O" : "X";
                 let win = checkWinner(g.board, g.size);
                 let update = { board: g.board, turn: next };
-                if(win && win !== "draw") { g.scores[win.w]++; update.scores = g.scores; lastWinner = win.w; }
+                if(win && win !== "draw") { g.scores[win.w]++; update.scores = g.scores; }
                 gameRef.update(update);
             });
         };
@@ -211,7 +215,7 @@ function initGame() {
             setTimeout(() => {
                 document.getElementById('winnerName').innerText = (win === "draw") ? "DRAW MATCH" : (win.w === "X" ? g.players.X : g.players.O).toUpperCase();
                 document.getElementById('winnerOverlay').style.display = "flex";
-            }, 1200);
+            }, 1000);
         } else {
             document.getElementById('winnerOverlay').style.display = "none";
             document.getElementById('status').innerText = (g.turn === mySymbol) ? "APKI BARI" : "WAITING...";
@@ -234,7 +238,7 @@ function checkWinner(b, size) {
     return b.includes("") ? null : "draw";
 }
 
-// --- ULTRA SMART AI ---
+// --- ULTRA ROBOT AI (MINIMAX) ---
 function ultraRobotAI(game) {
     let board = [...game.board];
     let bestScore = -Infinity; let bestMove;
@@ -245,22 +249,20 @@ function ultraRobotAI(game) {
         if (res === "draw") return 0;
         if (res) return res.w === "O" ? 10 - depth : depth - 10;
         if (depth >= depthLimit) return 0;
-
         if (isMax) {
-            let score = -Infinity;
+            let s = -Infinity;
             for(let i=0; i<tempBoard.length; i++) {
-                if(tempBoard[i]==="") { tempBoard[i]="O"; score=Math.max(score, minimax(tempBoard, depth+1, false)); tempBoard[i]=""; }
+                if(tempBoard[i]==="") { tempBoard[i]="O"; s=Math.max(s, minimax(tempBoard, depth+1, false)); tempBoard[i]=""; }
             }
-            return score;
+            return s;
         } else {
-            let score = Infinity;
+            let s = Infinity;
             for(let i=0; i<tempBoard.length; i++) {
-                if(tempBoard[i]==="") { tempBoard[i]="X"; score=Math.min(score, minimax(tempBoard, depth+1, true)); tempBoard[i]=""; }
+                if(tempBoard[i]==="") { tempBoard[i]="X"; s=Math.min(s, minimax(tempBoard, depth+1, true)); tempBoard[i]=""; }
             }
-            return score;
+            return s;
         }
     }
-
     for (let i = 0; i < board.length; i++) {
         if (board[i] === "") {
             board[i] = "O";
@@ -269,23 +271,28 @@ function ultraRobotAI(game) {
             if (score > bestScore) { bestScore = score; bestMove = i; }
         }
     }
-
     if(bestMove !== undefined) {
         game.board[bestMove] = "O";
         let win = checkWinner(game.board, game.size);
         let up = { board: game.board, turn: "X" };
-        if(win && win !== "draw") { game.scores.O++; up.scores = game.scores; lastWinner = "O"; }
+        if(win && win !== "draw") { game.scores.O++; up.scores = game.scores; }
         gameRef.update(up);
     }
 }
 
-// --- NEXT ROUND LOGIC (ALTERNATING TURNS) ---
+// --- NEXT ROUND WITH ALTERNATING START ---
 document.getElementById('nextRoundBtn').onclick = () => { 
-    // Isse jo haara hai, agli bari uski hogi
-    let nextStarter = lastWinner === "X" ? "O" : "X";
-    gameRef.update({ board: Array(gridSize*gridSize).fill(""), turn: nextStarter }); 
+    gameRef.once("value", snap => {
+        let g = snap.val();
+        // Agli bari uski jo pichli baar second player tha
+        let nextStarter = g.starter === "X" ? "O" : "X";
+        gameRef.update({ 
+            board: Array(gridSize*gridSize).fill(""), 
+            turn: nextStarter,
+            starter: nextStarter 
+        }); 
+    });
 };
 </script>
 </body>
 </html>
-
