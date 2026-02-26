@@ -2,207 +2,175 @@
 <html lang="hi">
 <head>
     <meta charset="UTF-8">
-    <title>@rp_gupta_07 | Elite Gaming Arena</title>
+    <title>Ultimate Game Arena</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
     <style>
-        :root { --primary: #00f2ff; --bg: #05050a; --card: #1a1a2e; }
-        * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; -webkit-tap-highlight-color: transparent; }
+        :root { --p: #00f2ff; --bg: #05050a; --c: #1a1a2e; }
+        * { box-sizing: border-box; font-family: sans-serif; -webkit-tap-highlight-color: transparent; }
         body { margin: 0; background: var(--bg); color: #fff; overflow: hidden; }
+        .wrapper { max-width: 450px; margin: auto; height: 100vh; display: flex; flex-direction: column; position: relative; }
         
-        .app-wrapper { max-width: 450px; margin: auto; height: 100vh; display: flex; flex-direction: column; position: relative; }
+        /* Auth */
+        #login { position: absolute; inset: 0; background: var(--bg); z-index: 1000; padding: 40px 20px; display: flex; flex-direction: column; justify-content: center; }
+        input { width: 100%; padding: 15px; margin-bottom: 10px; border-radius: 10px; border: 1px solid #333; background: #111; color: #fff; }
+        .btn { width: 100%; padding: 15px; border: none; border-radius: 10px; background: var(--p); font-weight: bold; cursor: pointer; }
 
-        /* Login Screen */
-        #authScreen { position: absolute; inset: 0; background: var(--bg); z-index: 1000; padding: 40px 20px; display: flex; flex-direction: column; justify-content: center; }
-        .auth-box { background: var(--card); padding: 25px; border-radius: 20px; border: 1px solid #333; }
-        input { width: 100%; padding: 15px; margin-bottom: 15px; border-radius: 10px; border: 1px solid #444; background: #111; color: #fff; outline: none; }
-        .btn-join { width: 100%; padding: 15px; border-radius: 10px; border: none; background: var(--primary); color: #000; font-weight: 900; cursor: pointer; font-size: 16px; }
-
-        /* Game Section */
-        #mainContent { flex: 1; display: flex; flex-direction: column; overflow: hidden; display: none; }
-        .top-info { padding: 10px; background: #111; display: flex; justify-content: space-between; font-size: 12px; border-bottom: 1px solid #222; }
+        /* Game UI */
+        .top { padding: 10px; background: #111; display: flex; justify-content: space-between; font-size: 12px; border-bottom: 1px solid #222; }
+        #menu { flex: 1; overflow-y: auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 15px; }
+        .g-item { background: var(--c); padding: 15px 5px; border-radius: 12px; text-align: center; border: 1px solid #333; cursor: pointer; }
+        .g-item:active { background: var(--p); color: #000; }
         
-        #gameDisplay { flex: 1; position: relative; background: #000; overflow-y: auto; padding: 15px; }
-        .game-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-        .game-item { background: var(--card); padding: 15px 5px; border-radius: 12px; text-align: center; cursor: pointer; border: 1px solid #333; transition: 0.2s; }
-        .game-item:active { background: var(--primary); color: #000; }
-        .game-icon { font-size: 24px; display: block; margin-bottom: 5px; }
-
-        /* Chat Section */
-        .chat-container { height: 230px; background: #0a0a15; display: flex; flex-direction: column; border-top: 1px solid #333; }
-        #chatMsgs { flex: 1; overflow-y: auto; padding: 10px; font-size: 13px; display: flex; flex-direction: column; gap: 8px; }
-        .msg-bubble { max-width: 80%; padding: 8px 12px; border-radius: 15px; line-height: 1.4; }
-        .msg-me { align-self: flex-end; background: var(--primary); color: #000; }
-        .msg-other { align-self: flex-start; background: #222; color: #fff; }
-        .chat-bar { display: flex; padding: 10px; gap: 8px; background: #000; }
-        .chat-bar input { margin: 0; flex: 1; padding: 10px; border-radius: 20px; }
+        #stage { position: absolute; inset: 0; background: #000; z-index: 500; display: none; flex-direction: column; align-items: center; justify-content: center; }
+        canvas { background: #111; border: 2px solid #333; border-radius: 10px; touch-action: none; }
         
-        #canvasArea { position: absolute; inset: 0; background: #000; z-index: 500; display: none; flex-direction: column; align-items: center; justify-content: center; }
-        .close-game { position: absolute; top: 15px; right: 15px; color: red; font-weight: bold; cursor: pointer; font-size: 20px; }
+        /* Chat */
+        .chat { height: 200px; background: #0a0a15; display: flex; flex-direction: column; border-top: 1px solid #333; }
+        #msgs { flex: 1; overflow-y: auto; padding: 10px; font-size: 12px; display: flex; flex-direction: column; gap: 5px; }
+        .m { padding: 6px 10px; border-radius: 10px; max-width: 80%; }
+        .me { align-self: flex-end; background: var(--p); color: #000; }
+        .ot { align-self: flex-start; background: #222; }
+        .in { display: flex; padding: 8px; gap: 5px; background: #000; }
     </style>
 </head>
 <body>
 
-<div class="app-wrapper">
-    <div id="authScreen">
-        <div class="auth-box">
-            <h1 style="text-align:center; color:var(--primary); margin:0 0 10px 0;">ARENA PRO</h1>
-            <p style="text-align:center; font-size:10px; margin-bottom:25px; color:#888;">CREATED BY @RP_GUPTA_07</p>
-            <input id="uName" type="text" placeholder="Apna Naam (eg: Ramprakash)">
-            <input id="rCode" type="text" placeholder="Room ID (Dost wala same daalein)">
-            <button class="btn-join" onclick="initApp()">JOIN ARENA</button>
-        </div>
+<div class="wrapper">
+    <div id="login">
+        <h2 style="text-align:center">GAME ARENA</h2>
+        <input id="u" placeholder="Apna Naam">
+        <input id="r" placeholder="Room ID (Dost wala same)">
+        <button class="btn" onclick="init()">START ARENA</button>
     </div>
 
-    <div id="mainContent">
-        <div class="top-info">
-            <span>ROOM: <b id="outRoom">--</b></span>
-            <span id="scoreText">Score: 0</span>
-        </div>
+    <div class="top">
+        <span>ROOM: <b id="ro">--</b></span>
+        <span id="sc">Score: 0</span>
+    </div>
 
-        <div id="gameDisplay">
-            <div id="canvasArea">
-                <span class="close-game" onclick="closeGame()">✕</span>
-                <canvas id="gameCanvas" width="300" height="300" style="background:#111; border:2px solid #333; border-radius:10px;"></canvas>
-                <p id="gameInstr" style="font-size:12px; margin-top:10px; color:var(--primary);">TAP TO PLAY</p>
-            </div>
+    <div id="menu">
+        <div class="g-item" onclick="go('DINO')">🦖<br>Dino</div>
+        <div class="g-item" onclick="go('SNAKE')">🐍<br>Snake</div>
+        <div class="g-item" onclick="go('CATCH')">🍎<br>Catch</div>
+        <div class="g-item" onclick="go('FLAPPY')">🐦<br>Flappy</div>
+        <div class="g-item" onclick="go('PONG')">🏓<br>Pong</div>
+        <div class="g-item" onclick="go('DODGE')">🚗<br>Dodge</div>
+        <div class="g-item" onclick="go('MATH')">🔢<br>Math</div>
+        <div class="g-item" onclick="go('STACK')">📦<br>Stack</div>
+        <div class="g-item" onclick="go('SHOOT')">🎯<br>Shoot</div>
+        <div class="g-item" onclick="go('JUMP')">🚀<br>Jump</div>
+        <div class="g-item" onclick="go('TAP')">⚡<br>Fast Tap</div>
+        <div class="g-item" onclick="go('AVOID')">💣<br>Avoid</div>
+        <div class="g-item" onclick="go('GLOW')">✨<br>Glow</div>
+        <div class="g-item" onclick="go('MINES')">💎<br>Mines</div>
+        <div class="g-item" onclick="go('TICTAC')">❌<br>TicTac</div>
+    </div>
 
-            <div class="game-grid">
-                <div class="game-item" onclick="launchGame('DINO')"><span class="game-icon">🦖</span>Dino</div>
-                <div class="game-item" onclick="launchGame('CATCH')"><span class="game-icon">🍎</span>Catch</div>
-                <div class="game-item" onclick="launchGame('SNAKE')"><span class="game-icon">🐍</span>Snake</div>
-                <div class="game-item" onclick="launchGame('PONG')"><span class="game-icon">🏓</span>Pong</div>
-                <div class="game-item" onclick="launchGame('BIRD')"><span class="game-icon">🐦</span>Flappy</div>
-                <div class="game-item" onclick="launchGame('DODGE')"><span class="game-icon">🚗</span>Dodge</div>
-                <div class="game-item" onclick="launchGame('MATH')"><span class="game-icon">🔢</span>Math</div>
-                <div class="game-item" onclick="launchGame('SHOOT')"><span class="game-icon">🎯</span>Shoot</div>
-                <div class="game-item" onclick="launchGame('BOX')"><span class="game-icon">📦</span>Stack</div>
-                <div class="game-item" onclick="launchGame('JUMP')"><span class="game-icon">🚀</span>Jump</div>
-                <div class="game-item" onclick="launchGame('TAP')"><span class="game-icon">⚡</span>Fast Tap</div>
-                <div class="game-item" onclick="launchGame('AVOID')"><span class="game-icon">💣</span>Avoid</div>
-                <div class="game-item" onclick="launchGame('GLOW')"><span class="game-icon">✨</span>Glow</div>
-                <div class="game-item" onclick="launchGame('TICTAC')"><span class="game-icon">❌</span>TicTac</div>
-                <div class="game-item" onclick="launchGame('MINE')"><span class="game-icon">💎</span>Mines</div>
-            </div>
-        </div>
+    <div id="stage">
+        <div style="color:red; margin-bottom:10px" onclick="stop()">✕ CLOSE GAME</div>
+        <canvas id="cvs" width="300" height="300"></canvas>
+    </div>
 
-        <div class="chat-container">
-            <div id="chatMsgs"></div>
-            <div class="chat-bar">
-                <input id="chatInp" type="text" placeholder="Message likhein...">
-                <button onclick="sendMsg()" style="background:var(--primary); border:none; padding:10px 15px; border-radius:20px; font-weight:bold;">➤</button>
-            </div>
+    <div class="chat">
+        <div id="msgs"></div>
+        <div class="in">
+            <input id="ci" placeholder="Chat..." style="margin:0; flex:1">
+            <button onclick="send()" style="border:none; background:var(--p); border-radius:5px">➤</button>
         </div>
     </div>
 </div>
 
 <script>
-    // Firebase Initialization
-    const firebaseConfig = {
-        apiKey: "AIzaSyARuO_pN2vdYrVKYkKHHaNys7WI8HqM6I4",
-        databaseURL: "https://friendchat-43941-default-rtdb.firebaseio.com"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const database = firebase.database();
+    const config = { apiKey: "AIzaSyARuO_pN2vdYrVKYkKHHaNys7WI8HqM6I4", databaseURL: "https://friendchat-43941-default-rtdb.firebaseio.com" };
+    firebase.initializeApp(config);
+    const rtdb = firebase.database();
 
-    let currentUser, currentRoom, chatRef, gameActive = false, currentGame = "", score = 0;
-    const canvas = document.getElementById('gameCanvas');
-    const ctx = canvas.getContext('2d');
+    let user, room, chatRef, active = false, mode = "", score = 0;
+    const canvas = document.getElementById('cvs'), ctx = canvas.getContext('2d');
 
-    // App Initialization
-    function initApp() {
-        currentUser = document.getElementById('uName').value.trim();
-        currentRoom = document.getElementById('rCode').value.trim();
-
-        if (currentUser && currentRoom) {
-            document.getElementById('authScreen').style.display = "none";
-            document.getElementById('mainContent').style.display = "flex";
-            document.getElementById('outRoom').innerText = currentRoom;
-
-            // Chat Listener
-            chatRef = database.ref("rooms/" + currentRoom + "/chat");
-            chatRef.on("child_added", (snap) => {
-                const data = snap.val();
-                const msgBox = document.getElementById('chatMsgs');
+    function init() {
+        user = document.getElementById('u').value;
+        room = document.getElementById('r').value;
+        if (user && room) {
+            document.getElementById('login').style.display="none";
+            document.getElementById('ro').innerText = room;
+            chatRef = rtdb.ref("rooms/"+room+"/chat");
+            chatRef.on("child_added", s => {
+                const d = s.val();
                 const div = document.createElement('div');
-                div.className = `msg-bubble ${data.user === currentUser ? 'msg-me' : 'msg-other'}`;
-                div.innerHTML = `<small style="font-size:8px; display:block; opacity:0.7;">${data.user}</small>${data.msg}`;
-                msgBox.appendChild(div);
-                msgBox.scrollTop = msgBox.scrollHeight;
+                div.className = `m ${d.u === user ? 'me' : 'ot'}`;
+                div.innerHTML = `<small style="font-size:8px">${d.u}</small><br>${d.m}`;
+                document.getElementById('msgs').appendChild(div);
+                document.getElementById('msgs').scrollTop = 9999;
             });
-        } else {
-            alert("Bhai, Naam aur Room ID dono bharo!");
         }
     }
 
-    function sendMsg() {
-        const inp = document.getElementById('chatInp');
-        if (inp.value.trim()) {
-            chatRef.push({ user: currentUser, msg: inp.value });
-            inp.value = "";
-        }
+    function send() {
+        const i = document.getElementById('ci');
+        if (i.value) { chatRef.push({ u: user, m: i.value }); i.value = ""; }
     }
 
-    // GAME LOGIC
-    let pY = 250, pV = 0, obstacles = [];
+    // GAME ENGINE
+    let py = 200, pv = 0, obs = [], snk = [{x:10,y:10}], dir = {x:0,y:0}, food = {x:5,y:5};
 
-    function launchGame(type) {
-        document.getElementById('canvasArea').style.display = "flex";
-        gameActive = true;
-        currentGame = type;
-        score = 0;
-        obstacles = [];
-        pY = 250; pV = 0;
-        
-        if(type === 'DINO') runDino();
-        else if(type === 'CATCH') runCatch();
-        else {
-            ctx.clearRect(0,0,300,300);
-            ctx.fillStyle = "white";
-            ctx.fillText(type + " GAME STARTING...", 80, 150);
-        }
+    function go(m) {
+        mode = m; active = true; score = 0; obs = []; py = 200; pv = 0;
+        document.getElementById('stage').style.display="flex";
+        if(m === 'SNAKE') { snk = [{x:10,y:10}]; dir = {x:1,y:0}; }
+        loop();
     }
 
-    function closeGame() {
-        gameActive = false;
-        document.getElementById('canvasArea').style.display = "none";
-    }
+    function stop() { active = false; document.getElementById('stage').style.display="none"; }
 
-    function runDino() {
-        if(!gameActive) return;
+    function loop() {
+        if (!active) return;
         ctx.clearRect(0,0,300,300);
-        
-        // Physics
-        pV += 0.8; pY += pV;
-        if(pY > 250) { pY = 250; pV = 0; }
-        
-        // Draw Dino
-        ctx.fillStyle = "#00f2ff";
-        ctx.fillRect(40, pY, 25, 25);
-        
-        // Obstacles
-        if(Math.random() < 0.02) obstacles.push({x:320});
-        obstacles.forEach((ob, i) => {
-            ob.x -= 6;
-            ctx.fillStyle = "red";
-            ctx.fillRect(ob.x, 255, 15, 20);
-            
-            // Collision
-            if(ob.x < 65 && ob.x > 40 && pY > 230) {
-                gameActive = false;
-                alert("Game Over! Score: " + score);
-                closeGame();
-            }
-            if(ob.x < -20) { obstacles.splice(i, 1); score++; document.getElementById('scoreText').innerText = "Score: " + score; }
-        });
-        
-        requestAnimationFrame(runDino);
+        document.getElementById('sc').innerText = "Score: " + score;
+
+        if (mode === 'DINO') {
+            pv += 0.8; py += pv; if(py > 250) { py = 250; pv = 0; }
+            ctx.fillStyle = "#00f2ff"; ctx.fillRect(40, py, 20, 20);
+            if(Math.random() < 0.02) obs.push({x:300});
+            obs.forEach((o, i) => {
+                o.x -= 5; ctx.fillStyle = "red"; ctx.fillRect(o.x, 250, 15, 20);
+                if(o.x < 60 && o.x > 40 && py > 230) { alert("Game Over"); stop(); }
+                if(o.x < -20) { obs.splice(i,1); score++; }
+            });
+        } 
+        else if (mode === 'SNAKE') {
+            let h = {x: snk[0].x + dir.x, y: snk[0].y + dir.y};
+            if(h.x === food.x && h.y === food.y) { score++; food = {x:Math.floor(Math.random()*19),y:Math.floor(Math.random()*19)}; } else { snk.pop(); }
+            if(h.x < 0 || h.x > 19 || h.y < 0 || h.y > 19) { alert("Over"); stop(); }
+            snk.unshift(h);
+            ctx.fillStyle = "lime"; snk.forEach(s => ctx.fillRect(s.x*15, s.y*15, 14, 14));
+            ctx.fillStyle = "red"; ctx.fillRect(food.x*15, food.y*15, 14, 14);
+        }
+        else if (mode === 'CATCH') {
+            ctx.fillStyle = "#00f2ff"; ctx.fillRect(py, 270, 60, 10);
+            if(Math.random() < 0.03) obs.push({x: Math.random()*280, y:0});
+            obs.forEach((o, i) => {
+                o.y += 4; ctx.fillStyle = "gold"; ctx.fillRect(o.x, o.y, 10, 10);
+                if(o.y > 270 && o.x > py && o.x < py+60) { obs.splice(i,1); score++; }
+                if(o.y > 300) { alert("Missed!"); stop(); }
+            });
+        }
+        else {
+            ctx.fillStyle = "white"; ctx.fillText(mode + " STARTING...", 100, 150);
+        }
+        requestAnimationFrame(loop);
     }
 
-    // Basic Touch to Jump
     canvas.addEventListener('touchstart', (e) => {
-        if(currentGame === 'DINO' && pY === 250) pV = -12;
+        if(mode === 'DINO' && py === 250) pv = -12;
+        if(mode === 'CATCH' || mode === 'PONG') py = e.touches[0].clientX - 50;
+        if(mode === 'SNAKE') {
+            let tx = e.touches[0].clientX;
+            if(tx < 150) { let t = dir.x; dir.x = dir.y; dir.y = -t; } 
+            else { let t = dir.x; dir.x = -dir.y; dir.y = t; }
+        }
     });
 </script>
 </body>
