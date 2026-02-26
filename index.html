@@ -13,89 +13,105 @@
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
 body, html { margin: 0; padding: 0; height: 100%; width: 100%; background: var(--bg); color: #fff; font-family: 'Segoe UI', sans-serif; overflow: hidden; position: fixed; }
 
-.container { display: flex; flex-direction: column; height: 100%; max-width: 450px; margin: auto; }
+/* Background Glow */
+.bg-blur { position: fixed; width: 100vw; height: 100vh; background: radial-gradient(circle at 50% 50%, #111 0%, #000 100%); z-index: -1; }
+
+.container { display: flex; flex-direction: column; height: 100%; max-width: 450px; margin: auto; position: relative; }
 .screen { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 25px; }
 
-/* Home Page Design */
-.hero-title { font-size: 45px; font-weight: 800; text-align: center; margin: 0; }
-.hero-pro { color: var(--primary); margin-top: -5px; }
-.created-by { color: #555; font-size: 13px; margin: 15px 0 30px 0; }
+/* Home Screen Styling */
+.hero-title { font-size: 45px; font-weight: 900; text-align: center; margin: 0; letter-spacing: -2px; }
+.hero-pro { color: var(--primary); text-shadow: 0 0 20px rgba(0, 242, 255, 0.5); }
+.created-by { color: #444; font-size: 12px; margin: 10px 0 30px 0; text-transform: uppercase; letter-spacing: 2px; }
 
-input { width: 100%; padding: 18px; border-radius: 12px; border: 1px solid #222; background: #0a0a0a; color: #fff; font-size: 16px; margin-bottom: 12px; }
+input { width: 100%; padding: 18px; border-radius: 12px; border: 1px solid #222; background: #0a0a0a; color: #fff; font-size: 16px; margin-bottom: 12px; transition: 0.3s; }
+input:focus { border-color: var(--primary); box-shadow: 0 0 10px rgba(0, 242, 255, 0.2); }
+
 .grid-select { display: flex; gap: 8px; width: 100%; margin-bottom: 15px; }
-.grid-btn { flex: 1; padding: 15px; background: #1a1a1a; border: none; color: #fff; border-radius: 10px; font-weight: bold; cursor: pointer; }
-.grid-btn.active { background: var(--primary); color: #000; box-shadow: 0 0 15px var(--primary); }
+.grid-btn { flex: 1; padding: 15px; background: #111; border: 1px solid #222; color: #fff; border-radius: 12px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+.grid-btn.active { background: var(--primary); color: #000; border-color: var(--primary); box-shadow: 0 0 15px var(--primary); }
 
-.btn-main { width: 100%; padding: 18px; border-radius: 12px; border: none; font-weight: 800; cursor: pointer; text-transform: uppercase; margin-bottom: 10px; font-size: 14px; }
-.btn-cyan { background: var(--primary); color: #000; }
-.btn-purple { background: var(--secondary); color: #fff; }
-.btn-white { background: #fff; color: #000; }
+.btn-main { width: 100%; padding: 18px; border-radius: 12px; border: none; font-weight: 800; cursor: pointer; text-transform: uppercase; margin-bottom: 10px; font-size: 14px; transition: 0.2s; }
+.btn-main:active { transform: scale(0.96); }
+.btn-cyan { background: var(--primary); color: #000; box-shadow: 0 4px 15px rgba(0, 242, 255, 0.3); }
+.btn-purple { background: var(--secondary); color: #fff; box-shadow: 0 4px 15px rgba(112, 0, 255, 0.3); }
 
 /* Game Elements */
-#board { display: grid; gap: 8px; margin: 20px auto; }
-.cell { background: #111; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 900; cursor: pointer; border: 1px solid rgba(255,255,255,0.05); }
+#board { display: grid; gap: 10px; margin: 20px auto; perspective: 1000px; }
+.cell { background: #0f0f0f; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-weight: 900; cursor: pointer; border: 1px solid rgba(255,255,255,0.05); transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+.cell:hover { background: #151515; }
 
-/* Winning Neon Glow */
+/* Winning Animation - Ye Goti par tab tak rahega jab tak round reset na ho */
 .winner-cell { 
-    background: rgba(0, 255, 136, 0.3) !important; 
+    background: rgba(0, 255, 136, 0.15) !important; 
     border: 2px solid var(--win) !important; 
-    animation: winPulse 0.5s infinite alternate;
-    z-index: 10;
+    animation: neonGlow 0.8s infinite alternate !important;
+    z-index: 5;
 }
-@keyframes winPulse { 
-    from { transform: scale(1); box-shadow: 0 0 5px var(--win); } 
-    to { transform: scale(1.08); box-shadow: 0 0 20px var(--win); } 
+@keyframes neonGlow { 
+    from { box-shadow: 0 0 5px var(--win), inset 0 0 5px var(--win); transform: scale(1); } 
+    to { box-shadow: 0 0 25px var(--win), inset 0 0 10px var(--win); transform: scale(1.05); } 
 }
 
-.symbol-anim { animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: inline-block; }
-@keyframes popIn { 0% { transform: scale(0); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+.symbol-anim { animation: spawn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+@keyframes spawn { 0% { transform: scale(0) rotate(-20deg); opacity: 0; } 100% { transform: scale(1) rotate(0); opacity: 1; } }
 
-#winnerOverlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; }
+/* Advanced Winner Overlay */
+#winnerOverlay { 
+    position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 9999; 
+    display: none; flex-direction: column; align-items: center; justify-content: center;
+    backdrop-filter: blur(8px);
+}
+.winner-card {
+    background: rgba(255, 255, 255, 0.05); padding: 40px; border-radius: 30px;
+    border: 1px solid rgba(255,255,255,0.1); text-align: center;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5); animation: cardSlide 0.5s ease;
+}
+@keyframes cardSlide { 0% { transform: translateY(50px); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
+
 .hidden { display: none !important; }
 </style>
 </head>
 <body>
-
-<div id="adminPanel" style="position:fixed; inset:0; background:#000; z-index:10001; padding:20px; display:none;">
-    <h2 style="color:var(--primary);">MASTER ADMIN</h2>
-    <div id="activeRoomsList"></div>
-    <button onclick="location.reload()" class="btn-main btn-cyan">EXIT</button>
-</div>
+<div class="bg-blur"></div>
 
 <div id="winnerOverlay">
-    <h1 id="winnerName" style="font-size: 40px; color: var(--win); text-shadow: 0 0 20px var(--win);">WINNER!</h1>
-    <button id="nextRoundBtn" class="btn-main btn-cyan" style="width:220px;">PLAY AGAIN</button>
+    <div class="winner-card">
+        <p style="color: #666; font-size: 14px; margin: 0;">MATCH FINISHED</p>
+        <h1 id="winnerName" style="font-size: 48px; margin: 10px 0; color: var(--win); text-shadow: 0 0 20px var(--win);">CHAMPION!</h1>
+        <div style="height: 2px; width: 50px; background: var(--win); margin: 20px auto;"></div>
+        <button id="nextRoundBtn" class="btn-main btn-cyan" style="width:200px; margin-top: 20px;">NEXT ROUND</button>
+    </div>
 </div>
 
 <div class="container" id="mainGameUI">
     <div id="loginScreen" class="screen">
         <h1 class="hero-title">ULTIMATE</h1>
         <h1 class="hero-title hero-pro">ARENA PRO</h1>
-        <p class="created-by">CREATED BY @RP_GUPTA_07</p>
-        <input id="userName" placeholder="ENTER YOUR NAME">
+        <p class="created-by">BY @RP_GUPTA_07</p>
+        <input id="userName" placeholder="ENTER PLAYER NAME">
         <div class="grid-select">
             <button class="grid-btn active" data-size="3">3X3</button>
             <button class="grid-btn" data-size="5">5X5</button>
             <button class="grid-btn" data-size="7">7X7</button>
         </div>
         <button id="createBtn" class="btn-main btn-cyan">CREATE ARENA</button>
-        <button id="globalBtn" class="btn-main btn-purple">GLOBAL BATTLE</button>
-        <button id="robotBtn" class="btn-main btn-white">SOLO VS ROBOT</button>
-        <input id="joinCode" placeholder="ENTER ARENA CODE" style="margin-top:15px;">
+        <button id="robotBtn" class="btn-main" style="background: #fff; color: #000;">SOLO VS ROBOT</button>
+        <input id="joinCode" placeholder="ARENA CODE" style="margin-top:20px;">
         <button id="joinBtn" class="btn-main" style="background:#222; color:#fff;">JOIN SQUAD</button>
     </div>
 
     <div id="gameScreen" class="hidden" style="display:flex; flex-direction:column; height: 100%;">
-        <div style="padding: 10px; display: flex; justify-content: space-between;">
-            <button onclick="location.reload()" style="background:none; border:none; color:red; font-weight:bold;">✕ EXIT</button>
-            <div id="status" style="color:var(--primary); font-weight:bold;">APKI BARI</div>
+        <div style="padding: 20px; display: flex; justify-content: space-between; align-items: center;">
+            <button onclick="location.reload()" style="background:none; border:none; color:#ff4d4d; font-weight:bold; cursor:pointer;">✕ EXIT</button>
+            <div id="status" style="color:var(--primary); font-weight:bold; letter-spacing: 1px;">APKI BARI</div>
             <div style="font-size:10px; color:#333;">ID: <span id="displayCode">----</span></div>
         </div>
         <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;">
-            <div style="display:flex; gap:30px; margin-bottom:20px; background:rgba(255,255,255,0.03); padding:15px 30px; border-radius:20px;">
-                <div style="text-align:center;">USER<div id="p1Score" style="font-size:32px; font-weight:900;">0</div></div>
-                <div style="font-size:28px; opacity:0.2;">VS</div>
-                <div style="text-align:center;">OPPONENT<div id="p2Score" style="font-size:32px; font-weight:900;">0</div></div>
+            <div style="display:flex; gap:40px; margin-bottom:30px; background:rgba(255,255,255,0.02); padding:20px 40px; border-radius:25px; border: 1px solid rgba(255,255,255,0.03);">
+                <div style="text-align:center;"><div style="font-size:10px; color:#555; margin-bottom:5px;">USER</div><div id="p1Score" style="font-size:36px; font-weight:900;">0</div></div>
+                <div style="font-size:30px; opacity:0.1; align-self:center;">VS</div>
+                <div style="text-align:center;"><div style="font-size:10px; color:#555; margin-bottom:5px;">ROBOT</div><div id="p2Score" style="font-size:36px; font-weight:900;">0</div></div>
             </div>
             <div id="board"></div>
         </div>
@@ -115,32 +131,51 @@ function play(n){ try{ sfx[n].currentTime=0; sfx[n].play(); }catch(e){} }
 
 let myRoomId, mySymbol, gameRef, gridSize = 3, isRobot = false, myName;
 
-document.querySelectorAll('.grid-btn').forEach(btn => { btn.onclick = () => { document.querySelectorAll('.grid-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); gridSize = parseInt(btn.dataset.size); }; });
+document.querySelectorAll('.grid-btn').forEach(btn => { 
+    btn.onclick = () => { 
+        document.querySelectorAll('.grid-btn').forEach(b => b.classList.remove('active')); 
+        btn.classList.add('active'); gridSize = parseInt(btn.dataset.size); 
+    }; 
+});
 
-document.getElementById('createBtn').onclick = () => { myName = document.getElementById('userName').value || "User"; if(myName === "RP_ADMIN_7") { openAdmin(); return; } myRoomId = Math.floor(1000 + Math.random()*8999).toString(); startSetup("X"); };
-document.getElementById('robotBtn').onclick = () => { isRobot = true; myName = "User"; myRoomId = "BOT_"+Date.now(); startSetup("X"); };
-document.getElementById('joinBtn').onclick = () => { myName = document.getElementById('userName').value || "Guest"; myRoomId = document.getElementById('joinCode').value; if(myRoomId) startSetup("O"); };
+document.getElementById('createBtn').onclick = () => { 
+    myName = document.getElementById('userName').value || "User"; 
+    myRoomId = Math.floor(1000 + Math.random()*8999).toString(); 
+    startSetup("X"); 
+};
+document.getElementById('robotBtn').onclick = () => { 
+    isRobot = true; myName = document.getElementById('userName').value || "User"; 
+    myRoomId = "BOT_"+Date.now(); startSetup("X"); 
+};
+document.getElementById('joinBtn').onclick = () => { 
+    myName = document.getElementById('userName').value || "Guest"; 
+    myRoomId = document.getElementById('joinCode').value; 
+    if(myRoomId) startSetup("O"); 
+};
 
 function startSetup(sym) {
     mySymbol = sym;
     gameRef = db.ref("rooms/" + myRoomId + "/game");
-    if(sym === "X") { gameRef.set({ board: Array(gridSize*gridSize).fill(""), turn: "X", size: gridSize, scores: {X:0, O:0}, players: {X: myName, O: isRobot ? "Robot AI" : "..."} }); }
+    if(sym === "X") { 
+        gameRef.set({ board: Array(gridSize*gridSize).fill(""), turn: "X", size: gridSize, scores: {X:0, O:0}, players: {X: myName, O: isRobot ? "ROBOT AI" : "..."} }); 
+    }
     document.getElementById('loginScreen').classList.add('hidden');
     document.getElementById('gameScreen').classList.remove('hidden');
-    document.getElementById('displayCode').innerText = isRobot ? "ROBOT AI" : myRoomId;
+    document.getElementById('displayCode').innerText = isRobot ? "IMPOSSIBLE AI" : myRoomId;
     initGame();
 }
 
 function initGame() {
     const bEl = document.getElementById('board');
-    let cellSize = gridSize === 3 ? 95 : (gridSize === 5 ? 65 : 45);
+    let cellSize = gridSize === 3 ? 100 : (gridSize === 5 ? 70 : 50);
     bEl.style.gridTemplateColumns = `repeat(${gridSize}, ${cellSize}px)`;
     bEl.innerHTML = "";
     for(let i=0; i < gridSize * gridSize; i++) {
         let c = document.createElement("div"); c.className = "cell"; c.style.width = cellSize+"px"; c.style.height = cellSize+"px";
         c.onclick = () => {
             gameRef.once("value", snap => {
-                let g = snap.val(); if(g.turn !== mySymbol || g.board[i] !== "" || checkWinner(g.board, g.size)) return;
+                let g = snap.val(); 
+                if(!g || g.turn !== mySymbol || g.board[i] !== "" || checkWinner(g.board, g.size)) return;
                 g.board[i] = mySymbol;
                 let next = mySymbol === "X" ? "O" : "X";
                 let win = checkWinner(g.board, g.size);
@@ -155,22 +190,33 @@ function initGame() {
     gameRef.on("value", snap => {
         let g = snap.val(); if(!g) return;
         document.getElementById('p1Score').innerText = g.scores.X; document.getElementById('p2Score').innerText = g.scores.O;
+        
         g.board.forEach((v, i) => {
             let cell = bEl.children[i];
             if(cell.innerText !== v && v !== "") {
                 cell.innerHTML = `<span class="symbol-anim" style="color:${v==='X'?'var(--primary)':'var(--accent)'}; font-size:${cellSize/1.8}px;">${v}</span>`;
                 play(v === "X" ? 'moveX' : 'moveO');
-            } else if (v === "") cell.innerHTML = "";
+            } else if (v === "") {
+                cell.innerHTML = ""; cell.classList.remove('winner-cell');
+            }
         });
 
         let win = checkWinner(g.board, g.size);
         if(win) {
             setTimeout(() => {
-                if(win !== "draw") { play('win'); win.line.forEach(idx => bEl.children[idx].classList.add('winner-cell')); confetti(); }
+                if(win !== "draw") { 
+                    play('win'); 
+                    document.getElementById('winnerName').innerText = (win.w === "X" ? g.players.X : g.players.O).toUpperCase();
+                    win.line.forEach(idx => bEl.children[idx].classList.add('winner-cell')); 
+                    confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+                } else {
+                    document.getElementById('winnerName').innerText = "DRAW!";
+                }
                 document.getElementById('winnerOverlay').style.display = "flex";
             }, 300);
         } else {
             document.getElementById('winnerOverlay').style.display = "none";
+            document.getElementById('status').innerText = g.turn === mySymbol ? "APKI BARI" : "WAITING...";
             if(isRobot && g.turn === "O") setTimeout(() => robotAI(g), 500);
         }
     });
@@ -221,7 +267,9 @@ function checkWinner(b, size) {
     return b.includes("") ? null : "draw";
 }
 
-document.getElementById('nextRoundBtn').onclick = () => { gameRef.update({ board: Array(gridSize*gridSize).fill(""), turn: "X" }); };
+document.getElementById('nextRoundBtn').onclick = () => { 
+    gameRef.update({ board: Array(gridSize*gridSize).fill(""), turn: "X" }); 
+};
 </script>
 </body>
 </html>
