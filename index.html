@@ -32,7 +32,7 @@ input { width: 100%; padding: 18px; border-radius: 12px; border: 1px solid #222;
 .grid-btn.active { background: var(--primary); color: #000; box-shadow: 0 0 15px var(--primary); }
 
 #board { display: grid; gap: 10px; margin: 20px auto; }
-.cell { background: #0f0f0f; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-weight: 900; cursor: pointer; border: 1px solid rgba(255,255,255,0.05); transition: 0.1s; }
+.cell { background: #0f0f0f; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-weight: 900; cursor: pointer; border: 1px solid rgba(255,255,255,0.05); }
 
 .winner-cell { 
     background: rgba(0, 255, 136, 0.2) !important; 
@@ -93,10 +93,10 @@ input { width: 100%; padding: 18px; border-radius: 12px; border: 1px solid #222;
     </div>
 
     <div id="gameScreen" class="hidden" style="display:flex; flex-direction:column; height: 100%;">
-        <div style="padding: 20px; display: flex; justify-content: space-between;">
+        <div style="padding: 20px; display: flex; justify-content: space-between; align-items: center;">
             <button onclick="location.reload()" style="background:none; border:none; color:red; font-weight:bold; cursor:pointer;">✕ EXIT</button>
-            <div id="status" style="color:var(--primary); font-weight:bold;">APKI BARI</div>
-            <div id="roomDisp" style="font-size:10px; color:#333;">ID: ----</div>
+            <div id="status" style="color:var(--primary); font-weight:bold; text-transform: uppercase;">APKI BARI</div>
+            <div id="roomDisp" style="font-size:10px; color:#555;">ID: ----</div>
         </div>
         <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;">
             <div style="display:flex; gap:40px; margin-bottom:30px; background:rgba(255,255,255,0.02); padding:20px 40px; border-radius:25px;">
@@ -117,16 +117,18 @@ const firebaseConfig = { apiKey: "AIzaSyARuO_pN2vdYrVKYkKHHaNys7WI8HqM6I4", data
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-// --- 50+ DYNAMIC SOUND EFFECTS ---
+// --- FIXED SOUND ENGINE (50+ VARIATIONS) ---
 function playDynamicSFX(type) {
-    const urls = [
-        "https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3", // X
-        "https://assets.mixkit.co/active_storage/sfx/2572/2572-preview.mp3", // O
+    const soundUrls = [
+        "https://cdn.pixabay.com/audio/2022/03/15/audio_7833320c74.mp3", // X (Alternative)
+        "https://cdn.pixabay.com/audio/2021/08/04/audio_06d8702b54.mp3", // O (Alternative)
         "https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3"  // Win
     ];
-    let a = new Audio(urls[type==='win'?2:(type==='X'?0:1)]);
-    a.playbackRate = 0.5 + Math.random() * 1.5; // Pitch randomization for 50 variations
-    a.play().catch(()=>{});
+    try {
+        let a = new Audio(soundUrls[type==='win'?2:(type==='X'?0:1)]);
+        a.playbackRate = 0.5 + Math.random() * 1.5; // Pitch randomization
+        a.play().catch(e => console.log("Sound error:", e));
+    } catch(err) {}
 }
 
 let myRoomId, mySymbol, gameRef, gridSize = 3, isRobot = false, myName;
@@ -165,7 +167,7 @@ function startSetup(sym) {
         gameRef.set({ 
             board: Array(gridSize*gridSize).fill(""), 
             turn: "X", 
-            starter: "X", // Tracking who started the round
+            starter: "X",
             size: gridSize, 
             scores: {X:0, O:0}, 
             players: {X: myName, O: isRobot ? "ULTRA ROBOT" : "..."} 
@@ -201,6 +203,17 @@ function initGame() {
     gameRef.on("value", snap => {
         let g = snap.val(); if(!g) return;
         document.getElementById('p1Score').innerText = g.scores.X; document.getElementById('p2Score').innerText = g.scores.O;
+        
+        // --- MSG/STATUS UPDATE ---
+        let statusEl = document.getElementById('status');
+        if(g.turn === mySymbol) {
+            statusEl.innerText = "APKI BARI";
+            statusEl.style.color = "var(--primary)";
+        } else {
+            statusEl.innerText = "WAITING...";
+            statusEl.style.color = "#555";
+        }
+
         g.board.forEach((v, i) => {
             let cell = bEl.children[i];
             if(cell.innerText !== v && v !== "") {
@@ -218,7 +231,6 @@ function initGame() {
             }, 1000);
         } else {
             document.getElementById('winnerOverlay').style.display = "none";
-            document.getElementById('status').innerText = (g.turn === mySymbol) ? "APKI BARI" : "WAITING...";
             if(isRobot && g.turn === "O") setTimeout(() => ultraRobotAI(g), 600);
         }
     });
@@ -238,7 +250,6 @@ function checkWinner(b, size) {
     return b.includes("") ? null : "draw";
 }
 
-// --- ULTRA ROBOT AI (MINIMAX) ---
 function ultraRobotAI(game) {
     let board = [...game.board];
     let bestScore = -Infinity; let bestMove;
@@ -274,17 +285,16 @@ function ultraRobotAI(game) {
     if(bestMove !== undefined) {
         game.board[bestMove] = "O";
         let win = checkWinner(game.board, game.size);
-        let up = { board: game.board, turn: "X" };
-        if(win && win !== "draw") { game.scores.O++; up.scores = game.scores; }
-        gameRef.update(up);
+        let updateObj = { board: game.board, turn: "X" };
+        if(win && win !== "draw") { game.scores.O++; updateObj.scores = game.scores; }
+        gameRef.update(updateObj);
     }
 }
 
-// --- NEXT ROUND WITH ALTERNATING START ---
+// --- NEXT ROUND ALTERNATING TURNS ---
 document.getElementById('nextRoundBtn').onclick = () => { 
     gameRef.once("value", snap => {
         let g = snap.val();
-        // Agli bari uski jo pichli baar second player tha
         let nextStarter = g.starter === "X" ? "O" : "X";
         gameRef.update({ 
             board: Array(gridSize*gridSize).fill(""), 
