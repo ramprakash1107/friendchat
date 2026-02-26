@@ -2,188 +2,152 @@
 <html lang="hi">
 <head>
 <meta charset="UTF-8">
-<title>@rp_gupta_07 | Elite Self-Made Arena</title>
+<title>@rp_gupta_07 | Elite Multi-Arena</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
 <style>
 :root { 
-    --primary: #00f2ff; --bg: #050505; --card: rgba(255, 255, 255, 0.1);
+    --primary: #00f2ff; --bg: #050505; --card: rgba(255, 255, 255, 0.08);
+    --me: linear-gradient(135deg, #0084ff, #00c6ff);
 }
 body { 
     margin: 0; background: var(--bg); color: #fff; 
-    font-family: sans-serif; overflow: hidden; touch-action: manipulation;
+    font-family: 'Segoe UI', sans-serif; overflow: hidden;
 }
 .container { max-width: 450px; margin: auto; height: 100vh; display: flex; flex-direction: column; }
-.header { text-align: center; padding: 20px; }
-.hero-title { font-size: 28px; margin: 0; color: #fff; font-weight: 900; }
-.tag { color: var(--primary); font-size: 10px; letter-spacing: 2px; }
 
-/* Game Grid */
-.grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; padding: 20px; }
-.game-card { 
-    background: var(--card); border-radius: 15px; padding: 20px; text-align: center;
-    border: 1px solid rgba(255,255,255,0.1); cursor: pointer; transition: 0.3s;
-}
-.game-card:active { transform: scale(0.95); background: var(--primary); color: #000; }
-.icon { font-size: 40px; margin-bottom: 10px; display: block; }
-
-/* Game Engine Overlay */
+/* Game Section */
 #gameStage { 
-    position: fixed; inset: 0; background: #000; display: none; 
-    flex-direction: column; align-items: center; justify-content: center; z-index: 100;
+    flex: 1; background: #000; position: relative; 
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    border-bottom: 2px solid #222;
 }
-canvas { background: #111; border: 2px solid var(--primary); max-width: 90%; }
-.close-btn { position: absolute; top: 20px; left: 20px; padding: 10px; background: red; color: white; border: none; border-radius: 5px; }
-#scoreDisplay { font-size: 24px; margin-bottom: 10px; color: var(--primary); }
+canvas { background: #111; border: 1px solid var(--primary); max-width: 90%; cursor: pointer; }
+.game-ui { position: absolute; top: 10px; width: 90%; display: flex; justify-content: space-between; font-weight: bold; }
+
+/* Chat Section */
+.chat-area { height: 250px; display: flex; flex-direction: column; background: #0a0a0a; }
+#messages { flex: 1; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 8px; }
+.msg { max-width: 80%; padding: 8px 12px; border-radius: 15px; font-size: 12px; line-height: 1.4; position: relative; }
+.msg b { display: block; font-size: 8px; margin-bottom: 2px; opacity: 0.7; text-transform: uppercase; }
+.me { align-self: flex-end; background: var(--me); border-bottom-right-radius: 2px; }
+.other { align-self: flex-start; background: #222; border-bottom-left-radius: 2px; }
+
+.chat-input-area { display: flex; padding: 10px; gap: 8px; background: #000; }
+input { flex: 1; padding: 12px; border-radius: 25px; border: 1px solid #333; background: #111; color: #fff; outline: none; }
+.send-btn { background: var(--primary); border: none; width: 45px; height: 45px; border-radius: 50%; cursor: pointer; font-weight: bold; }
+
+/* Menu Overlay */
+#menu { position: absolute; inset: 0; background: rgba(0,0,0,0.9); z-index: 10; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; text-align: center; }
+.btn-play { background: var(--primary); color: #000; padding: 15px 40px; border-radius: 30px; border: none; font-weight: 900; margin: 10px; width: 200px; }
 </style>
 </head>
 <body>
 
-<div class="container" id="menu">
-    <div class="header">
-        <h1 class="hero-title">MY OWN GAMES</h1>
-        <div class="tag">MADE BY @RP_GUPTA_07</div>
+<div class="container">
+    <div id="gameStage">
+        <div id="menu">
+            <h1 style="margin:0; font-size:32px;">ARENA PRO</h1>
+            <p style="color:var(--primary); font-size:10px; letter-spacing:3px;">BY @RP_GUPTA_07</p>
+            <input id="userName" placeholder="ENTER NAME TO CHAT" style="margin: 20px 0; max-width: 250px;">
+            <button class="btn-play" onclick="startGame('DINO')">PLAY DINO RUN</button>
+            <button class="btn-play" style="background:#fff" onclick="startGame('SHOOT')">PLAY SHOOTER</button>
+        </div>
+
+        <div class="game-ui">
+            <span id="scoreVal">Score: 0</span>
+            <span onclick="location.reload()" style="color:red; cursor:pointer;">EXIT</span>
+        </div>
+        <canvas id="canvas"></canvas>
     </div>
 
-    <div class="grid">
-        <div class="game-card" onclick="startDino()">
-            <span class="icon">🦖</span>
-            <b>DINO RUN</b>
-        </div>
-        <div class="game-card" onclick="startShooter()">
-            <span class="icon">🎯</span>
-            <b>CORE SHOOT</b>
-        </div>
-        <div class="game-card" onclick="alert('Working on it!')">
-            <span class="icon">🚗</span>
-            <b>COMING SOON</b>
-        </div>
-        <div class="game-card" onclick="alert('Working on it!')">
-            <span class="icon">⚔️</span>
-            <b>COMING SOON</b>
+    <div class="chat-area">
+        <div id="messages"></div>
+        <div class="chat-input-area">
+            <input id="msgInput" placeholder="Type message...">
+            <button class="send-btn" onclick="sendMessage()">➤</button>
         </div>
     </div>
 </div>
 
-<div id="gameStage">
-    <button class="close-btn" onclick="exitGame()">EXIT</button>
-    <div id="scoreDisplay">Score: 0</div>
-    <canvas id="canvas"></canvas>
-    <p style="margin-top:15px; font-size:12px; opacity:0.6;">TAP TO PLAY / JUMP</p>
-</div>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
 <script>
+// Firebase Config
+const firebaseConfig = {
+  apiKey: "AIzaSyARuO_pN2vdYrVKYkKHHaNys7WI8HqM6I4",
+  databaseURL: "https://friendchat-43941-default-rtdb.firebaseio.com",
+  projectId: "friendchat-43941",
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+const chatRef = db.ref("global_chat");
+
+// --- CHAT LOGIC ---
+let myName = "Player";
+
+function sendMessage() {
+    const input = document.getElementById('msgInput');
+    myName = document.getElementById('userName').value || "Guest";
+    if(!input.value.trim()) return;
+    
+    chatRef.push({ name: myName, msg: input.value, time: Date.now() });
+    input.value = "";
+}
+
+chatRef.limitToLast(20).on("child_added", (snap) => {
+    const data = snap.val();
+    const box = document.getElementById('messages');
+    const div = document.createElement('div');
+    div.className = `msg ${data.name === myName ? 'me' : 'other'}`;
+    div.innerHTML = `<b>${data.name}</b>${data.msg}`;
+    box.appendChild(div);
+    box.scrollTop = box.scrollHeight;
+});
+
+// --- GAME LOGIC (Built-in) ---
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
-const stage = document.getElementById('gameStage');
-const scoreLabel = document.getElementById('scoreDisplay');
-let gameActive = false, score = 0, animationId, currentGame = "";
+canvas.width = 300; canvas.height = 300;
 
-canvas.width = 300; canvas.height = 400;
+let gameActive = false, score = 0, currentGame = "";
+let dino = { y: 250, dy: 0, jump: -10, gravity: 0.6, grounded: true };
+let obs = [];
 
-// --- GAME 1: DINO RUN ---
-let dino = { x: 50, y: 350, w: 30, h: 30, dy: 0, jump: -12, gravity: 0.6, grounded: true };
-let obstacles = [];
-
-function startDino() {
-    setupGame("DINO");
-    dino.y = 350; dino.dy = 0; obstacles = [];
-    gameLoop();
+function startGame(type) {
+    myName = document.getElementById('userName').value || "Player";
+    document.getElementById('menu').style.display = "none";
+    gameActive = true; currentGame = type; score = 0; obs = [];
+    loop();
 }
 
-function updateDino() {
-    if (!dino.grounded) {
-        dino.dy += dino.gravity;
-        dino.y += dino.dy;
+function loop() {
+    if(!gameActive) return;
+    ctx.clearRect(0,0,300,300);
+    document.getElementById('scoreVal').innerText = "Score: " + score;
+
+    if(currentGame === "DINO") {
+        // Dino Physics
+        if(!dino.grounded) { dino.dy += dino.gravity; dino.y += dino.dy; }
+        if(dino.y >= 250) { dino.y = 250; dino.grounded = true; }
+        
+        ctx.fillStyle = "#00f2ff"; ctx.fillRect(40, dino.y, 30, 30);
+        
+        if(Math.random() < 0.02) obs.push({x:300});
+        ctx.fillStyle = "red";
+        obs.forEach((o, i) => {
+            o.x -= 4;
+            ctx.fillRect(o.x, 260, 20, 20);
+            if(o.x < 70 && o.x > 10 && dino.y > 230) { gameActive = false; alert("Over!"); location.reload(); }
+            if(o.x < -20) { obs.splice(i,1); score++; }
+        });
     }
-    if (dino.y >= 350) { dino.y = 350; dino.grounded = true; }
-
-    if (Math.random() < 0.02) obstacles.push({ x: 350, w: 20, h: 30 });
-    
-    obstacles.forEach((obs, i) => {
-        obs.x -= 5;
-        // Collision
-        if (dino.x < obs.x + obs.w && dino.x + dino.w > obs.x && dino.y < 350 + obs.h && dino.y + dino.h > 350) {
-            gameOver();
-        }
-        if (obs.x < -20) { obstacles.splice(i, 1); score++; }
-    });
+    requestAnimationFrame(loop);
 }
 
-function drawDino() {
-    ctx.fillStyle = "#00f2ff"; ctx.fillRect(dino.x, dino.y, dino.w, dino.h);
-    ctx.fillStyle = "red";
-    obstacles.forEach(obs => ctx.fillRect(obs.x, 350, obs.w, obs.h));
-}
-
-// --- GAME 2: CORE SHOOTER ---
-let angle = 0, bullets = [], targets = [];
-function startShooter() {
-    setupGame("SHOOT");
-    bullets = []; angle = 0;
-    gameLoop();
-}
-
-function updateShooter() {
-    angle += 0.05;
-    bullets.forEach((b, i) => {
-        b.y -= 7;
-        if(b.y < 100 && Math.abs((Math.atan2(b.y-200, b.x-150)) - angle) < 0.2) {
-            bullets.splice(i, 1); score++;
-        }
-        if(b.y < 0) bullets.splice(i,1);
-    });
-}
-
-function drawShooter() {
-    ctx.translate(150, 150); ctx.rotate(angle);
-    ctx.fillStyle = "white"; ctx.fillRect(-20, -20, 40, 40);
-    ctx.setTransform(1, 0, 0, 1, 0, 0);
-    
-    ctx.fillStyle = "yellow";
-    bullets.forEach(b => ctx.beginPath() || ctx.arc(b.x, b.y, 5, 0, 7) || ctx.fill());
-}
-
-// --- ENGINE ---
-function setupGame(name) {
-    currentGame = name; score = 0; gameActive = true;
-    stage.style.display = "flex";
-}
-
-function gameLoop() {
-    if(!gameActive) return;
-    ctx.clearRect(0,0,300,400);
-    scoreLabel.innerText = "Score: " + score;
-
-    if(currentGame === "DINO") { updateDino(); drawDino(); }
-    else if(currentGame === "SHOOT") { updateShooter(); drawShooter(); }
-
-    animationId = requestAnimationFrame(gameLoop);
-}
-
-function gameOver() {
-    gameActive = false;
-    alert("GAME OVER! Score: " + score);
-    exitGame();
-}
-
-function exitGame() {
-    gameActive = false;
-    cancelAnimationFrame(animationId);
-    stage.style.display = "none";
-}
-
-window.addEventListener('touchstart', (e) => {
-    if(!gameActive) return;
-    if(currentGame === "DINO" && dino.grounded) { dino.dy = dino.jump; dino.grounded = false; }
-    if(currentGame === "SHOOT") bullets.push({ x: 150, y: 380 });
-});
-
-// For PC testing
-window.addEventListener('mousedown', () => {
-    if(currentGame === "DINO" && dino.grounded) { dino.dy = dino.jump; dino.grounded = false; }
-    if(currentGame === "SHOOT") bullets.push({ x: 150, y: 380 });
-});
+// Controls
+canvas.addEventListener('touchstart', () => { if(dino.grounded) { dino.dy = dino.jump; dino.grounded = false; }});
+window.addEventListener('keydown', (e) => { if(e.code === "Space" && dino.grounded) { dino.dy = dino.jump; dino.grounded = false; }});
 </script>
 </body>
 </html>
-
