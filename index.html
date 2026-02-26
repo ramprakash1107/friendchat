@@ -2,268 +2,188 @@
 <html lang="hi">
 <head>
 <meta charset="UTF-8">
-<title>@rp_gupta_07 | Elite Arena Pro Hub</title>
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover">
-<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+<title>@rp_gupta_07 | Elite Self-Made Arena</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
 <style>
 :root { 
-    --primary: #00f2ff; 
-    --secondary: #7000ff;
-    --bg: #0b0b1a; 
-    --card: rgba(255, 255, 255, 0.08);
-    --win: #00ff88; 
-    --me: linear-gradient(135deg, #0084ff, #00c6ff);
-    --other: #2a2a2a; 
-    --accent: #ff0055;
+    --primary: #00f2ff; --bg: #050505; --card: rgba(255, 255, 255, 0.1);
 }
-
-* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-
-body, html { 
-    margin: 0; padding: 0; height: 100%; width: 100%; 
-    background: var(--bg); color: #fff; font-family: 'Segoe UI', Roboto, sans-serif;
-    overflow-x: hidden;
+body { 
+    margin: 0; background: var(--bg); color: #fff; 
+    font-family: sans-serif; overflow: hidden; touch-action: manipulation;
 }
+.container { max-width: 450px; margin: auto; height: 100vh; display: flex; flex-direction: column; }
+.header { text-align: center; padding: 20px; }
+.hero-title { font-size: 28px; margin: 0; color: #fff; font-weight: 900; }
+.tag { color: var(--primary); font-size: 10px; letter-spacing: 2px; }
 
-/* Background Animation */
-.bg-glow {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: radial-gradient(circle at 50% 50%, #1a1a2e 0%, #050505 100%);
-    z-index: -1;
+/* Game Grid */
+.grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; padding: 20px; }
+.game-card { 
+    background: var(--card); border-radius: 15px; padding: 20px; text-align: center;
+    border: 1px solid rgba(255,255,255,0.1); cursor: pointer; transition: 0.3s;
 }
+.game-card:active { transform: scale(0.95); background: var(--primary); color: #000; }
+.icon { font-size: 40px; margin-bottom: 10px; display: block; }
 
-.container { 
-    max-width: 450px; margin: auto; min-height: 100vh;
-    backdrop-filter: blur(10px); display: flex; flex-direction: column;
+/* Game Engine Overlay */
+#gameStage { 
+    position: fixed; inset: 0; background: #000; display: none; 
+    flex-direction: column; align-items: center; justify-content: center; z-index: 100;
 }
-
-.screen { padding: 20px; animation: fadeIn 0.6s ease-out; }
-
-@keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-
-.hero-title { 
-    font-size: 32px; font-weight: 900; letter-spacing: -1px; margin: 0; text-align: center;
-    background: linear-gradient(to bottom, #fff, #aaa); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-}
-
-/* UI Elements */
-input { 
-    width: 100%; padding: 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);
-    background: var(--card); color: #fff; font-size: 16px; outline: none; margin-bottom: 12px;
-}
-
-.btn-main { 
-    width: 100%; padding: 15px; border-radius: 12px; border: none; font-weight: 800;
-    font-size: 14px; cursor: pointer; text-transform: uppercase; margin-bottom: 10px; transition: 0.2s;
-}
-.btn-primary { background: var(--primary); color: #000; box-shadow: 0 0 15px rgba(0, 242, 255, 0.3); }
-
-/* Game Grid Styles (Image Like) */
-.section-label { font-size: 12px; font-weight: bold; color: var(--primary); margin: 20px 0 10px; letter-spacing: 1px; }
-
-.game-grid {
-    display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
-}
-
-.game-card {
-    background: var(--card); border-radius: 18px; overflow: hidden;
-    aspect-ratio: 1/1; cursor: pointer; border: 1px solid rgba(255,255,255,0.05);
-    transition: transform 0.2s; position: relative;
-}
-
-.game-card:active { transform: scale(0.95); }
-.game-card img { width: 100%; height: 100%; object-fit: cover; }
-.game-card .badge { 
-    position: absolute; top: 5px; right: 5px; background: var(--accent); 
-    font-size: 8px; padding: 2px 5px; border-radius: 4px; font-weight: bold;
-}
-
-/* Tic Tac Toe Specific */
-#board { display: grid; gap: 8px; margin: 15px auto; }
-.cell { 
-    background: var(--card); border-radius: 12px; display: flex; 
-    align-items: center; justify-content: center; font-weight: 900; cursor: pointer;
-}
-.winner-cell { background: var(--win) !important; color: #000 !important; animation: pulse 0.5s infinite; }
-@keyframes pulse { from { transform: scale(1); } to { transform: scale(1.05); } }
-
-.hidden { display: none !important; }
+canvas { background: #111; border: 2px solid var(--primary); max-width: 90%; }
+.close-btn { position: absolute; top: 20px; left: 20px; padding: 10px; background: red; color: white; border: none; border-radius: 5px; }
+#scoreDisplay { font-size: 24px; margin-bottom: 10px; color: var(--primary); }
 </style>
 </head>
 <body>
 
-<div class="bg-glow"></div>
-
-<div class="container">
-    
-    <div id="loginScreen" class="screen">
-        <div style="text-align: center; margin-bottom: 20px;">
-            <h1 class="hero-title">ARENA PRO</h1>
-            <p style="color:var(--primary); font-size:10px; letter-spacing: 2px;">BY @RP_GUPTA_07</p>
-        </div>
-
-        <input id="userName" placeholder="APNA NAAM LIKHO">
-        
-        <div style="display:flex; gap:10px; margin-bottom:15px;">
-            <button class="btn-main btn-primary" style="margin:0;" onclick="startRobot()">SOLO ROBOT</button>
-            <button class="btn-main" style="margin:0; background:var(--secondary); color:#fff;" onclick="startGlobal()">GLOBAL</button>
-        </div>
-
-        <div class="section-label">POPULAR GAMES (POKI STYLE)</div>
-        
-        <div class="game-grid">
-            <div class="game-card" onclick="openGame('https://poki.com/en/g/subway-surfers')">
-                <img src="https://img.poki.com/cdn-cgi/image/quality=78,width=150,height=150,fit=cover,f=auto/9910901e8609c1b75079a405.png">
-                <div class="badge">HOT</div>
-            </div>
-            <div class="game-card" onclick="openGame('https://poki.com/en/g/tank-trouble')">
-                <img src="https://img.poki.com/cdn-cgi/image/quality=78,width=150,height=150,fit=cover,f=auto/96c78a0f9a264a7892b963b61962354c.png">
-            </div>
-            <div class="game-card" onclick="openGame('https://poki.com/en/g/moto-x3m')">
-                <img src="https://img.poki.com/cdn-cgi/image/quality=78,width=150,height=150,fit=cover,f=auto/296719177114660.png">
-            </div>
-            <div class="game-card" onclick="openGame('https://poki.com/en/g/monkey-mart')">
-                <img src="https://img.poki.com/cdn-cgi/image/quality=78,width=150,height=150,fit=cover,f=auto/306719177114660.png">
-            </div>
-            <div class="game-card" onclick="openGame('https://poki.com/en/g/dino-game')">
-                <img src="https://img.poki.com/cdn-cgi/image/quality=78,width=150,height=150,fit=cover,f=auto/5107e0c4b370138d844a49c403.png">
-            </div>
-            <div class="game-card" onclick="openGame('https://poki.com/en/g/stick-merge')">
-                <img src="https://img.poki.com/cdn-cgi/image/quality=78,width=150,height=150,fit=cover,f=auto/7085c4b370138d844a49c403.png">
-            </div>
-        </div>
-
-        <div style="margin-top: 20px; text-align: center; opacity: 0.5; font-size: 10px;">
-            JOIN ARENA CODE: <input id="joinCode" style="display:inline; width:80px; padding:5px; margin:0;" placeholder="0000">
-            <button onclick="joinRoom()" style="background:none; border:1px solid #555; color:#fff; padding:5px; border-radius:5px;">JOIN</button>
-        </div>
+<div class="container" id="menu">
+    <div class="header">
+        <h1 class="hero-title">MY OWN GAMES</h1>
+        <div class="tag">MADE BY @RP_GUPTA_07</div>
     </div>
 
-    <div id="gameScreen" class="hidden screen">
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-            <button onclick="location.reload()" style="background:none; border:none; color:var(--accent); font-weight:bold;">✕ EXIT</button>
-            <div id="status" style="font-size:12px; color:var(--win);">YOUR TURN</div>
-            <div id="displayRoomCode" style="font-size:10px; color:#555;">0000</div>
+    <div class="grid">
+        <div class="game-card" onclick="startDino()">
+            <span class="icon">🦖</span>
+            <b>DINO RUN</b>
         </div>
-
-        <div id="board"></div>
-
-        <div style="background:var(--card); padding:15px; border-radius:15px; margin-top:10px;">
-            <div id="p1Name" style="font-size:12px;">Player X: 0</div>
-            <div id="p2Name" style="font-size:12px;">Player O: 0</div>
+        <div class="game-card" onclick="startShooter()">
+            <span class="icon">🎯</span>
+            <b>CORE SHOOT</b>
+        </div>
+        <div class="game-card" onclick="alert('Working on it!')">
+            <span class="icon">🚗</span>
+            <b>COMING SOON</b>
+        </div>
+        <div class="game-card" onclick="alert('Working on it!')">
+            <span class="icon">⚔️</span>
+            <b>COMING SOON</b>
         </div>
     </div>
 </div>
 
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<div id="gameStage">
+    <button class="close-btn" onclick="exitGame()">EXIT</button>
+    <div id="scoreDisplay">Score: 0</div>
+    <canvas id="canvas"></canvas>
+    <p style="margin-top:15px; font-size:12px; opacity:0.6;">TAP TO PLAY / JUMP</p>
+</div>
 
 <script>
-// Firebase Setup
-const firebaseConfig = {
-  apiKey: "AIzaSyARuO_pN2vdYrVKYkKHHaNys7WI8HqM6I4",
-  authDomain: "friendchat-43941.firebaseapp.com",
-  databaseURL: "https://friendchat-43941-default-rtdb.firebaseio.com",
-  projectId: "friendchat-43941",
-  storageBucket: "friendchat-43941.firebasestorage.app",
-  messagingSenderId: "1026542245723",
-  appId: "1:1026542245723:web:b892bfcc1d2358a018ac7e"
-};
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+const stage = document.getElementById('gameStage');
+const scoreLabel = document.getElementById('scoreDisplay');
+let gameActive = false, score = 0, animationId, currentGame = "";
 
-let myRoomId, myName, mySymbol, gameRef, isRobot = false;
-let gridSize = 3;
+canvas.width = 300; canvas.height = 400;
 
-function openGame(url) {
-    window.open(url, '_blank');
+// --- GAME 1: DINO RUN ---
+let dino = { x: 50, y: 350, w: 30, h: 30, dy: 0, jump: -12, gravity: 0.6, grounded: true };
+let obstacles = [];
+
+function startDino() {
+    setupGame("DINO");
+    dino.y = 350; dino.dy = 0; obstacles = [];
+    gameLoop();
 }
 
-function startRobot() {
-    myName = document.getElementById("userName").value || "Player";
-    isRobot = true; myRoomId = "BOT_" + Math.floor(Math.random()*999);
-    initGame("X");
-}
-
-function startGlobal() {
-    myName = document.getElementById("userName").value;
-    if(!myName) return alert("Naam likho bhai!");
-    myRoomId = "GLOBAL_ARENA"; 
-    initGame("X");
-}
-
-function joinRoom() {
-    myName = document.getElementById("userName").value;
-    myRoomId = document.getElementById("joinCode").value;
-    if(!myName || !myRoomId) return alert("Naam aur Code dalo!");
-    initGame("O");
-}
-
-function initGame(sym) {
-    mySymbol = sym;
-    document.getElementById("loginScreen").classList.add("hidden");
-    document.getElementById("gameScreen").classList.remove("hidden");
-    
-    gameRef = db.ref("rooms/" + myRoomId);
-    if(sym === "X") {
-        gameRef.set({ board: Array(9).fill(""), turn: "X", p1: myName, p2: isRobot ? "ROBOT" : "WAITING..." });
+function updateDino() {
+    if (!dino.grounded) {
+        dino.dy += dino.gravity;
+        dino.y += dino.dy;
     }
+    if (dino.y >= 350) { dino.y = 350; dino.grounded = true; }
+
+    if (Math.random() < 0.02) obstacles.push({ x: 350, w: 20, h: 30 });
     
-    renderBoard();
-    listenGame();
-}
-
-function renderBoard() {
-    const board = document.getElementById("board");
-    board.innerHTML = "";
-    board.style.gridTemplateColumns = `repeat(3, 1fr)`;
-    for(let i=0; i<9; i++) {
-        const cell = document.createElement("div");
-        cell.className = "cell";
-        cell.style.height = "100px";
-        cell.style.fontSize = "40px";
-        cell.onclick = () => makeMove(i);
-        board.appendChild(cell);
-    }
-}
-
-function makeMove(i) {
-    gameRef.once("value", snap => {
-        const data = snap.val();
-        if(data.turn === mySymbol && data.board[i] === "") {
-            data.board[i] = mySymbol;
-            data.turn = (mySymbol === "X" ? "O" : "X");
-            gameRef.update(data);
-            if(isRobot) setTimeout(botMove, 600);
+    obstacles.forEach((obs, i) => {
+        obs.x -= 5;
+        // Collision
+        if (dino.x < obs.x + obs.w && dino.x + dino.w > obs.x && dino.y < 350 + obs.h && dino.y + dino.h > 350) {
+            gameOver();
         }
+        if (obs.x < -20) { obstacles.splice(i, 1); score++; }
     });
 }
 
-function botMove() {
-    gameRef.once("value", snap => {
-        const data = snap.val();
-        let empty = data.board.map((v,i) => v === "" ? i : null).filter(v => v !== null);
-        if(empty.length > 0) {
-            data.board[empty[Math.floor(Math.random()*empty.length)]] = "O";
-            data.turn = "X";
-            gameRef.update(data);
+function drawDino() {
+    ctx.fillStyle = "#00f2ff"; ctx.fillRect(dino.x, dino.y, dino.w, dino.h);
+    ctx.fillStyle = "red";
+    obstacles.forEach(obs => ctx.fillRect(obs.x, 350, obs.w, obs.h));
+}
+
+// --- GAME 2: CORE SHOOTER ---
+let angle = 0, bullets = [], targets = [];
+function startShooter() {
+    setupGame("SHOOT");
+    bullets = []; angle = 0;
+    gameLoop();
+}
+
+function updateShooter() {
+    angle += 0.05;
+    bullets.forEach((b, i) => {
+        b.y -= 7;
+        if(b.y < 100 && Math.abs((Math.atan2(b.y-200, b.x-150)) - angle) < 0.2) {
+            bullets.splice(i, 1); score++;
         }
+        if(b.y < 0) bullets.splice(i,1);
     });
 }
 
-function listenGame() {
-    gameRef.on("value", snap => {
-        const data = snap.val();
-        if(!data) return;
-        data.board.forEach((v, i) => {
-            const cell = document.getElementById("board").children[i];
-            cell.innerText = v;
-            cell.style.color = (v === "X" ? "var(--primary)" : "var(--accent)");
-        });
-        document.getElementById("status").innerText = data.turn === mySymbol ? "YOUR TURN" : "WAITING...";
-    });
+function drawShooter() {
+    ctx.translate(150, 150); ctx.rotate(angle);
+    ctx.fillStyle = "white"; ctx.fillRect(-20, -20, 40, 40);
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    
+    ctx.fillStyle = "yellow";
+    bullets.forEach(b => ctx.beginPath() || ctx.arc(b.x, b.y, 5, 0, 7) || ctx.fill());
 }
+
+// --- ENGINE ---
+function setupGame(name) {
+    currentGame = name; score = 0; gameActive = true;
+    stage.style.display = "flex";
+}
+
+function gameLoop() {
+    if(!gameActive) return;
+    ctx.clearRect(0,0,300,400);
+    scoreLabel.innerText = "Score: " + score;
+
+    if(currentGame === "DINO") { updateDino(); drawDino(); }
+    else if(currentGame === "SHOOT") { updateShooter(); drawShooter(); }
+
+    animationId = requestAnimationFrame(gameLoop);
+}
+
+function gameOver() {
+    gameActive = false;
+    alert("GAME OVER! Score: " + score);
+    exitGame();
+}
+
+function exitGame() {
+    gameActive = false;
+    cancelAnimationFrame(animationId);
+    stage.style.display = "none";
+}
+
+window.addEventListener('touchstart', (e) => {
+    if(!gameActive) return;
+    if(currentGame === "DINO" && dino.grounded) { dino.dy = dino.jump; dino.grounded = false; }
+    if(currentGame === "SHOOT") bullets.push({ x: 150, y: 380 });
+});
+
+// For PC testing
+window.addEventListener('mousedown', () => {
+    if(currentGame === "DINO" && dino.grounded) { dino.dy = dino.jump; dino.grounded = false; }
+    if(currentGame === "SHOOT") bullets.push({ x: 150, y: 380 });
+});
 </script>
 </body>
-            </html>
-    
+</html>
+
