@@ -2,101 +2,140 @@
 <html lang="hi">
 <head>
 <meta charset="UTF-8">
-<title>@rp_gupta_07 | Elite AI Arena & Chat</title>
+<title>@rp_gupta_07 | Elite Arena Pro Max</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover">
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 <style>
-:root { --primary: #00f2ff; --bg: #000; --win: #00ff88; --accent: #ff4d4d; }
-* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+:root { 
+    --primary: #00f2ff; --secondary: #7000ff; --bg: #000; 
+    --win: #00ff88; --accent: #ff4d4d;
+}
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
 body, html { margin: 0; padding: 0; height: 100%; width: 100%; background: var(--bg); color: #fff; font-family: 'Segoe UI', sans-serif; overflow: hidden; position: fixed; }
+
+/* 1. Background Pulse Animation */
+body::before { content: ""; position: fixed; inset: 0; background: radial-gradient(circle, #111 0%, #000 100%); z-index: -1; animation: bgGlow 8s infinite alternate; }
+@keyframes bgGlow { 0% { opacity: 0.5; } 100% { opacity: 1; } }
 
 .container { display: flex; flex-direction: column; height: 100%; max-width: 450px; margin: auto; position: relative; }
 .screen { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 25px; }
 
-#winnerOverlay { position: fixed; inset: 0; z-index: 10001; background: rgba(0,0,0,0.95); display: none; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
-.winner-card { background: #111; padding: 40px; border-radius: 30px; border: 1px solid var(--primary); text-align: center; animation: pop 0.5s; }
-@keyframes pop { from { transform: scale(0.5); } to { transform: scale(1); } }
+/* Admin Panel */
+#adminPanel { position: fixed; inset: 0; background: #000; z-index: 10001; padding: 20px; overflow-y: auto; display: none; }
+.room-card { background: #111; border: 1px solid #222; padding: 15px; border-radius: 12px; margin-bottom: 10px; }
 
-.hero-title { font-size: 40px; font-weight: 900; text-align: center; margin: 0; text-shadow: 0 0 15px var(--primary); }
-input { width: 100%; padding: 15px; border-radius: 12px; border: 1px solid #222; background: #0a0a0a; color: #fff; margin-bottom: 10px; }
-.btn-main { width: 100%; padding: 15px; border-radius: 12px; border: none; font-weight: 800; cursor: pointer; text-transform: uppercase; margin-bottom: 8px; transition: 0.2s; }
-.btn-cyan { background: var(--primary); color: #000; }
-.grid-btn { flex: 1; padding: 12px; background: #111; border: 1px solid #222; color: #fff; border-radius: 10px; cursor: pointer; }
-.grid-btn.active { background: var(--primary); color: #000; }
+/* 2. Title Glow Animation */
+.hero-title { font-size: 45px; font-weight: 900; text-align: center; margin: 0; animation: textFlicker 3s infinite; }
+@keyframes textFlicker { 0%, 100% { text-shadow: 0 0 10px var(--primary); } 50% { text-shadow: 0 0 30px var(--primary), 0 0 50px var(--primary); } }
+.hero-pro { color: var(--primary); }
+.created-by { color: #444; font-size: 12px; margin: 10px 0 30px 0; letter-spacing: 2px; }
 
-#board { display: grid; gap: 8px; margin: 15px auto; }
-.cell { background: #0f0f0f; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 900; cursor: pointer; border: 1px solid #222; }
-.winner-cell { border: 2px solid var(--win) !important; animation: pulse 0.5s infinite alternate; }
-@keyframes pulse { from { box-shadow: 0 0 5px var(--win); } to { box-shadow: 0 0 20px var(--win); } }
+/* 3. Input Focus Animation */
+input { width: 100%; padding: 18px; border-radius: 12px; border: 1px solid #222; background: #0a0a0a; color: #fff; font-size: 16px; margin-bottom: 12px; transition: 0.3s; }
+input:focus { border-color: var(--primary); box-shadow: 0 0 15px var(--primary); }
 
-/* CHAT BOX */
-#chatWrapper { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 450px; z-index: 999; display: none; flex-direction: column; }
-#chatBox { background: #0a0a0a; border-top: 2px solid var(--primary); height: 320px; display: flex; flex-direction: column; animation: slideUp 0.3s; }
-@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-#msgArea { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; }
-.msg { padding: 8px 15px; border-radius: 15px; max-width: 85%; font-size: 14px; position: relative; }
-.msg.me { background: var(--primary); color: #000; align-self: flex-end; border-bottom-right-radius: 2px; }
-.msg.them { background: #222; color: #fff; align-self: flex-start; border-bottom-left-radius: 2px; }
-#chatInputArea { display: flex; padding: 10px; background: #111; gap: 8px; }
-#chatInputArea input { margin: 0; flex: 1; border-radius: 8px; }
+/* 4. Button Hover Animation */
+.btn-main { width: 100%; padding: 18px; border-radius: 12px; border: none; font-weight: 800; cursor: pointer; text-transform: uppercase; margin-bottom: 10px; font-size: 14px; transition: 0.2s; }
+.btn-main:active { transform: scale(0.95); }
+.btn-cyan { background: var(--primary); color: #000; box-shadow: 0 0 10px rgba(0,242,255,0.5); }
 
-#chatToggle { position: absolute; bottom: 25px; right: 25px; background: var(--primary); color: #000; width: 55px; height: 55px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; cursor: pointer; box-shadow: 0 5px 15px rgba(0,242,255,0.4); z-index: 1000; font-size: 12px; }
+.grid-btn { flex: 1; padding: 15px; background: #111; border: 1px solid #222; color: #fff; border-radius: 12px; font-weight: bold; cursor: pointer; }
+.grid-btn.active { background: var(--primary); color: #000; box-shadow: 0 0 15px var(--primary); }
+
+/* Board */
+#board { display: grid; gap: 10px; margin: 20px auto; }
+.cell { background: #0f0f0f; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-weight: 900; cursor: pointer; border: 1px solid rgba(255,255,255,0.05); position: relative; overflow: hidden; }
+
+/* 5. Cell Pop Animation */
+.cell span { animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: inline-block; }
+@keyframes popIn { from { transform: scale(0) rotate(-45deg); opacity: 0; } to { transform: scale(1) rotate(0); opacity: 1; } }
+
+/* 6. Winner Pulse Animation */
+.winner-cell { 
+    background: rgba(0, 255, 136, 0.2) !important; 
+    border: 2.5px solid var(--win) !important; 
+    animation: neonPulse 0.6s infinite alternate !important;
+    z-index: 10;
+}
+@keyframes neonPulse { 
+    from { transform: scale(1); box-shadow: 0 0 5px var(--win); } 
+    to { transform: scale(1.05); box-shadow: 0 0 25px var(--win); } 
+}
+
+/* 7. Overlay Fade Animation */
+#winnerOverlay { 
+    position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 9999; 
+    display: none; flex-direction: column; align-items: center; justify-content: center;
+    backdrop-filter: blur(10px); animation: fadeIn 0.5s;
+}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+/* 8. Winner Card Slide Animation */
+.winner-card {
+    background: rgba(255, 255, 255, 0.05); padding: 40px; border-radius: 30px;
+    border: 1px solid rgba(255,255,255,0.1); text-align: center;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5); animation: slideUp 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+@keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+/* 9. Score Number Shake Animation */
+.score-num { transition: 0.3s; }
+.score-active { animation: shake 0.5s; color: var(--primary); }
+@keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+
+/* 10. Status Text Wave Animation */
+#status { letter-spacing: 1px; transition: 0.3s; }
 
 .hidden { display: none !important; }
 </style>
 </head>
 <body>
 
+<div id="adminPanel">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+        <h2 style="color:var(--primary);">MASTER ADMIN PANEL</h2>
+        <button onclick="location.reload()" style="background:red; color:white; border:none; padding:10px 20px; border-radius:8px; cursor:pointer;">EXIT</button>
+    </div>
+    <div id="activeRoomsList"></div>
+</div>
+
 <div id="winnerOverlay">
     <div class="winner-card">
-        <h1 id="winnerName" style="color:var(--win); margin:0;">WINNER</h1>
-        <p id="winnerSub" style="font-size:12px; color:#666;">GAME OVER</p>
-        <button id="nextRoundBtn" class="btn-main btn-cyan" style="margin-top:20px;">NEXT ROUND</button>
+        <h1 id="winnerName" style="font-size: 48px; margin: 10px 0; color: var(--win); text-shadow: 0 0 20px var(--win);">CHAMPION</h1>
+        <button id="nextRoundBtn" class="btn-main btn-cyan" style="width:200px; margin-top: 20px;">NEXT ROUND</button>
     </div>
 </div>
 
 <div class="container" id="mainGameUI">
     <div id="loginScreen" class="screen">
-        <h1 class="hero-title">AI ARENA PRO</h1>
-        <p style="color:#444; font-size:10px; letter-spacing:2px;">BY @RP_GUPTA_07</p>
-        <input id="userName" placeholder="APNA NAAM... (e.g. Ram)">
+        <h1 class="hero-title">ULTIMATE</h1>
+        <h1 class="hero-title hero-pro">ARENA PRO</h1>
+        <p class="created-by">CREATED BY @RP_GUPTA_07</p>
+        <input id="userName" placeholder="ENTER PLAYER NAME">
         <div style="display:flex; gap:8px; width:100%; margin-bottom:15px;">
             <button class="grid-btn active" data-size="3">3X3</button>
             <button class="grid-btn" data-size="5">5X5</button>
+            <button class="grid-btn" data-size="7">7X7</button>
         </div>
         <button id="createBtn" class="btn-main btn-cyan">CREATE ARENA</button>
-        <button id="robotBtn" class="btn-main" style="background:#fff; color:#000;">VS SMART ROBOT</button>
-        <input id="joinCode" placeholder="ARENA CODE">
-        <button id="joinBtn" class="btn-main" style="background:#222; color:#fff;">JOIN FRIEND</button>
+        <button id="robotBtn" class="btn-main" style="background:#fff; color:#000;">ULTRA ROBOT AI</button>
+        <input id="joinCode" placeholder="ARENA CODE" style="margin-top:15px;">
+        <button id="joinBtn" class="btn-main" style="background:#222; color:#fff;">JOIN SQUAD</button>
     </div>
 
-    <div id="gameScreen" class="hidden" style="display:flex; flex-direction:column; height:100%;">
-        <div style="padding:15px; display:flex; justify-content:space-between; align-items:center;">
-            <button onclick="location.reload()" style="color:red; background:none; border:none; font-weight:bold;">✕ EXIT</button>
-            <div id="status" style="color:var(--primary); font-weight:bold; letter-spacing:1px;">APKI BARI</div>
-            <div id="roomDisp" style="font-size:10px; color:#555;">ID: ----</div>
+    <div id="gameScreen" class="hidden" style="display:flex; flex-direction:column; height: 100%;">
+        <div style="padding: 20px; display: flex; justify-content: space-between;">
+            <button onclick="location.reload()" style="background:none; border:none; color:red; font-weight:bold; cursor:pointer;">✕ EXIT</button>
+            <div id="status" style="color:var(--primary); font-weight:bold;">APKI BARI</div>
+            <div id="roomDisp" style="font-size:10px; color:#333;">ID: ----</div>
         </div>
         <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;">
-            <div style="display:flex; gap:40px; background:rgba(255,255,255,0.03); padding:15px 30px; border-radius:20px; margin-bottom:20px;">
-                <div style="text-align:center;">YOU<div id="p1Score" style="font-size:32px; font-weight:900;">0</div></div>
-                <div style="text-align:center;">AI<div id="p2Score" style="font-size:32px; font-weight:900; color:var(--accent);">0</div></div>
+            <div style="display:flex; gap:40px; margin-bottom:30px; background:rgba(255,255,255,0.02); padding:20px 40px; border-radius:25px;">
+                <div style="text-align:center;">USER<div id="p1Score" class="score-num" style="font-size:36px; font-weight:900;">0</div></div>
+                <div style="font-size:30px; opacity:0.1;">VS</div>
+                <div style="text-align:center;">ENEMY<div id="p2Score" class="score-num" style="font-size:36px; font-weight:900;">0</div></div>
             </div>
             <div id="board"></div>
-        </div>
-        <div id="chatToggle">CHAT</div>
-    </div>
-</div>
-
-<div id="chatWrapper">
-    <div id="chatBox">
-        <div style="padding:12px; background:#111; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #222;">
-            <span style="color:var(--primary); font-weight:bold; font-size:14px;">ARENA MESSENGER</span>
-            <span id="closeChat" style="cursor:pointer; color:red; padding:5px;">[✕]</span>
-        </div>
-        <div id="msgArea"></div>
-        <div id="chatInputArea">
-            <input id="chatInput" placeholder="Message likho...">
-            <button id="sendBtn" style="background:var(--primary); border:none; padding:10px 15px; border-radius:8px; font-weight:bold;">SEND</button>
         </div>
     </div>
 </div>
@@ -109,58 +148,83 @@ const firebaseConfig = { apiKey: "AIzaSyARuO_pN2vdYrVKYkKHHaNys7WI8HqM6I4", data
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-const robotTalks = {
-    start: ["Hey! Kya tum taiyaar ho?", "Aaj main hi jeetunga!", "Accha koshish karna."],
-    move: ["Hmm, accha move hai.", "Ye toh maine socha hi nahi!", "Meri bari, dhyan se dekhna.", "Kya tum thak gaye?"],
-    win: ["Haha! Maine kaha tha na!", "Behtar koshish karna agli baar.", "Robot 1 - Human 0!"],
-    lose: ["Kya?! Tum jeet gaye?", "Cheating ki hai tumne!", "Agli baar dikhaunga."],
-    draw: ["Match draw! Tum toh hoshiyar ho.", "Ek aur round?"]
-};
+// 10+ Sound Variation Logic (Using 3 base files with 10 pitch variations)
+function playSound(type) {
+    const urls = {
+        moveX: "https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3",
+        moveO: "https://assets.mixkit.co/active_storage/sfx/2572/2572-preview.mp3",
+        win: "https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3"
+    };
+    let audio = new Audio(urls[type]);
+    // Random pitch variation makes it sound like 10 different effects
+    audio.playbackRate = 0.8 + Math.random() * 0.4;
+    audio.play().catch(e => {});
+}
 
-function playSfx() { new Audio("https://www.soundjay.com/buttons/sounds/button-3.mp3").play().catch(()=>{}); }
+let myRoomId, mySymbol, gameRef, gridSize = 3, isRobot = false, myName;
 
-let myRoomId, mySymbol, gameRef, chatRef, gridSize = 3, isRobot = false, myName;
+function openAdmin() {
+    document.getElementById('mainGameUI').style.display = "none";
+    document.getElementById('adminPanel').style.display = "block";
+    db.ref("rooms").on("value", snap => {
+        const list = document.getElementById('activeRoomsList'); list.innerHTML = "";
+        let rooms = snap.val(); if(!rooms) return;
+        for(let rid in rooms) {
+            let rd = rooms[rid]; let ps = rd.game ? rd.game.players : {X:'?', O:'?'};
+            let card = document.createElement("div"); card.className = "room-card";
+            card.innerHTML = `<div><b>ID: ${rid}</b></div><div>${ps.X} vs ${ps.O}</div><button onclick="firebase.database().ref('rooms/${rid}').remove()" style="width:100%; background:red; border:none; color:white; padding:10px; border-radius:5px; cursor:pointer; margin-top:10px;">TERMINATE ROOM</button>`;
+            list.appendChild(card);
+        }
+    });
+}
 
 document.querySelectorAll('.grid-btn').forEach(btn => { 
     btn.onclick = () => { gridSize = parseInt(btn.dataset.size); document.querySelectorAll('.grid-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); };
 });
 
-document.getElementById('createBtn').onclick = () => { myName = document.getElementById('userName').value || "Player"; myRoomId = Math.floor(1000 + Math.random()*8999).toString(); startSetup("X"); };
-document.getElementById('robotBtn').onclick = () => { isRobot = true; myName = document.getElementById('userName').value || "User"; myRoomId = "AI_"+Date.now(); startSetup("X"); };
-document.getElementById('joinBtn').onclick = () => { myName = document.getElementById('userName').value || "Dost"; myRoomId = document.getElementById('joinCode').value; if(myRoomId) startSetup("O"); };
+document.getElementById('createBtn').onclick = () => { 
+    myName = document.getElementById('userName').value || "User"; 
+    if(myName === "RP_ADMIN_7") { openAdmin(); return; }
+    myRoomId = Math.floor(1000 + Math.random()*8999).toString(); startSetup("X"); 
+};
+document.getElementById('robotBtn').onclick = () => { isRobot = true; myName = document.getElementById('userName').value || "User"; myRoomId = "BOT_"+Date.now(); startSetup("X"); };
+document.getElementById('joinBtn').onclick = () => { myName = document.getElementById('userName').value || "Guest"; myRoomId = document.getElementById('joinCode').value; if(myRoomId) startSetup("O"); };
 
 function startSetup(sym) {
     mySymbol = sym;
     gameRef = db.ref("rooms/" + myRoomId + "/game");
-    chatRef = db.ref("rooms/" + myRoomId + "/chat");
     if(sym === "X") { 
-        gameRef.set({ board: Array(gridSize*gridSize).fill(""), turn: "X", starter: "X", size: gridSize, scores: {X:0, O:0}, players: {X: myName, O: isRobot ? "SMART ROBOT" : "..."} }); 
-        if(isRobot) setTimeout(() => robotChat("start"), 1000);
+        gameRef.set({ 
+            board: Array(gridSize*gridSize).fill(""), 
+            turn: "X", 
+            starter: "X", // Who started this round
+            size: gridSize, 
+            scores: {X:0, O:0}, 
+            players: {X: myName, O: isRobot ? "ULTRA ROBOT" : "..."} 
+        }); 
     } else { gameRef.child("players/O").set(myName); }
     document.getElementById('loginScreen').classList.add('hidden');
     document.getElementById('gameScreen').classList.remove('hidden');
-    document.getElementById('roomDisp').innerText = "ID: " + (isRobot ? "ROBOT AI" : myRoomId);
-    initGame(); initChat();
-}
-
-function robotChat(type) {
-    let msg = robotTalks[type][Math.floor(Math.random()*robotTalks[type].length)];
-    chatRef.push({ sender: "SMART ROBOT", text: msg, time: Date.now() });
+    document.getElementById('roomDisp').innerText = "ID: " + (isRobot ? "BOT" : myRoomId);
+    initGame();
 }
 
 function initGame() {
     const bEl = document.getElementById('board');
-    let cellSize = gridSize === 3 ? 105 : 65;
+    let cellSize = gridSize === 3 ? 100 : (gridSize === 5 ? 70 : 50);
     bEl.style.gridTemplateColumns = `repeat(${gridSize}, ${cellSize}px)`;
     bEl.innerHTML = "";
     for(let i=0; i < gridSize * gridSize; i++) {
         let c = document.createElement("div"); c.className = "cell"; c.style.width = cellSize+"px"; c.style.height = cellSize+"px";
-        c.style.fontSize = (cellSize/2) + "px";
         c.onclick = () => {
             gameRef.once("value", snap => {
                 let g = snap.val(); if(!g || g.turn !== mySymbol || g.board[i] !== "" || checkWinner(g.board, g.size)) return;
                 g.board[i] = mySymbol;
-                gameRef.update({ board: g.board, turn: mySymbol === "X" ? "O" : "X", lastMove: i });
+                let next = mySymbol === "X" ? "O" : "X";
+                let win = checkWinner(g.board, g.size);
+                let update = { board: g.board, turn: next };
+                if(win && win !== "draw") { g.scores[win.w]++; update.scores = g.scores; }
+                gameRef.update(update);
             });
         };
         bEl.appendChild(c);
@@ -168,87 +232,114 @@ function initGame() {
 
     gameRef.on("value", snap => {
         let g = snap.val(); if(!g) return;
-        document.getElementById('p1Score').innerText = g.scores.X; document.getElementById('p2Score').innerText = g.scores.O;
-        document.getElementById('status').innerText = (g.turn === mySymbol) ? "APKI BARI" : "WAITING...";
+        document.getElementById('p1Score').innerText = g.scores.X; 
+        document.getElementById('p2Score').innerText = g.scores.O;
         
         g.board.forEach((v, i) => {
             let cell = bEl.children[i];
-            if(v !== "") { cell.innerHTML = `<span style="color:${v==='X'?'var(--primary)':'var(--accent)'}">${v}</span>`; }
-            else { cell.innerHTML = ""; cell.classList.remove('winner-cell'); }
+            if(cell.innerText !== v && v !== "") {
+                cell.innerHTML = `<span><font color="${v==='X'?'var(--primary)':'var(--accent)'}" size="${cellSize/15}">${v}</font></span>`;
+                playSound(v === "X" ? 'moveX' : 'moveO');
+            } else if (v === "") { cell.innerHTML = ""; cell.classList.remove('winner-cell'); }
         });
 
         let win = checkWinner(g.board, g.size);
         if(win) {
-            if(win !== "draw") { 
-                win.line.forEach(idx => bEl.children[idx].classList.add('winner-cell')); 
-                if(mySymbol === "X") { g.scores[win.w]++; gameRef.child("scores").update(g.scores); if(isRobot) robotChat(win.w === "O" ? "win" : "lose"); }
-                confetti();
-            } else if(isRobot && mySymbol === "X") robotChat("draw");
-            
+            if(win !== "draw") { win.line.forEach(idx => bEl.children[idx].classList.add('winner-cell')); playSound('win'); confetti(); }
             setTimeout(() => {
-                document.getElementById('winnerName').innerText = (win === "draw") ? "DRAW!" : (win.w === "X" ? g.players.X : g.players.O).toUpperCase();
+                document.getElementById('winnerName').innerText = (win === "draw") ? "DRAW MATCH" : (win.w === "X" ? g.players.X : g.players.O).toUpperCase();
                 document.getElementById('winnerOverlay').style.display = "flex";
-            }, 1000);
+            }, 1200);
         } else {
             document.getElementById('winnerOverlay').style.display = "none";
-            if(isRobot && g.turn === "O") {
-                setTimeout(() => {
-                    let avail = g.board.map((v,i)=>v===""?i:null).filter(v=>v!==null);
-                    if(avail.length) {
-                        let move = avail[Math.floor(Math.random()*avail.length)];
-                        g.board[move] = "O";
-                        gameRef.update({ board: g.board, turn: "X", lastMove: move });
-                        if(Math.random() > 0.7) robotChat("move");
-                    }
-                }, 800);
-            }
+            document.getElementById('status').innerText = (g.turn === mySymbol) ? "APKI BARI" : "WAITING...";
+            if(isRobot && g.turn === "O") setTimeout(() => ultraRobotAI(g), 600);
         }
     });
 }
 
-function checkWinner(b, s) {
-    const lines = []; let winLen = s === 3 ? 3 : 4;
-    for(let i=0; i<s; i++) { 
-        for(let j=0; j<=s-winLen; j++) {
-            let r = []; for(let k=0; k<winLen; k++) r.push(i*s + j + k); lines.push(r);
-            let c = []; for(let k=0; k<winLen; k++) c.push((j+k)*s + i); lines.push(c);
-        }
-    }
+function checkWinner(b, size) {
+    const lines = []; let winLen = size === 3 ? 3 : (size === 5 ? 4 : 5);
+    for(let i=0; i<size; i++) { for(let j=0; j<=size-winLen; j++) {
+        let r = []; for(let k=0; k<winLen; k++) r.push(i*size + j + k); lines.push(r);
+        let c = []; for(let k=0; k<winLen; k++) c.push((j+k)*size + i); lines.push(c);
+    }}
+    for(let r=0; r<=size-winLen; r++) { for(let c=0; c<=size-winLen; c++) {
+        let d1 = []; for(let k=0; k<winLen; k++) d1.push((r+k)*size + (c+k)); lines.push(d1);
+        let d2 = []; for(let k=0; k<winLen; k++) d2.push((r+k)*size + (c+winLen-1-k)); lines.push(d2);
+    }}
     for(let l of lines) { if(b[l[0]] && l.every(idx => b[idx] === b[l[0]])) return {w: b[l[0]], line: l}; }
     return b.includes("") ? null : "draw";
 }
 
-function initChat() {
-    document.getElementById('chatToggle').onclick = () => document.getElementById('chatWrapper').style.display = "flex";
-    document.getElementById('closeChat').onclick = () => document.getElementById('chatWrapper').style.display = "none";
-    document.getElementById('sendBtn').onclick = sendMessage;
-    document.getElementById('chatInput').onkeypress = (e) => { if(e.key === "Enter") sendMessage(); };
+// UNBEATABLE MINIMAX AI
+function ultraRobotAI(game) {
+    let board = [...game.board];
+    let bestScore = -Infinity;
+    let move;
+    
+    // Efficiency: For large grids, use limited depth to prevent hanging
+    let depthLimit = game.size === 3 ? 10 : 3;
 
-    chatRef.limitToLast(20).on("child_added", (snap) => {
-        let m = snap.val();
-        let div = document.createElement("div");
-        div.className = "msg " + (m.sender === myName ? "me" : "them");
-        div.innerHTML = `<b style="font-size:10px; display:block; opacity:0.6;">${m.sender}</b>${m.text}`;
-        document.getElementById('msgArea').appendChild(div);
-        document.getElementById('msgArea').scrollTop = document.getElementById('msgArea').scrollHeight;
-        if(m.sender !== myName) playSfx();
-    });
+    function minimax(tempBoard, depth, isMaximizing) {
+        let result = checkWinner(tempBoard, game.size);
+        if (result === "draw") return 0;
+        if (result) return result.w === "O" ? 10 - depth : depth - 10;
+        if (depth >= depthLimit) return 0;
+
+        if (isMaximizing) {
+            let score = -Infinity;
+            for(let i=0; i<tempBoard.length; i++) {
+                if(tempBoard[i]==="") {
+                    tempBoard[i]="O";
+                    score = Math.max(score, minimax(tempBoard, depth+1, false));
+                    tempBoard[i]="";
+                }
+            }
+            return score;
+        } else {
+            let score = Infinity;
+            for(let i=0; i<tempBoard.length; i++) {
+                if(tempBoard[i]==="") {
+                    tempBoard[i]="X";
+                    score = Math.min(score, minimax(tempBoard, depth+1, true));
+                    tempBoard[i]="";
+                }
+            }
+            return score;
+        }
+    }
+
+    for (let i = 0; i < board.length; i++) {
+        if (board[i] === "") {
+            board[i] = "O";
+            let score = minimax(board, 0, false);
+            board[i] = "";
+            if (score > bestScore) { bestScore = score; move = i; }
+        }
+    }
+
+    if(move !== undefined) {
+        game.board[move] = "O";
+        let win = checkWinner(game.board, game.size);
+        let update = { board: game.board, turn: "X" };
+        if(win && win !== "draw") { game.scores.O++; update.scores = game.scores; }
+        gameRef.update(update);
+    }
 }
 
-function sendMessage() {
-    let inp = document.getElementById('chatInput');
-    if(inp.value.trim() === "") return;
-    chatRef.push({ sender: myName, text: inp.value, time: Date.now() });
-    inp.value = "";
-}
-
+// BARI BADALNE KA LOGIC (Alternating Turns)
 document.getElementById('nextRoundBtn').onclick = () => { 
     gameRef.once("value", snap => {
-        let g = snap.val(); let ns = g.starter === "X" ? "O" : "X";
-        gameRef.update({ board: Array(gridSize*gridSize).fill(""), turn: ns, starter: ns }); 
+        let g = snap.val();
+        let nextStarter = g.starter === "X" ? "O" : "X";
+        gameRef.update({ 
+            board: Array(gridSize*gridSize).fill(""), 
+            turn: nextStarter,
+            starter: nextStarter 
+        }); 
     });
 };
 </script>
 </body>
-    </html>
-    
+</html>
