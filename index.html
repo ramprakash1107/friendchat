@@ -2,7 +2,7 @@
 <html lang="hi">
 <head>
 <meta charset="UTF-8">
-<title>@rp_gupta_07 | Elite Arena Pro</title>
+<title>@rp_gupta_07 | Elite Arena Pro Max</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover">
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 <style>
@@ -16,7 +16,7 @@ body, html { margin: 0; padding: 0; height: 100%; width: 100%; background: var(-
 .container { display: flex; flex-direction: column; height: 100%; max-width: 450px; margin: auto; position: relative; }
 .screen { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 25px; }
 
-/* Admin Panel Styling */
+/* Admin Panel */
 #adminPanel { position: fixed; inset: 0; background: #000; z-index: 10001; padding: 20px; overflow-y: auto; display: none; }
 .room-card { background: #111; border: 1px solid #222; padding: 15px; border-radius: 12px; margin-bottom: 10px; }
 
@@ -31,7 +31,7 @@ input { width: 100%; padding: 18px; border-radius: 12px; border: 1px solid #222;
 .grid-btn { flex: 1; padding: 15px; background: #111; border: 1px solid #222; color: #fff; border-radius: 12px; font-weight: bold; cursor: pointer; }
 .grid-btn.active { background: var(--primary); color: #000; box-shadow: 0 0 15px var(--primary); }
 
-/* Board and Win Logic */
+/* Board */
 #board { display: grid; gap: 10px; margin: 20px auto; }
 .cell { background: #0f0f0f; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-weight: 900; cursor: pointer; border: 1px solid rgba(255,255,255,0.05); }
 
@@ -46,7 +46,6 @@ input { width: 100%; padding: 18px; border-radius: 12px; border: 1px solid #222;
     to { transform: scale(1.1); box-shadow: 0 0 25px var(--win); } 
 }
 
-/* Winner Card (Next Level) */
 #winnerOverlay { 
     position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 9999; 
     display: none; flex-direction: column; align-items: center; justify-content: center;
@@ -91,7 +90,7 @@ input { width: 100%; padding: 18px; border-radius: 12px; border: 1px solid #222;
             <button class="grid-btn" data-size="7">7X7</button>
         </div>
         <button id="createBtn" class="btn-main btn-cyan">CREATE ARENA</button>
-        <button id="robotBtn" class="btn-main" style="background:#fff; color:#000;">SOLO VS ROBOT</button>
+        <button id="robotBtn" class="btn-main" style="background:#fff; color:#000;">ULTRA ROBOT AI</button>
         <input id="joinCode" placeholder="ARENA CODE" style="margin-top:15px;">
         <button id="joinBtn" class="btn-main" style="background:#222; color:#fff;">JOIN SQUAD</button>
     </div>
@@ -121,12 +120,21 @@ const firebaseConfig = { apiKey: "AIzaSyARuO_pN2vdYrVKYkKHHaNys7WI8HqM6I4", data
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-const sfx = { moveX: new Audio("https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3"), moveO: new Audio("https://assets.mixkit.co/active_storage/sfx/2572/2572-preview.mp3"), win: new Audio("https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3") };
-function play(n){ try{ sfx[n].currentTime=0; sfx[n].play(); }catch(e){} }
+// --- 50+ SOUND VARIATION ENGINE ---
+function playDynamicSFX(type) {
+    let baseLinks = [
+        "https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3", // X
+        "https://assets.mixkit.co/active_storage/sfx/2572/2572-preview.mp3", // O
+        "https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3"  // Win
+    ];
+    let audio = new Audio(baseLinks[type==='win'?2:(type==='X'?0:1)]);
+    // This creates unique sound effects by modifying frequency on every play
+    audio.playbackRate = 0.5 + Math.random() * 1.5; 
+    audio.play().catch(()=>{});
+}
 
 let myRoomId, mySymbol, gameRef, gridSize = 3, isRobot = false, myName;
 
-// Admin Dashboard Login
 function openAdmin() {
     document.getElementById('mainGameUI').style.display = "none";
     document.getElementById('adminPanel').style.display = "block";
@@ -157,7 +165,7 @@ document.getElementById('joinBtn').onclick = () => { myName = document.getElemen
 function startSetup(sym) {
     mySymbol = sym;
     gameRef = db.ref("rooms/" + myRoomId + "/game");
-    if(sym === "X") { gameRef.set({ board: Array(gridSize*gridSize).fill(""), turn: "X", size: gridSize, scores: {X:0, O:0}, players: {X: myName, O: isRobot ? "ROBOT AI" : "..."} }); }
+    if(sym === "X") { gameRef.set({ board: Array(gridSize*gridSize).fill(""), turn: "X", size: gridSize, scores: {X:0, O:0}, players: {X: myName, O: isRobot ? "ULTRA ROBOT" : "..."} }); }
     else { gameRef.child("players/O").set(myName); }
     document.getElementById('loginScreen').classList.add('hidden');
     document.getElementById('gameScreen').classList.remove('hidden');
@@ -193,16 +201,13 @@ function initGame() {
             let cell = bEl.children[i];
             if(cell.innerText !== v && v !== "") {
                 cell.innerHTML = `<span style="color:${v==='X'?'var(--primary)':'var(--accent)'}; font-size:${cellSize/1.8}px;">${v}</span>`;
-                play(v === "X" ? 'moveX' : 'moveO');
+                playDynamicSFX(v);
             } else if (v === "") { cell.innerHTML = ""; cell.classList.remove('winner-cell'); }
         });
 
         let win = checkWinner(g.board, g.size);
         if(win) {
-            // STEP 1: Pehle board par animation dikhao
-            if(win !== "draw") { win.line.forEach(idx => bEl.children[idx].classList.add('winner-cell')); play('win'); confetti(); }
-            
-            // STEP 2: 1.2 second baad Winner Name card dikhao
+            if(win !== "draw") { win.line.forEach(idx => bEl.children[idx].classList.add('winner-cell')); playDynamicSFX('win'); confetti(); }
             setTimeout(() => {
                 document.getElementById('winnerName').innerText = (win === "draw") ? "DRAW MATCH" : (win.w === "X" ? g.players.X : g.players.O).toUpperCase();
                 document.getElementById('winnerOverlay').style.display = "flex";
@@ -210,7 +215,7 @@ function initGame() {
         } else {
             document.getElementById('winnerOverlay').style.display = "none";
             document.getElementById('status').innerText = (g.turn === mySymbol) ? "APKI BARI" : "WAITING...";
-            if(isRobot && g.turn === "O") setTimeout(() => robotMove(g), 600);
+            if(isRobot && g.turn === "O") setTimeout(() => ultraRobotAI(g), 600);
         }
     });
 }
@@ -229,11 +234,48 @@ function checkWinner(b, size) {
     return b.includes("") ? null : "draw";
 }
 
-function robotMove(game) {
-    let avail = game.board.map((v,i)=>v===""?i:null).filter(v=>v!==null);
-    if(avail.length > 0) {
-        let move = avail[Math.floor(Math.random()*avail.length)];
-        game.board[move] = "O"; let win = checkWinner(game.board, game.size);
+// --- ULTRA SMART MINIMAX AI ---
+function ultraRobotAI(game) {
+    let board = [...game.board];
+    let bestScore = -Infinity;
+    let bestMove;
+    
+    // AI difficulty depth
+    let depthLimit = game.size === 3 ? 10 : (game.size === 5 ? 4 : 2);
+
+    function minimax(tempBoard, depth, isMax) {
+        let res = checkWinner(tempBoard, game.size);
+        if (res === "draw") return 0;
+        if (res) return res.w === "O" ? 10 - depth : depth - 10;
+        if (depth >= depthLimit) return 0;
+
+        if (isMax) {
+            let score = -Infinity;
+            for(let i=0; i<tempBoard.length; i++) {
+                if(tempBoard[i]==="") { tempBoard[i]="O"; score=Math.max(score, minimax(tempBoard, depth+1, false)); tempBoard[i]=""; }
+            }
+            return score;
+        } else {
+            let score = Infinity;
+            for(let i=0; i<tempBoard.length; i++) {
+                if(tempBoard[i]==="") { tempBoard[i]="X"; score=Math.min(score, minimax(tempBoard, depth+1, true)); tempBoard[i]=""; }
+            }
+            return score;
+        }
+    }
+
+    for (let i = 0; i < board.length; i++) {
+        if (board[i] === "") {
+            board[i] = "O";
+            let score = minimax(board, 0, false);
+            board[i] = "";
+            if (score > bestScore) { bestScore = score; bestMove = i; }
+        }
+    }
+
+    if(bestMove !== undefined) {
+        game.board[bestMove] = "O";
+        let win = checkWinner(game.board, game.size);
         let up = { board: game.board, turn: "X" };
         if(win && win !== "draw") { game.scores.O++; up.scores = game.scores; }
         gameRef.update(up);
@@ -243,5 +285,5 @@ function robotMove(game) {
 document.getElementById('nextRoundBtn').onclick = () => { gameRef.update({ board: Array(gridSize*gridSize).fill(""), turn: "X" }); };
 </script>
 </body>
-</html>
-
+                                                        </html>
+                
