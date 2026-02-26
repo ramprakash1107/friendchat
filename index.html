@@ -120,7 +120,7 @@ const firebaseConfig = { apiKey: "AIzaSyARuO_pN2vdYrVKYkKHHaNys7WI8HqM6I4", data
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-// --- 50+ SOUND VARIATION ENGINE ---
+// --- 50+ DYNAMIC SOUND EFFECTS ENGINE ---
 function playDynamicSFX(type) {
     let baseLinks = [
         "https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3", // X
@@ -128,12 +128,12 @@ function playDynamicSFX(type) {
         "https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3"  // Win
     ];
     let audio = new Audio(baseLinks[type==='win'?2:(type==='X'?0:1)]);
-    // This creates unique sound effects by modifying frequency on every play
-    audio.playbackRate = 0.5 + Math.random() * 1.5; 
+    // Generating 50+ variations by changing pitch & speed on every move
+    audio.playbackRate = 0.6 + (Math.random() * 1.4); 
     audio.play().catch(()=>{});
 }
 
-let myRoomId, mySymbol, gameRef, gridSize = 3, isRobot = false, myName;
+let myRoomId, mySymbol, gameRef, gridSize = 3, isRobot = false, myName, lastWinner = "X";
 
 function openAdmin() {
     document.getElementById('mainGameUI').style.display = "none";
@@ -187,7 +187,7 @@ function initGame() {
                 let next = mySymbol === "X" ? "O" : "X";
                 let win = checkWinner(g.board, g.size);
                 let update = { board: g.board, turn: next };
-                if(win && win !== "draw") { g.scores[win.w]++; update.scores = g.scores; }
+                if(win && win !== "draw") { g.scores[win.w]++; update.scores = g.scores; lastWinner = win.w; }
                 gameRef.update(update);
             });
         };
@@ -234,13 +234,10 @@ function checkWinner(b, size) {
     return b.includes("") ? null : "draw";
 }
 
-// --- ULTRA SMART MINIMAX AI ---
+// --- ULTRA SMART AI ---
 function ultraRobotAI(game) {
     let board = [...game.board];
-    let bestScore = -Infinity;
-    let bestMove;
-    
-    // AI difficulty depth
+    let bestScore = -Infinity; let bestMove;
     let depthLimit = game.size === 3 ? 10 : (game.size === 5 ? 4 : 2);
 
     function minimax(tempBoard, depth, isMax) {
@@ -277,13 +274,18 @@ function ultraRobotAI(game) {
         game.board[bestMove] = "O";
         let win = checkWinner(game.board, game.size);
         let up = { board: game.board, turn: "X" };
-        if(win && win !== "draw") { game.scores.O++; up.scores = game.scores; }
+        if(win && win !== "draw") { game.scores.O++; up.scores = game.scores; lastWinner = "O"; }
         gameRef.update(up);
     }
 }
 
-document.getElementById('nextRoundBtn').onclick = () => { gameRef.update({ board: Array(gridSize*gridSize).fill(""), turn: "X" }); };
+// --- NEXT ROUND LOGIC (ALTERNATING TURNS) ---
+document.getElementById('nextRoundBtn').onclick = () => { 
+    // Isse jo haara hai, agli bari uski hogi
+    let nextStarter = lastWinner === "X" ? "O" : "X";
+    gameRef.update({ board: Array(gridSize*gridSize).fill(""), turn: nextStarter }); 
+};
 </script>
 </body>
-                                                        </html>
-                
+</html>
+
