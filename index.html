@@ -8,7 +8,7 @@
 <style>
 :root { 
     --primary: #00f2ff; --secondary: #7000ff; --bg: #000; 
-    --win: #00ff88; --accent: #ff4d4d;
+    --win: #00ff88; --accent: #ff4d4d; --glass: rgba(255, 255, 255, 0.05);
 }
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
 body, html { margin: 0; padding: 0; height: 100%; width: 100%; background: var(--bg); color: #fff; font-family: 'Segoe UI', sans-serif; overflow: hidden; position: fixed; }
@@ -16,48 +16,40 @@ body, html { margin: 0; padding: 0; height: 100%; width: 100%; background: var(-
 .container { display: flex; flex-direction: column; height: 100%; max-width: 450px; margin: auto; position: relative; }
 .screen { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 25px; }
 
-/* Admin Panel Styling */
+/* Admin & UI Components */
 #adminPanel { position: fixed; inset: 0; background: #000; z-index: 10001; padding: 20px; overflow-y: auto; display: none; }
 .room-card { background: #111; border: 1px solid #222; padding: 15px; border-radius: 12px; margin-bottom: 10px; }
 
-/* Home Screen */
-.hero-title { font-size: 45px; font-weight: 900; text-align: center; margin: 0; }
+.hero-title { font-size: 45px; font-weight: 900; text-align: center; margin: 0; line-height: 0.9; }
 .hero-pro { color: var(--primary); text-shadow: 0 0 15px var(--primary); }
-.created-by { color: #444; font-size: 12px; margin: 10px 0 30px 0; letter-spacing: 2px; }
+.created-by { color: #555; font-size: 12px; margin: 10px 0 30px 0; letter-spacing: 2px; }
 
-input { width: 100%; padding: 18px; border-radius: 12px; border: 1px solid #222; background: #0a0a0a; color: #fff; font-size: 16px; margin-bottom: 12px; }
-.btn-main { width: 100%; padding: 18px; border-radius: 12px; border: none; font-weight: 800; cursor: pointer; text-transform: uppercase; margin-bottom: 10px; font-size: 14px; }
+input { width: 100%; padding: 18px; border-radius: 12px; border: 1px solid #222; background: #0a0a0a; color: #fff; font-size: 16px; margin-bottom: 12px; transition: 0.3s; }
+input:focus { border-color: var(--primary); box-shadow: 0 0 10px rgba(0,242,255,0.2); }
+
+.btn-main { width: 100%; padding: 18px; border-radius: 12px; border: none; font-weight: 800; cursor: pointer; text-transform: uppercase; margin-bottom: 10px; font-size: 14px; transition: 0.2s; }
+.btn-main:active { transform: scale(0.96); }
 .btn-cyan { background: var(--primary); color: #000; }
+
 .grid-btn { flex: 1; padding: 15px; background: #111; border: 1px solid #222; color: #fff; border-radius: 12px; font-weight: bold; cursor: pointer; }
 .grid-btn.active { background: var(--primary); color: #000; box-shadow: 0 0 15px var(--primary); }
 
-/* Board and Win Logic */
-#board { display: grid; gap: 10px; margin: 20px auto; }
-.cell { background: #0f0f0f; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-weight: 900; cursor: pointer; border: 1px solid rgba(255,255,255,0.05); }
+/* Game Board */
+#board { display: grid; gap: 10px; margin: 10px auto; }
+.cell { background: var(--glass); border-radius: 15px; display: flex; align-items: center; justify-content: center; font-weight: 900; cursor: pointer; border: 1px solid rgba(255,255,255,0.05); transition: 0.2s; }
+.cell:active { background: rgba(255,255,255,0.1); }
 
-.winner-cell { 
-    background: rgba(0, 255, 136, 0.2) !important; 
-    border: 2.5px solid var(--win) !important; 
-    animation: neonPulse 0.8s infinite alternate !important;
-    z-index: 10;
-}
-@keyframes neonPulse { 
-    from { transform: scale(1); box-shadow: 0 0 5px var(--win); } 
-    to { transform: scale(1.1); box-shadow: 0 0 25px var(--win); } 
-}
+/* Chat Box System */
+#chatArea { width: 100%; background: #0a0a0a; border-radius: 20px 20px 0 0; border-top: 1px solid #222; padding: 10px; display: none; }
+.chat-msgs { height: 80px; overflow-y: auto; font-size: 12px; margin-bottom: 10px; color: #888; padding: 5px; }
+.chat-input-row { display: flex; gap: 5px; }
+.quick-btn { background: #1a1a1a; border: 1px solid #333; color: #fff; padding: 5px 10px; border-radius: 20px; font-size: 10px; cursor: pointer; white-space: nowrap; }
 
-/* Winner Card (Next Level) */
-#winnerOverlay { 
-    position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 9999; 
-    display: none; flex-direction: column; align-items: center; justify-content: center;
-    backdrop-filter: blur(10px);
-}
-.winner-card {
-    background: rgba(255, 255, 255, 0.05); padding: 40px; border-radius: 30px;
-    border: 1px solid rgba(255,255,255,0.1); text-align: center;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.5); animation: zoomIn 0.5s ease forwards;
-}
-@keyframes zoomIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.winner-cell { background: rgba(0, 255, 136, 0.2) !important; border: 2.5px solid var(--win) !important; animation: neonPulse 0.8s infinite alternate !important; z-index: 10; }
+@keyframes neonPulse { from { transform: scale(1); box-shadow: 0 0 5px var(--win); } to { transform: scale(1.05); box-shadow: 0 0 20px var(--win); } }
+
+#winnerOverlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(15px); }
+.winner-card { background: var(--glass); padding: 40px; border-radius: 30px; border: 1px solid rgba(255,255,255,0.1); text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
 
 .hidden { display: none !important; }
 </style>
@@ -66,15 +58,15 @@ input { width: 100%; padding: 18px; border-radius: 12px; border: 1px solid #222;
 
 <div id="adminPanel">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-        <h2 style="color:var(--primary);">MASTER ADMIN PANEL</h2>
-        <button onclick="location.reload()" style="background:red; color:white; border:none; padding:10px 20px; border-radius:8px; cursor:pointer;">EXIT</button>
+        <h2 style="color:var(--primary);">MASTER ADMIN</h2>
+        <button onclick="location.reload()" style="background:red; color:white; border:none; padding:10px 20px; border-radius:8px;">EXIT</button>
     </div>
     <div id="activeRoomsList"></div>
 </div>
 
 <div id="winnerOverlay">
     <div class="winner-card">
-        <h1 id="winnerName" style="font-size: 48px; margin: 10px 0; color: var(--win); text-shadow: 0 0 20px var(--win);">CHAMPION</h1>
+        <h1 id="winnerName" style="font-size: 42px; margin: 10px 0; color: var(--win); text-shadow: 0 0 20px var(--win);">CHAMPION</h1>
         <button id="nextRoundBtn" class="btn-main btn-cyan" style="width:200px; margin-top: 20px;">NEXT ROUND</button>
     </div>
 </div>
@@ -83,32 +75,54 @@ input { width: 100%; padding: 18px; border-radius: 12px; border: 1px solid #222;
     <div id="loginScreen" class="screen">
         <h1 class="hero-title">ULTIMATE</h1>
         <h1 class="hero-title hero-pro">ARENA PRO</h1>
-        <p class="created-by">CREATED BY @RP_GUPTA_07</p>
-        <input id="userName" placeholder="ENTER PLAYER NAME">
+        <p class="created-by">DESIGNED BY @RP_GUPTA_07</p>
+        
+        <input id="userName" placeholder="APNA NAAM LIKHO">
         <div style="display:flex; gap:8px; width:100%; margin-bottom:15px;">
             <button class="grid-btn active" data-size="3">3X3</button>
             <button class="grid-btn" data-size="5">5X5</button>
-            <button class="grid-btn" data-size="7">7X7</button>
         </div>
-        <button id="createBtn" class="btn-main btn-cyan">CREATE ARENA</button>
-        <button id="robotBtn" class="btn-main" style="background:#fff; color:#000;">SOLO VS ROBOT</button>
-        <input id="joinCode" placeholder="ARENA CODE" style="margin-top:15px;">
+        
+        <button id="createBtn" class="btn-main btn-cyan">CREATE NEW ARENA</button>
+        <button id="robotBtn" class="btn-main" style="background:#fff; color:#000;">VS SMART ROBOT</button>
+        
+        <div style="width:100%; height:1px; background:#222; margin:15px 0;"></div>
+        
+        <input id="joinCode" placeholder="ARENA CODE DAALO">
         <button id="joinBtn" class="btn-main" style="background:#222; color:#fff;">JOIN SQUAD</button>
     </div>
 
     <div id="gameScreen" class="hidden" style="display:flex; flex-direction:column; height: 100%;">
-        <div style="padding: 20px; display: flex; justify-content: space-between;">
-            <button onclick="location.reload()" style="background:none; border:none; color:red; font-weight:bold; cursor:pointer;">✕ EXIT</button>
-            <div id="status" style="color:var(--primary); font-weight:bold;">APKI BARI</div>
-            <div id="roomDisp" style="font-size:10px; color:#333;">ID: ----</div>
+        <div style="padding: 15px; display: flex; justify-content: space-between; align-items: center;">
+            <button onclick="location.reload()" style="background:none; border:none; color:red; font-weight:bold;">✕ EXIT</button>
+            <div id="status" style="color:var(--primary); font-size:14px; font-weight:bold; letter-spacing:1px;">APKI BARI</div>
+            <div id="roomDisp" style="font-size:10px; color:#555;">ID: ----</div>
         </div>
+
         <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;">
-            <div style="display:flex; gap:40px; margin-bottom:30px; background:rgba(255,255,255,0.02); padding:20px 40px; border-radius:25px;">
-                <div style="text-align:center;">USER<div id="p1Score" style="font-size:36px; font-weight:900;">0</div></div>
-                <div style="font-size:30px; opacity:0.1;">VS</div>
-                <div style="text-align:center;">ENEMY<div id="p2Score" style="font-size:36px; font-weight:900;">0</div></div>
+            <div style="display:flex; gap:30px; margin-bottom:20px; background:var(--glass); padding:15px 35px; border-radius:20px; border:1px solid rgba(255,255,255,0.05);">
+                <div style="text-align:center; min-width:60px;">
+                    <div id="p1Label" style="font-size:10px; color:var(--primary);">PLAYER 1</div>
+                    <div id="p1Score" style="font-size:32px; font-weight:900;">0</div>
+                </div>
+                <div style="font-size:24px; align-self:center; opacity:0.2;">VS</div>
+                <div style="text-align:center; min-width:60px;">
+                    <div id="p2Label" style="font-size:10px; color:var(--accent);">PLAYER 2</div>
+                    <div id="p2Score" style="font-size:32px; font-weight:900;">0</div>
+                </div>
             </div>
+            
             <div id="board"></div>
+        </div>
+
+        <div id="chatArea">
+            <div style="display:flex; gap:5px; overflow-x:auto; padding-bottom:8px;" id="quickChat">
+                <button class="quick-btn" onclick="sendMsg('Good Game! 🔥')">GG!</button>
+                <button class="quick-btn" onclick="sendMsg('Nice Move! 😮')">Nice Move</button>
+                <button class="quick-btn" onclick="sendMsg('My Turn Now! 😎')">My Turn</button>
+                <button class="quick-btn" onclick="sendMsg('Haha! Loseer 😂')">Haha!</button>
+            </div>
+            <div class="chat-msgs" id="chatMsgs"></div>
         </div>
     </div>
 </div>
@@ -122,11 +136,11 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
 const sfx = { moveX: new Audio("https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3"), moveO: new Audio("https://assets.mixkit.co/active_storage/sfx/2572/2572-preview.mp3"), win: new Audio("https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3") };
-function play(n){ try{ sfx[n].currentTime=0; sfx[n].play(); }catch(e){} }
+function play(n){ try{ sfx[n].currentTime=0; sfx[n].play(); if(window.navigator.vibrate) window.navigator.vibrate(30); }catch(e){} }
 
 let myRoomId, mySymbol, gameRef, gridSize = 3, isRobot = false, myName;
 
-// Admin Dashboard Login
+// Admin
 function openAdmin() {
     document.getElementById('mainGameUI').style.display = "none";
     document.getElementById('adminPanel').style.display = "block";
@@ -134,9 +148,9 @@ function openAdmin() {
         const list = document.getElementById('activeRoomsList'); list.innerHTML = "";
         let rooms = snap.val(); if(!rooms) return;
         for(let rid in rooms) {
-            let rd = rooms[rid]; let ps = rd.game ? rd.game.players : {X:'?', O:'?'};
+            let rd = rooms[rid]; 
             let card = document.createElement("div"); card.className = "room-card";
-            card.innerHTML = `<div><b>ID: ${rid}</b></div><div>${ps.X} vs ${ps.O}</div><button onclick="firebase.database().ref('rooms/${rid}').remove()" style="width:100%; background:red; border:none; color:white; padding:10px; border-radius:5px; cursor:pointer; margin-top:10px;">TERMINATE ROOM</button>`;
+            card.innerHTML = `<div><b>ID: ${rid}</b></div><button onclick="firebase.database().ref('rooms/${rid}').remove()" style="width:100%; background:red; color:white; border:none; padding:8px; border-radius:5px; margin-top:5px;">CLOSE ROOM</button>`;
             list.appendChild(card);
         }
     });
@@ -148,26 +162,37 @@ document.querySelectorAll('.grid-btn').forEach(btn => {
 
 document.getElementById('createBtn').onclick = () => { 
     myName = document.getElementById('userName').value || "User"; 
-    if(myName === "RP_ADMIN_7") { openAdmin(); return; }
+    if(myName.toUpperCase() === "RP_ADMIN_7") { openAdmin(); return; }
     myRoomId = Math.floor(1000 + Math.random()*8999).toString(); startSetup("X"); 
 };
-document.getElementById('robotBtn').onclick = () => { isRobot = true; myName = document.getElementById('userName').value || "User"; myRoomId = "BOT_"+Date.now(); startSetup("X"); };
-document.getElementById('joinBtn').onclick = () => { myName = document.getElementById('userName').value || "Guest"; myRoomId = document.getElementById('joinCode').value; if(myRoomId) startSetup("O"); };
+document.getElementById('robotBtn').onclick = () => { isRobot = true; myName = document.getElementById('userName').value || "Player"; myRoomId = "BOT_"+Date.now(); startSetup("X"); };
+document.getElementById('joinBtn').onclick = () => { myName = document.getElementById('userName').value || "Player"; myRoomId = document.getElementById('joinCode').value; if(myRoomId) startSetup("O"); };
 
 function startSetup(sym) {
     mySymbol = sym;
     gameRef = db.ref("rooms/" + myRoomId + "/game");
-    if(sym === "X") { gameRef.set({ board: Array(gridSize*gridSize).fill(""), turn: "X", size: gridSize, scores: {X:0, O:0}, players: {X: myName, O: isRobot ? "ROBOT AI" : "..."} }); }
-    else { gameRef.child("players/O").set(myName); }
+    if(!isRobot) document.getElementById('chatArea').style.display = "block";
+    
+    if(sym === "X") { 
+        gameRef.set({ board: Array(gridSize*gridSize).fill(""), turn: "X", size: gridSize, scores: {X:0, O:0}, players: {X: myName, O: isRobot ? "ROBOT AI" : "WAITING..."}, chat: [] }); 
+    } else { 
+        gameRef.child("players/O").set(myName); 
+    }
     document.getElementById('loginScreen').classList.add('hidden');
     document.getElementById('gameScreen').classList.remove('hidden');
-    document.getElementById('roomDisp').innerText = "ID: " + (isRobot ? "BOT" : myRoomId);
+    document.getElementById('roomDisp').innerText = "ROOM: " + (isRobot ? "SOLO" : myRoomId);
     initGame();
+}
+
+function sendMsg(msg) {
+    if(isRobot) return;
+    const chatRef = db.ref("rooms/" + myRoomId + "/game/chat");
+    chatRef.push({ n: myName, m: msg });
 }
 
 function initGame() {
     const bEl = document.getElementById('board');
-    let cellSize = gridSize === 3 ? 100 : (gridSize === 5 ? 70 : 50);
+    let cellSize = gridSize === 3 ? 100 : 65;
     bEl.style.gridTemplateColumns = `repeat(${gridSize}, ${cellSize}px)`;
     bEl.innerHTML = "";
     for(let i=0; i < gridSize * gridSize; i++) {
@@ -175,12 +200,7 @@ function initGame() {
         c.onclick = () => {
             gameRef.once("value", snap => {
                 let g = snap.val(); if(!g || g.turn !== mySymbol || g.board[i] !== "" || checkWinner(g.board, g.size)) return;
-                g.board[i] = mySymbol;
-                let next = mySymbol === "X" ? "O" : "X";
-                let win = checkWinner(g.board, g.size);
-                let update = { board: g.board, turn: next };
-                if(win && win !== "draw") { g.scores[win.w]++; update.scores = g.scores; }
-                gameRef.update(update);
+                makeMove(i, g);
             });
         };
         bEl.appendChild(c);
@@ -189,20 +209,26 @@ function initGame() {
     gameRef.on("value", snap => {
         let g = snap.val(); if(!g) return;
         document.getElementById('p1Score').innerText = g.scores.X; document.getElementById('p2Score').innerText = g.scores.O;
+        document.getElementById('p1Label').innerText = g.players.X.substring(0,8);
+        document.getElementById('p2Label').innerText = g.players.O.substring(0,8);
+
         g.board.forEach((v, i) => {
             let cell = bEl.children[i];
             if(cell.innerText !== v && v !== "") {
-                cell.innerHTML = `<span style="color:${v==='X'?'var(--primary)':'var(--accent)'}; font-size:${cellSize/1.8}px;">${v}</span>`;
+                cell.innerHTML = `<span style="color:${v==='X'?'var(--primary)':'var(--accent)'}; font-size:${cellSize/2}px;">${v}</span>`;
                 play(v === "X" ? 'moveX' : 'moveO');
             } else if (v === "") { cell.innerHTML = ""; cell.classList.remove('winner-cell'); }
         });
 
+        // Chat listener
+        const chatBox = document.getElementById('chatMsgs');
+        if(g.chat) {
+            chatBox.innerHTML = Object.values(g.chat).map(m => `<div><b>${m.n}:</b> ${m.m}</div>`).reverse().join('');
+        }
+
         let win = checkWinner(g.board, g.size);
         if(win) {
-            // STEP 1: Pehle board par animation dikhao
             if(win !== "draw") { win.line.forEach(idx => bEl.children[idx].classList.add('winner-cell')); play('win'); confetti(); }
-            
-            // STEP 2: 1.2 second baad Winner Name card dikhao
             setTimeout(() => {
                 document.getElementById('winnerName').innerText = (win === "draw") ? "DRAW MATCH" : (win.w === "X" ? g.players.X : g.players.O).toUpperCase();
                 document.getElementById('winnerOverlay').style.display = "flex";
@@ -210,37 +236,80 @@ function initGame() {
         } else {
             document.getElementById('winnerOverlay').style.display = "none";
             document.getElementById('status').innerText = (g.turn === mySymbol) ? "APKI BARI" : "WAITING...";
-            if(isRobot && g.turn === "O") setTimeout(() => robotMove(g), 600);
+            if(isRobot && g.turn === "O") setTimeout(() => smartRobotMove(g), 600);
         }
     });
 }
 
+function makeMove(i, g) {
+    g.board[i] = g.turn;
+    let next = g.turn === "X" ? "O" : "X";
+    let win = checkWinner(g.board, g.size);
+    let update = { board: g.board, turn: next };
+    if(win && win !== "draw") { g.scores[win.w]++; update.scores = g.scores; }
+    gameRef.update(update);
+}
+
 function checkWinner(b, size) {
-    const lines = []; let winLen = size === 3 ? 3 : (size === 5 ? 4 : 5);
-    for(let i=0; i<size; i++) { for(let j=0; j<=size-winLen; j++) {
-        let r = []; for(let k=0; k<winLen; k++) r.push(i*size + j + k); lines.push(r);
-        let c = []; for(let k=0; k<winLen; k++) c.push((j+k)*size + i); lines.push(c);
-    }}
-    for(let r=0; r<=size-winLen; r++) { for(let c=0; c<=size-winLen; c++) {
-        let d1 = []; for(let k=0; k<winLen; k++) d1.push((r+k)*size + (c+k)); lines.push(d1);
-        let d2 = []; for(let k=0; k<winLen; k++) d2.push((r+k)*size + (c+winLen-1-k)); lines.push(d2);
-    }}
+    const lines = []; let winLen = size === 3 ? 3 : 4;
+    for(let i=0; i<size; i++) { 
+        for(let j=0; j<=size-winLen; j++) {
+            let r = []; for(let k=0; k<winLen; k++) r.push(i*size + j + k); lines.push(r);
+            let c = []; for(let k=0; k<winLen; k++) c.push((j+k)*size + i); lines.push(c);
+        }
+    }
+    for(let r=0; r<=size-winLen; r++) { 
+        for(let c=0; c<=size-winLen; c++) {
+            let d1 = []; for(let k=0; k<winLen; k++) d1.push((r+k)*size + (c+k)); lines.push(d1);
+            let d2 = []; for(let k=0; k<winLen; k++) d2.push((r+k)*size + (c+winLen-1-k)); lines.push(d2);
+        }
+    }
     for(let l of lines) { if(b[l[0]] && l.every(idx => b[idx] === b[l[0]])) return {w: b[l[0]], line: l}; }
     return b.includes("") ? null : "draw";
 }
 
-function robotMove(game) {
-    let avail = game.board.map((v,i)=>v===""?i:null).filter(v=>v!==null);
-    if(avail.length > 0) {
-        let move = avail[Math.floor(Math.random()*avail.length)];
-        game.board[move] = "O"; let win = checkWinner(game.board, game.size);
-        let up = { board: game.board, turn: "X" };
-        if(win && win !== "draw") { game.scores.O++; up.scores = game.scores; }
-        gameRef.update(up);
+// Smart AI Logic (Minimax for 3x3, Random for others to save performance)
+function smartRobotMove(game) {
+    let bestMove;
+    if(game.size === 3) {
+        let bestScore = -Infinity;
+        for(let i=0; i<9; i++) {
+            if(game.board[i] === "") {
+                game.board[i] = "O";
+                let score = minimax(game.board, 0, false);
+                game.board[i] = "";
+                if(score > bestScore) { bestScore = score; bestMove = i; }
+            }
+        }
+    } else {
+        let avail = game.board.map((v,i)=>v===""?i:null).filter(v=>v!==null);
+        bestMove = avail[Math.floor(Math.random()*avail.length)];
+    }
+    if(bestMove !== undefined) makeMove(bestMove, game);
+}
+
+function minimax(board, depth, isMaximizing) {
+    let res = checkWinner(board, 3);
+    if(res === "draw") return 0;
+    if(res) return res.w === "O" ? 10 : -10;
+
+    if(isMaximizing) {
+        let bestScore = -Infinity;
+        for(let i=0; i<9; i++) {
+            if(board[i] === "") { board[i] = "O"; let score = minimax(board, depth+1, false); board[i] = ""; bestScore = Math.max(score, bestScore); }
+        }
+        return bestScore;
+    } else {
+        let bestScore = Infinity;
+        for(let i=0; i<9; i++) {
+            if(board[i] === "") { board[i] = "X"; let score = minimax(board, depth+1, true); board[i] = ""; bestScore = Math.min(score, bestScore); }
+        }
+        return bestScore;
     }
 }
 
 document.getElementById('nextRoundBtn').onclick = () => { gameRef.update({ board: Array(gridSize*gridSize).fill(""), turn: "X" }); };
 </script>
 </body>
-</html>
+    </html>
+                    
