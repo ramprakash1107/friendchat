@@ -2,104 +2,115 @@
 <html lang="hi">
 <head>
 <meta charset="UTF-8">
-<title>@rp_gupta_07 | Elite Arena Pro V2</title>
+<title>@rp_gupta_07 | Elite Arena Pro V3</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover">
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 <style>
 :root { 
-    --primary: #00f2ff; --secondary: #7000ff; --bg: #0b0b0b; 
-    --win: #00ff88; --accent: #ff4d4d; --glass: rgba(255, 255, 255, 0.05);
+    --primary: #00f2ff; --secondary: #7000ff; --bg: #050505; 
+    --win: #00ff88; --accent: #ff4d4d; --glass: rgba(255, 255, 255, 0.07);
 }
-* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
 body, html { margin: 0; padding: 0; height: 100%; width: 100%; background: var(--bg); color: #fff; font-family: 'Segoe UI', sans-serif; overflow: hidden; }
 
-/* Animated Background */
-.bg-animate { position: fixed; inset: 0; background: radial-gradient(circle at 50% 50%, #1a0033 0%, #000 100%); z-index: -1; }
+/* Dynamic Background */
+.bg-glow { position: fixed; width: 200px; height: 200px; background: var(--secondary); filter: blur(120px); border-radius: 50%; opacity: 0.3; z-index: -1; top: 20%; left: 20%; animation: move 10s infinite alternate; }
+@keyframes move { from { transform: translate(0,0); } to { transform: translate(100px, 200px); } }
 
-.container { display: flex; flex-direction: column; height: 100%; max-width: 450px; margin: auto; position: relative; }
-.screen { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 25px; }
+.container { display: flex; flex-direction: column; height: 100vh; max-width: 450px; margin: auto; position: relative; }
+.screen { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px; }
 
 /* Admin Panel */
-#adminPanel { position: fixed; inset: 0; background: #000; z-index: 10001; padding: 20px; overflow-y: auto; display: none; }
-.room-card { background: #111; border: 1px solid #222; padding: 15px; border-radius: 12px; margin-bottom: 10px; }
+#adminPanel { position: fixed; inset: 0; background: #000; z-index: 10002; padding: 25px; overflow-y: auto; display: none; }
+.room-card { background: #111; border: 1px solid #333; padding: 15px; border-radius: 12px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
 
-/* UI Elements */
-.hero-title { font-size: 40px; font-weight: 900; text-align: center; margin: 0; line-height: 1; }
-.hero-pro { color: var(--primary); text-shadow: 0 0 15px var(--primary); }
-.created-by { color: #555; font-size: 10px; margin: 5px 0 20px 0; letter-spacing: 3px; }
+/* UI Styling */
+.hero-title { font-size: 42px; font-weight: 900; text-align: center; margin: 0; letter-spacing: -1px; }
+.hero-pro { color: var(--primary); text-shadow: 0 0 20px rgba(0,242,255,0.5); }
+.created-by { color: #666; font-size: 11px; margin-top: 5px; margin-bottom: 30px; letter-spacing: 4px; font-weight: bold; }
 
-input { width: 100%; padding: 15px; border-radius: 12px; border: 1px solid #333; background: #111; color: #fff; margin-bottom: 10px; }
-.btn-main { width: 100%; padding: 15px; border-radius: 12px; border: none; font-weight: 800; cursor: pointer; text-transform: uppercase; margin-bottom: 8px; transition: 0.3s; }
-.btn-cyan { background: var(--primary); color: #000; }
-.btn-cyan:hover { box-shadow: 0 0 20px var(--primary); }
+input { width: 100%; padding: 18px; border-radius: 15px; border: 1px solid #222; background: #0a0a0a; color: #fff; font-size: 16px; margin-bottom: 12px; transition: 0.3s; }
+input:focus { border-color: var(--primary); box-shadow: 0 0 10px rgba(0,242,255,0.2); }
 
-/* Board */
-#board { display: grid; gap: 8px; margin: 15px auto; transition: 0.5s; }
-.cell { background: var(--glass); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 900; cursor: pointer; border: 1px solid rgba(255,255,255,0.1); transition: 0.2s; }
-.cell:active { transform: scale(0.9); }
-.winner-cell { background: var(--win) !important; color: #000 !important; box-shadow: 0 0 20px var(--win); animation: pulse 0.5s infinite alternate; }
-@keyframes pulse { from { opacity: 1; } to { opacity: 0.7; } }
+.btn-main { width: 100%; padding: 18px; border-radius: 15px; border: none; font-weight: 800; cursor: pointer; text-transform: uppercase; margin-bottom: 10px; font-size: 14px; transition: 0.3s; }
+.btn-cyan { background: var(--primary); color: #000; box-shadow: 0 5px 15px rgba(0,242,255,0.2); }
+.btn-cyan:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,242,255,0.4); }
 
-/* Chat System */
-#chatWrapper { width: 100%; background: rgba(0,0,0,0.5); border-radius: 15px; padding: 10px; border: 1px solid #222; }
-#chatMsgs { height: 80px; overflow-y: auto; font-size: 13px; color: #ccc; margin-bottom: 5px; text-align: left; }
-.msg-entry { margin-bottom: 4px; border-bottom: 1px solid #111; padding-bottom: 2px; }
+/* Board & Cells */
+#board { display: grid; gap: 10px; margin: 20px auto; }
+.cell { background: var(--glass); border-radius: 18px; display: flex; align-items: center; justify-content: center; font-weight: 900; cursor: pointer; border: 1px solid rgba(255,255,255,0.05); transition: 0.2s; font-size: 32px; }
+.cell:hover { background: rgba(255,255,255,0.1); }
+.winner-cell { background: var(--win) !important; color: #000 !important; box-shadow: 0 0 30px var(--win); transform: scale(1.05); }
 
-#winnerOverlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
+/* Chat Box */
+#chatWrapper { width: 100%; background: #0a0a0a; border-radius: 20px; padding: 12px; border: 1px solid #1a1a1a; margin-top: 10px; }
+#chatMsgs { height: 90px; overflow-y: auto; font-size: 13px; margin-bottom: 8px; color: #888; text-align: left; }
+.chat-input-area { display: flex; gap: 8px; }
+.chat-input-area input { margin-bottom: 0; padding: 10px; font-size: 14px; }
+
+#winnerOverlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(15px); }
 .hidden { display: none !important; }
 </style>
 </head>
 <body>
-<div class="bg-animate"></div>
+<div class="bg-glow"></div>
 
 <div id="adminPanel">
-    <h2 style="color:var(--primary);">MASTER ADMIN</h2>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:30px;">
+        <h2 style="color:var(--primary); margin:0;">SYSTEM CONTROL</h2>
+        <button onclick="location.reload()" style="background:red; color:white; border:none; padding:10px 15px; border-radius:8px;">EXIT</button>
+    </div>
     <div id="activeRoomsList"></div>
-    <button onclick="location.reload()" class="btn-main" style="background:red; color:#fff;">LOGOUT</button>
 </div>
 
 <div id="winnerOverlay">
-    <h1 id="winnerName" style="color:var(--win); font-size:40px; text-align:center;"></h1>
-    <button id="nextRoundBtn" class="btn-main btn-cyan" style="width:200px;">NEXT ROUND</button>
+    <h3 style="color:#666; margin:0;">MATCH ENDED</h3>
+    <h1 id="winnerName" style="color:var(--win); font-size:45px; margin:10px 0; text-align:center;"></h1>
+    <button id="nextRoundBtn" class="btn-main btn-cyan" style="width:220px;">PLAY AGAIN</button>
 </div>
 
 <div class="container" id="mainGameUI">
     <div id="loginScreen" class="screen">
-        <h1 class="hero-title">ELITE</h1>
+        <h1 class="hero-title">ULTIMATE</h1>
         <h1 class="hero-title hero-pro">ARENA PRO</h1>
-        <p class="created-by">BY @RP_GUPTA_07</p>
+        <p class="created-by">CREATED BY @RP_GUPTA_07</p>
         
-        <input id="userName" placeholder="NICKNAME">
-        <div style="display:flex; gap:5px; width:100%; margin-bottom:10px;">
-            <button class="btn-main btn-cyan size-btn" data-size="3" style="flex:1">3X3</button>
-            <button class="btn-main size-btn" data-size="5" style="flex:1; background:#222; color:#fff;">5X5</button>
+        <input id="userName" placeholder="ENTER YOUR NAME">
+        
+        <div style="display:flex; gap:10px; width:100%; margin-bottom:15px;">
+            <button class="btn-main size-btn" data-size="3" style="flex:1; background:var(--primary); color:#000;">3X3</button>
+            <button class="btn-main size-btn" data-size="5" style="flex:1; background:#111; color:#fff;">5X5</button>
         </div>
+
+        <button id="createBtn" class="btn-main btn-cyan">CREATE NEW ROOM</button>
+        <button id="robotBtn" class="btn-main" style="background:#fff; color:#000;">SOLO VS SMART AI</button>
         
-        <button id="createBtn" class="btn-main btn-cyan">CREATE ARENA</button>
-        <button id="robotBtn" class="btn-main" style="background:#fff; color:#000;">VS SMART ROBOT</button>
-        <input id="joinCode" placeholder="ROOM ID" style="margin-top:10px;">
-        <button id="joinBtn" class="btn-main" style="background:#222; color:#fff;">JOIN ROOM</button>
+        <div style="width:100%; height:1px; background:#222; margin:20px 0;"></div>
+        
+        <input id="joinCode" placeholder="ROOM CODE (e.g. 1234)">
+        <button id="joinBtn" class="btn-main" style="background:#222; color:#fff;">JOIN ARENA</button>
     </div>
 
-    <div id="gameScreen" class="hidden" style="flex-direction:column; height:100%; padding:15px;">
+    <div id="gameScreen" class="hidden" style="flex-direction:column; height:100%; padding:20px;">
         <div style="display:flex; justify-content:space-between; align-items:center;">
-            <span onclick="location.reload()" style="color:red; font-weight:bold; cursor:pointer;">EXIT</span>
-            <div id="status" style="color:var(--primary); font-size:14px; font-weight:bold;">WAITING...</div>
-            <div id="roomDisp" style="font-size:10px; opacity:0.5;">ID: --</div>
+            <span onclick="location.reload()" style="color:red; font-weight:bold; cursor:pointer; font-size:14px;">✕ EXIT</span>
+            <div id="status" style="color:var(--primary); font-size:14px; font-weight:bold; text-transform:uppercase;">WAITING...</div>
+            <div id="roomDisp" style="font-size:11px; color:#444; font-weight:bold;">ID: --</div>
         </div>
 
-        <div style="display:flex; justify-content:space-around; margin:15px 0; background:var(--glass); padding:10px; border-radius:15px;">
-            <div style="text-align:center;">YOU<div id="p1Score" style="font-size:24px; font-weight:900;">0</div></div>
-            <div style="text-align:center;">OPPONENT<div id="p2Score" style="font-size:24px; font-weight:900;">0</div></div>
+        <div style="display:flex; justify-content:space-around; align-items:center; margin:20px 0; background:var(--glass); padding:15px; border-radius:20px; border:1px solid rgba(255,255,255,0.03);">
+            <div style="text-align:center;">YOU<div id="p1Score" style="font-size:28px; font-weight:900; color:var(--primary);">0</div></div>
+            <div style="font-size:20px; opacity:0.2; font-weight:900;">VS</div>
+            <div style="text-align:center;">ENEMY<div id="p2Score" style="font-size:28px; font-weight:900; color:var(--accent);">0</div></div>
         </div>
 
         <div id="board"></div>
 
         <div id="chatWrapper">
             <div id="chatMsgs"></div>
-            <div style="display:flex; gap:5px;">
-                <input id="chatInput" placeholder="Chat..." style="margin:0; padding:8px; border-radius:8px;">
-                <button id="sendMsg" style="background:var(--primary); border:none; padding:0 15px; border-radius:8px; font-weight:bold;">SEND</button>
+            <div class="chat-input-area">
+                <input id="chatInput" placeholder="Say something...">
+                <button id="sendMsg" style="background:var(--primary); border:none; padding:0 15px; border-radius:12px; font-weight:bold; color:#000;">➤</button>
             </div>
         </div>
     </div>
@@ -109,79 +120,112 @@ input { width: 100%; padding: 15px; border-radius: 12px; border: 1px solid #333;
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
 <script>
+// Firebase Initialization
 const firebaseConfig = { apiKey: "AIzaSyARuO_pN2vdYrVKYkKHHaNys7WI8HqM6I4", databaseURL: "https://friendchat-43941-default-rtdb.firebaseio.com", projectId: "friendchat-43941" };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
 let myRoomId, mySymbol, gameRef, gridSize = 3, isRobot = false, myName;
 
-// Admin Security
-function openAdmin() {
-    let pin = prompt("ENTER ADMIN PIN:");
+// Admin Panel Logic (Vahi logic jo aapne manga tha)
+function checkAdminLogin() {
+    let pin = prompt("ENTER MASTER ADMIN PIN:");
     if(pin === "0077") {
         document.getElementById('mainGameUI').style.display = "none";
         document.getElementById('adminPanel').style.display = "block";
-        db.ref("rooms").on("value", snap => {
-            const list = document.getElementById('activeRoomsList'); list.innerHTML = "";
-            let rooms = snap.val(); if(!rooms) return;
-            for(let id in rooms) {
-                let div = document.createElement("div"); div.className="room-card";
-                div.innerHTML = `ID: ${id} <button onclick="firebase.database().ref('rooms/${id}').remove()" style="float:right; background:red; border:none; color:#fff; border-radius:4px;">KILL</button>`;
-                list.appendChild(div);
-            }
-        });
-    } else { alert("WRONG PIN!"); }
+        loadAdminRooms();
+    } else {
+        alert("ACCESS DENIED!");
+    }
 }
 
+function loadAdminRooms() {
+    db.ref("rooms").on("value", snap => {
+        const list = document.getElementById('activeRoomsList'); list.innerHTML = "";
+        let rooms = snap.val(); if(!rooms) { list.innerHTML = "<p>No active rooms.</p>"; return; }
+        for(let id in rooms) {
+            let div = document.createElement("div"); div.className="room-card";
+            div.innerHTML = `<span><b>Room:</b> ${id}</span> <button onclick="deleteRoom('${id}')" style="background:red; color:#fff; border:none; padding:8px 12px; border-radius:6px; cursor:pointer;">TERMINATE</button>`;
+            list.appendChild(div);
+        }
+    });
+}
+
+function deleteRoom(id) { if(confirm("Delete room "+id+"?")) db.ref("rooms/"+id).remove(); }
+
+// Grid Size Selector
 document.querySelectorAll('.size-btn').forEach(btn => {
     btn.onclick = () => {
         gridSize = parseInt(btn.dataset.size);
-        document.querySelectorAll('.size-btn').forEach(b => b.style.background = "#222");
+        document.querySelectorAll('.size-btn').forEach(b => { b.style.background = "#111"; b.style.color = "#fff"; });
         btn.style.background = "var(--primary)"; btn.style.color = "#000";
     };
 });
 
+// Start Actions
 document.getElementById('createBtn').onclick = () => { 
-    myName = document.getElementById('userName').value || "Player1";
-    if(myName === "RP_ADMIN") { openAdmin(); return; }
-    myRoomId = Math.floor(1000 + Math.random()*8999).toString(); startSetup("X"); 
+    myName = document.getElementById('userName').value.trim() || "Player1";
+    if(myName.toUpperCase() === "RP_ADMIN") { checkAdminLogin(); return; }
+    myRoomId = Math.floor(1000 + Math.random()*8999).toString(); 
+    startSetup("X"); 
 };
-document.getElementById('robotBtn').onclick = () => { isRobot = true; myName = document.getElementById('userName').value || "User"; myRoomId = "BOT_"+Date.now(); startSetup("X"); };
-document.getElementById('joinBtn').onclick = () => { myName = document.getElementById('userName').value || "Player2"; myRoomId = document.getElementById('joinCode').value; if(myRoomId) startSetup("O"); };
+
+document.getElementById('robotBtn').onclick = () => { 
+    isRobot = true; 
+    myName = document.getElementById('userName').value.trim() || "User"; 
+    myRoomId = "BOT_" + Math.floor(Math.random()*999);
+    startSetup("X"); 
+};
+
+document.getElementById('joinBtn').onclick = () => { 
+    myName = document.getElementById('userName').value.trim() || "Player2"; 
+    myRoomId = document.getElementById('joinCode').value.trim(); 
+    if(myRoomId) startSetup("O"); 
+};
 
 function startSetup(sym) {
     mySymbol = sym;
     gameRef = db.ref("rooms/" + myRoomId + "/game");
+    
     if(sym === "X") {
-        gameRef.set({ board: Array(gridSize*gridSize).fill(""), turn: "X", size: gridSize, scores: {X:0, O:0}, players: {X: myName, O: isRobot ? "SMART BOT" : "..."} });
+        gameRef.set({
+            board: Array(gridSize*gridSize).fill(""),
+            turn: "X",
+            size: gridSize,
+            scores: {X:0, O:0},
+            players: {X: myName, O: isRobot ? "SMART AI" : "..."}
+        });
     } else {
         gameRef.child("players/O").set(myName);
     }
+
     document.getElementById('loginScreen').classList.add('hidden');
     document.getElementById('gameScreen').style.display = 'flex';
-    document.getElementById('roomDisp').innerText = "ROOM: " + myRoomId;
+    document.getElementById('roomDisp').innerText = "ID: " + myRoomId;
     initGame();
     initChat();
 }
 
 function initGame() {
     const bEl = document.getElementById('board');
-    let sizePx = gridSize === 3 ? 100 : 65;
-    bEl.style.gridTemplateColumns = `repeat(${gridSize}, ${sizePx}px)`;
+    let cellSize = gridSize === 3 ? 100 : 65;
+    bEl.style.gridTemplateColumns = `repeat(${gridSize}, ${cellSize}px)`;
     bEl.innerHTML = "";
     
     for(let i=0; i<gridSize*gridSize; i++) {
         let c = document.createElement("div"); c.className="cell";
-        c.style.width = sizePx+"px"; c.style.height = sizePx+"px";
-        c.onclick = () => handleMove(i);
+        c.style.width = cellSize+"px"; c.style.height = cellSize+"px";
+        c.onclick = () => handleInput(i);
         bEl.appendChild(c);
     }
 
     gameRef.on("value", snap => {
         let g = snap.val(); if(!g) return;
         g.board.forEach((v, i) => {
-            bEl.children[i].innerText = v;
-            bEl.children[i].style.color = v === "X" ? "var(--primary)" : "var(--accent)";
+            let cell = bEl.children[i];
+            cell.innerText = v;
+            cell.style.color = v === "X" ? "var(--primary)" : "var(--accent)";
+            if(v==="") cell.classList.remove('winner-cell');
         });
         
         document.getElementById('p1Score').innerText = g.scores.X;
@@ -191,81 +235,64 @@ function initGame() {
         if(win) {
             if(win !== "draw") win.line.forEach(idx => bEl.children[idx].classList.add('winner-cell'));
             setTimeout(() => {
-                document.getElementById('winnerName').innerText = win === "draw" ? "DRAW!" : (win.w === "X" ? g.players.X : g.players.O) + " WINS!";
+                document.getElementById('winnerName').innerText = win === "draw" ? "DRAW MATCH" : (win.w === "X" ? g.players.X : g.players.O).toUpperCase();
                 document.getElementById('winnerOverlay').style.display = "flex";
                 if(win !== "draw") confetti();
-            }, 1000);
+            }, 800);
         } else {
             document.getElementById('winnerOverlay').style.display = "none";
             document.getElementById('status').innerText = g.turn === mySymbol ? "YOUR TURN" : "WAITING...";
-            if(isRobot && g.turn === "O") setTimeout(() => smartRobotMove(g), 800);
+            if(isRobot && g.turn === "O") setTimeout(() => runAI(g), 600);
         }
     });
 }
 
-function handleMove(i) {
+function handleInput(i) {
     gameRef.once("value", snap => {
         let g = snap.val();
-        if(g.turn !== mySymbol || g.board[i] !== "" || checkWinner(g.board, g.size)) return;
+        if(!g || g.turn !== mySymbol || g.board[i] !== "" || checkWinner(g.board, g.size)) return;
         g.board[i] = mySymbol;
-        updateGameState(g);
+        processMove(g);
     });
 }
 
-function updateGameState(g) {
+function processMove(g) {
     let win = checkWinner(g.board, g.size);
-    let nextTurn = g.turn === "X" ? "O" : "X";
-    let updates = { board: g.board, turn: nextTurn };
-    if(win && win !== "draw") {
-        g.scores[win.w]++;
-        updates.scores = g.scores;
-    }
-    gameRef.update(updates);
+    let up = { board: g.board, turn: g.turn === "X" ? "O" : "X" };
+    if(win && win !== "draw") { g.scores[win.w]++; up.scores = g.scores; }
+    gameRef.update(up);
 }
 
-// MINIMAX AI (Smart Logic)
-function smartRobotMove(g) {
+// Optimized AI
+function runAI(g) {
     let board = [...g.board];
-    let bestScore = -Infinity;
-    let move;
-    
-    for(let i=0; i<board.length; i++) {
-        if(board[i] === "") {
-            board[i] = "O";
-            let score = minimax(board, 0, false);
-            board[i] = "";
-            if(score > bestScore) { bestScore = score; move = i; }
-        }
-    }
-    if(move !== undefined) {
+    let move = getBestMove(board, g.size);
+    if(move !== null) {
         g.board[move] = "O";
-        updateGameState(g);
+        processMove(g);
     }
 }
 
-function minimax(board, depth, isMax) {
-    let res = checkWinner(board, gridSize);
-    if(res === "draw") return 0;
-    if(res) return res.w === "O" ? 10 - depth : depth - 10;
-
-    if(isMax) {
-        let best = -Infinity;
-        for(let i=0; i<board.length; i++) {
-            if(board[i] === "") { board[i]="O"; best = Math.max(best, minimax(board, depth+1, false)); board[i]=""; }
+function getBestMove(board, size) {
+    // 1. Can AI Win?
+    for(let i=0; i<board.length; i++) {
+        if(board[i]==="") {
+            board[i]="O"; if(checkWinner(board, size)) return i; board[i]="";
         }
-        return best;
-    } else {
-        let best = Infinity;
-        for(let i=0; i<board.length; i++) {
-            if(board[i] === "") { board[i]="X"; best = Math.min(best, minimax(board, depth+1, true)); board[i]=""; }
-        }
-        return best;
     }
+    // 2. Can Player Win? (Block them)
+    for(let i=0; i<board.length; i++) {
+        if(board[i]==="") {
+            board[i]="X"; if(checkWinner(board, size)) { board[i]=""; return i; } board[i]="";
+        }
+    }
+    // 3. Random move
+    let avail = board.map((v,i)=>v===""?i:null).filter(v=>v!==null);
+    return avail.length > 0 ? avail[Math.floor(Math.random()*avail.length)] : null;
 }
 
 function checkWinner(b, size) {
     const lines = []; let winLen = size === 3 ? 3 : 4;
-    // Rows & Cols
     for(let i=0; i<size; i++) {
         for(let j=0; j<=size-winLen; j++) {
             let r = [], c = [];
@@ -273,7 +300,6 @@ function checkWinner(b, size) {
             lines.push(r, c);
         }
     }
-    // Diagonals
     for(let r=0; r<=size-winLen; r++) {
         for(let c=0; c<=size-winLen; c++) {
             let d1 = [], d2 = [];
@@ -288,13 +314,13 @@ function checkWinner(b, size) {
 function initChat() {
     const chatRef = db.ref("rooms/" + myRoomId + "/chat");
     document.getElementById('sendMsg').onclick = () => {
-        let inp = document.getElementById('chatInput');
-        if(inp.value) { chatRef.push({ n: myName, t: inp.value }); inp.value = ""; }
+        let msg = document.getElementById('chatInput').value.trim();
+        if(msg) { chatRef.push({ n: myName, t: msg }); document.getElementById('chatInput').value = ""; }
     };
-    chatRef.limitToLast(10).on("child_added", snap => {
+    chatRef.limitToLast(15).on("child_added", snap => {
         let m = snap.val();
-        let div = document.createElement("div"); div.className="msg-entry";
-        div.innerHTML = `<b>${m.n}:</b> ${m.t}`;
+        let div = document.createElement("div");
+        div.innerHTML = `<span style="color:var(--primary)">${m.n}:</span> ${m.t}`;
         let box = document.getElementById('chatMsgs');
         box.appendChild(div); box.scrollTop = box.scrollHeight;
     });
@@ -306,4 +332,4 @@ document.getElementById('nextRoundBtn').onclick = () => {
 </script>
 </body>
     </html>
-        
+    
