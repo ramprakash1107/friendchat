@@ -3,160 +3,273 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
-    <title>RP_GUPTA_07 | LEGENDARY ARENA</title>
+    <title>RP_GUPTA_07 | ULTIMATE ARENA</title>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
 
     <style>
         :root {
             --neon: #00f2ff;
-            --gold: #ffcc00;
             --pink: #ff0055;
-            --bg: #050508;
+            --gold: #ffcc00;
+            --bg: #020205;
+            --card: rgba(255, 255, 255, 0.03);
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
-        body { margin: 0; background: var(--bg); color: #fff; font-family: 'Rajdhani', sans-serif; height: 100vh; overflow: hidden; }
+        body { margin: 0; background: var(--bg); color: #fff; font-family: 'Rajdhani', sans-serif; overflow: hidden; height: 100vh; }
 
-        /* Animated Background Elements */
-        .scanline { width: 100%; height: 100px; background: linear-gradient(0deg, transparent, rgba(0,242,255,0.1), transparent); position: fixed; top: -100px; animation: scan 4s linear infinite; z-index: 100; pointer-events: none; }
-        @keyframes scan { 0% { top: -100px; } 100% { top: 100vh; } }
+        /* --- Layers Logic --- */
+        .layer { position: fixed; inset: 0; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 30px; z-index: 10; background: var(--bg); transition: 0.5s; }
+        .active { display: flex; animation: pageIn 0.5s ease-out; }
+        @keyframes pageIn { from { opacity: 0; transform: scale(1.1); } to { opacity: 1; transform: scale(1); } }
 
-        .screen { position: fixed; inset: 0; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 20px; transition: 0.5s; background: radial-gradient(circle at center, #10101a 0%, #050508 100%); }
-        .active { display: flex; animation: fadeIn 0.8s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: scale(1.1); } to { opacity: 1; transform: scale(1); } }
+        /* --- Background Matrix Effect --- */
+        .matrix-bg { position: fixed; inset: 0; opacity: 0.05; background: url('https://www.transparenttextures.com/patterns/carbon-fibre.png'); z-index: -1; }
 
-        /* PAGE 1: INTRO */
-        .photo-frame { width: 150px; height: 150px; border-radius: 50%; border: 4px solid var(--neon); box-shadow: 0 0 20px var(--neon); overflow: hidden; margin-bottom: 20px; }
-        .photo-frame img { width: 100%; height: 100%; object-fit: cover; }
+        /* --- UI Elements --- */
+        .profile-img { width: 130px; height: 130px; border-radius: 50%; border: 3px solid var(--neon); box-shadow: 0 0 30px var(--neon); margin-bottom: 15px; }
+        
+        .loader-box { width: 250px; height: 6px; background: #111; border-radius: 10px; margin: 20px 0; overflow: hidden; border: 1px solid #333; position: relative; }
+        .bar { width: 0%; height: 100%; background: var(--neon); box-shadow: 0 0 15px var(--neon); transition: 1.8s ease-in-out; }
+        .loader-box::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent); animation: rush 1s infinite; }
+        @keyframes rush { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
 
-        /* PAGE 2-4: PROGRESS & UNLOCKING */
-        .loader-bar { width: 250px; height: 10px; background: #222; border-radius: 5px; overflow: hidden; margin: 20px 0; border: 1px solid #444; }
-        .fill { width: 0%; height: 100%; background: var(--neon); transition: 2s; box-shadow: 0 0 15px var(--neon); }
+        .btn { padding: 16px 40px; border: none; border-radius: 12px; background: linear-gradient(45deg, var(--neon), #00aaff); color: #000; font-family: 'Syncopate'; font-size: 11px; font-weight: 900; cursor: pointer; box-shadow: 0 0 20px rgba(0,242,255,0.3); transition: 0.3s; text-transform: uppercase; }
+        .btn:active { transform: scale(0.9); box-shadow: 0 0 10px rgba(0,242,255,0.5); }
 
-        /* COMMON BUTTONS */
-        .btn { padding: 15px 40px; border: none; border-radius: 50px; background: linear-gradient(45deg, var(--neon), #0066ff); color: #000; font-family: 'Orbitron'; font-weight: 900; cursor: pointer; text-transform: uppercase; box-shadow: 0 5px 20px rgba(0,242,255,0.4); margin-top: 20px; }
-        .btn:active { transform: scale(0.95); }
+        /* --- Game Board --- */
+        .board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; width: 100%; max-width: 330px; perspective: 1000px; }
+        .cell { aspect-ratio: 1/1; background: var(--card); border: 1px solid rgba(255,255,255,0.05); border-radius: 18px; display: flex; align-items: center; justify-content: center; font-size: 50px; font-weight: 700; transition: 0.3s; position: relative; overflow: hidden; }
+        .cell:active { transform: scale(0.95); background: rgba(255,255,255,0.05); }
+        .cell.x { color: var(--neon); text-shadow: 0 0 20px var(--neon); animation: markIn 0.3s ease; }
+        .cell.o { color: var(--pink); text-shadow: 0 0 20px var(--pink); animation: markIn 0.3s ease; }
+        @keyframes markIn { from { opacity: 0; transform: scale(0.5) rotate(10deg); } to { opacity: 1; transform: scale(1) rotate(0); } }
 
-        /* GAME BOARD (PAGE 5) */
-        .board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; width: 100%; max-width: 320px; margin: 20px 0; }
-        .cell { aspect-ratio: 1/1; background: rgba(255,255,255,0.03); border: 1px solid #333; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 40px; font-weight: bold; transition: 0.3s; }
-        .cell.x { color: var(--neon); text-shadow: 0 0 10px var(--neon); }
-        .cell.o { color: var(--pink); text-shadow: 0 0 10px var(--pink); }
+        /* --- POWER-UP WINNING ANIMATION (The 3 Lines) --- */
+        .winner-cell { 
+            border: 2px solid var(--gold) !important; 
+            box-shadow: 0 0 40px var(--gold); 
+            background: rgba(255, 204, 0, 0.1);
+            animation: winnerPulse 1s infinite alternate, winnerFlame 0.5s infinite; 
+        }
+        @keyframes winnerPulse { 
+            0% { transform: scale(1); box-shadow: 0 0 20px var(--gold); } 
+            100% { transform: scale(1.05); box-shadow: 0 0 50px var(--gold); } 
+        }
+        /* Flame Effect inside cell */
+        @keyframes winnerFlame {
+            0%, 100% { background-image: radial-gradient(circle at center, rgba(255,204,0,0.2) 0%, rgba(255,255,255,0) 70%); }
+            50% { background-image: radial-gradient(circle at center, rgba(255,204,0,0.4) 0%, rgba(255,255,255,0) 80%); }
+        }
 
-        h1 { font-family: 'Orbitron'; letter-spacing: 3px; text-align: center; }
-        .glitch { text-shadow: 2px 2px var(--pink), -2px -2px var(--neon); }
+        /* --- Victory Overlay (Colorful & Powerful) --- */
+        .victory-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 100; backdrop-filter: blur(10px); }
+        .victory-name { font-family: 'Syncopate'; font-size: 40px; font-weight: 900; text-transform: uppercase; margin-bottom: 20px; text-align: center; line-height: 1; }
+        
+        /* Colorful Glich/Power animation for Winner Name */
+        .winner-x { color: var(--neon); text-shadow: 3px 3px var(--pink), -3px -3px #fff, 0 0 30px var(--neon); animation: victorGlitch 0.4s infinite; }
+        .winner-o { color: var(--pink); text-shadow: 3px 3px var(--neon), -3px -3px #fff, 0 0 30px var(--pink); animation: victorGlitch 0.4s infinite; }
+        .winner-draw { color: #888; text-shadow: 0 0 20px #888; }
+        
+        @keyframes victorGlitch {
+            0% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+            100% { transform: translate(0); }
+        }
+
+        /* --- Header & Stats --- */
+        h1 { font-family: 'Syncopate'; font-size: 19px; text-align: center; color: var(--neon); letter-spacing: 1px; margin: 0; }
+        .status-txt { font-size: 13px; color: #888; letter-spacing: 2px; text-transform: uppercase; font-weight: 700; }
+        .score-box { background: rgba(0,0,0,0.3); padding: 10px 20px; border-radius: 12px; border: 1px solid #222; text-align: center; }
+
+        /* --- Settings Panel --- */
+        .settings-btn { position: fixed; top: 20px; right: 20px; background: none; border: none; font-size: 24px; color: #555; cursor: pointer; z-index: 20; transition: 0.3s; }
+        .settings-btn:hover { color: #fff; transform: rotate(90deg); }
+        
+        .settings-panel { position: fixed; right: -300px; top: 0; bottom: 0; width: 280px; background: rgba(10,10,15,0.98); border-left: 1px solid #333; z-index: 30; padding: 60px 20px; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); backdrop-filter: blur(10px); }
+        .settings-panel.open { right: 0; box-shadow: -10px 0 30px rgba(0,0,0,0.5); }
+        .close-settings { position: absolute; top: 20px; left: 20px; background: none; border: none; color: #fff; font-size: 20px; cursor: pointer; }
+        
+        .setting-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background: rgba(255,255,255,0.03); padding: 15px; border-radius: 10px; border: 1px solid #222; }
+        .setting-item span { font-weight: 700; color: #ccc; }
+        
+        /* Toggle Switch */
+        .switch { position: relative; display: inline-block; width: 45px; height: 24px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; inset: 0; background-color: #333; transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--neon); box-shadow: 0 0 10px var(--neon); }
+        input:checked + .slider:before { transform: translateX(21px); }
     </style>
 </head>
 <body>
 
-<div class="scanline"></div>
+<div class="matrix-bg"></div>
 
-<div id="p1" class="screen active">
-    <div class="photo-frame">
-        <img src="https://via.placeholder.com/150" alt="RP_GUPTA_07">
+<div id="victoryOverlay" class="victory-overlay">
+    <div id="winnerNameDisplay" class="victory-name">WINNER</div>
+    <p class="status-txt" style="color: #fff; margin-bottom: 30px;">HAS DOMINATED THE ARENA</p>
+    <button class="btn" onclick="closeVictory()">CONTINUE BATTLE</button>
+</div>
+
+<button class="settings-btn" onclick="toggleSettings()">⚙️</button>
+<div id="settingsPanel" class="settings-panel">
+    <button class="close-settings" onclick="toggleSettings()">✕</button>
+    <h1 style="margin-bottom: 40px;">CONTROL PANEL</h1>
+    
+    <div class="setting-item">
+        <span>SOUND EFFECTS</span>
+        <label class="switch"><input type="checkbox" id="setSound" checked><span class="slider"></span></label>
     </div>
-    <h1 class="glitch">RP_GUPTA_07</h1>
-    <p style="color: var(--neon)">BORN TO CONQUER</p>
-    <button class="btn" onclick="nextPage(2)">ENTER ARENA</button>
-</div>
-
-<div id="p2" class="screen">
-    <h1>LEVEL 1: AUTH</h1>
-    <p>ENCRYPTING PROTOCOLS...</p>
-    <div class="loader-bar"><div id="f1" class="fill"></div></div>
-    <div id="btn2" style="display:none"><button class="btn" onclick="nextPage(3)">PROCEED</button></div>
-</div>
-
-<div id="p3" class="screen">
-    <h1>LEVEL 2: SCAN</h1>
-    <p>AI ANALYSIS IN PROGRESS...</p>
-    <div class="loader-bar"><div id="f2" class="fill"></div></div>
-    <div id="btn3" style="display:none"><button class="btn" onclick="nextPage(4)">NEXT STAGE</button></div>
-</div>
-
-<div id="p4" class="screen">
-    <h1 style="color:var(--gold)">FINAL STAGE</h1>
-    <p>SYNCING NEURAL NETWORK...</p>
-    <div class="loader-bar"><div id="f3" class="fill"></div></div>
-    <div id="btn4" style="display:none"><button class="btn" onclick="nextPage(5)">START BATTLE</button></div>
-</div>
-
-<div id="p5" class="screen">
-    <div style="display:flex; gap:20px; margin-bottom:20px;">
-        <div style="text-align:center">SCORE<br><b id="winScore" style="color:var(--neon); font-size:24px">0</b></div>
-        <div style="text-align:center">LOSS<br><b id="loseScore" style="color:var(--pink); font-size:24px">0</b></div>
+    <div class="setting-item">
+        <span>VIBRATION</span>
+        <label class="switch"><input type="checkbox" id="setVibrate" checked><span class="slider"></span></label>
     </div>
-    <h2 id="status">YOUR TURN</h2>
-    <div class="board" id="board"></div>
-    <button class="btn" onclick="resetGame()" style="background:none; color:var(--neon); border:1px solid var(--neon)">RESTART</button>
+    <div class="setting-item">
+        <span>IMPOSSIBLE AI</span>
+        <label class="switch"><input type="checkbox" id="setImpossible"><span class="slider"></span></label>
+    </div>
+    <p style="text-align:center; color:#444; font-size:10px; margin-top:50px;">RP_GUPTA_07 ENGINE V4.0</p>
+</div>
+
+
+<div id="L1" class="layer active">
+    <img src="https://github.com/rp_gupta.png" class="profile-img" onerror="this.src='https://via.placeholder.com/130?text=RP'">
+    <h1 style="margin:0">RP_GUPTA_07</h1>
+    <p class="status-txt" style="color:var(--gold)">SYSTEM OWNER</p>
+    <button class="btn" onclick="go(2)" style="margin-top: 25px;">INITIALIZE</button>
+</div>
+
+<div id="L2" class="layer">
+    <div style="font-size: 60px; margin-bottom: 20px; color: var(--neon);">👤</div>
+    <h1>BIOMETRIC SCAN</h1>
+    <div class="loader-box"><div id="b2" class="bar"></div></div>
+    <p id="t2" class="status-txt">VERIFYING ID...</p>
+</div>
+
+<div id="L3" class="layer">
+    <div style="font-size: 60px; margin-bottom: 20px; color: var(--pink);">🛰️</div>
+    <h1>DATABASE BREACH</h1>
+    <div class="loader-box"><div id="b3" class="bar"></div></div>
+    <p id="t3" class="status-txt">BYPASSING FIREWALL...</p>
+</div>
+
+<div id="L4" class="layer">
+    <div style="font-size: 60px; margin-bottom: 20px; color: #fff;">🤖</div>
+    <h1>AI WAKING UP</h1>
+    <div class="loader-box"><div id="b4" class="bar"></div></div>
+    <p id="t4" class="status-txt">SYNCHRONIZING CORE...</p>
+</div>
+
+<div id="L5" class="layer" style="padding-top: 60px;">
+    <div style="display:flex; justify-content: space-between; width:100%; max-width:320px; margin-bottom:25px;">
+        <div class="score-box">OWNER<br><b id="winScore" style="color:var(--neon); font-size:26px">0</b></div>
+        <div class="score-box">AI BOT<br><b id="loseScore" style="color:var(--pink); font-size:26px">0</b></div>
+    </div>
+    <h2 id="status" class="status-txt" style="margin-bottom:15px; color:#fff; font-size: 15px;">YOUR TURN</h2>
+    <div class="board" id="gameGrid"></div>
+    <button class="btn" onclick="reboot()" style="margin-top:25px; background:none; border:1px solid var(--neon); color:var(--neon); font-size:10px; padding: 12px 30px;">RESET ARENA</button>
 </div>
 
 <script>
-    let board = Array(9).fill("");
-    let isGameOver = false;
-    let scores = { w: 0, l: 0 };
+    // Game State & Settings
+    let grid = Array(9).fill("");
+    let over = false;
+    let score = { w: 0, l: 0 };
+    const settings = { sound: true, vibrate: true, impossible: false };
 
-    function nextPage(n) {
-        // Haptic feedback
-        if (window.navigator.vibrate) window.navigator.vibrate(50);
-        
-        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        document.getElementById('p' + n).classList.add('active');
+    // Sounds
+    const sndTap = new Audio('https://cdn.pixabay.com/audio/2022/03/15/audio_7838634a73.mp3');
+    const sndWin = new Audio('https://cdn.pixabay.com/audio/2021/08/04/audio_0625c1366b.mp3');
 
-        if(n === 2) startLoad('f1', 'btn2');
-        if(n === 3) startLoad('f2', 'btn3');
-        if(n === 4) startLoad('f3', 'btn4');
-        if(n === 5) initGame();
+    // Load Settings from UI
+    document.getElementById('setSound').addEventListener('change', (e) => settings.sound = e.target.checked);
+    document.getElementById('setVibrate').addEventListener('change', (e) => settings.vibrate = e.target.checked);
+    document.getElementById('setImpossible').addEventListener('change', (e) => settings.impossible = e.target.checked);
+
+    function toggleSettings() {
+        if(settings.vibrate && window.navigator.vibrate) window.navigator.vibrate(30);
+        document.getElementById('settingsPanel').classList.toggle('open');
     }
 
-    function startLoad(id, btnId) {
-        setTimeout(() => {
-            document.getElementById(id).style.width = "100%";
+    // --- Layer Navigation ---
+    function go(n) {
+        if (settings.vibrate && window.navigator.vibrate) window.navigator.vibrate(40);
+        document.querySelectorAll('.layer').forEach(l => l.classList.remove('active'));
+        document.getElementById('L' + n).classList.add('active');
+
+        if(n >= 2 && n <= 4) {
             setTimeout(() => {
-                document.getElementById(btnId).style.display = "block";
-            }, 2100);
-        }, 500);
+                document.getElementById('b' + n).style.width = "100%";
+                // Status text updates during loading
+                const txts = {2: "ID VERIFIED", 3: "ACCESS GRANTED", 4: "AI ONLINE"};
+                setTimeout(() => document.getElementById('t'+n).innerText = txts[n], 1000);
+                setTimeout(() => go(n + 1), 2200); // Wait for bar animation
+            }, 100);
+        }
+        if(n === 5) startArena();
     }
 
-    function initGame() {
-        const b = document.getElementById('board');
-        b.innerHTML = '';
-        board = Array(9).fill("");
-        isGameOver = false;
+    // --- Game Logic ---
+    function startArena() {
+        const board = document.getElementById('gameGrid');
+        board.innerHTML = '';
+        grid = Array(9).fill("");
+        over = false;
+        document.getElementById('status').innerText = "YOUR TURN";
         for(let i=0; i<9; i++) {
             let c = document.createElement('div');
             c.className = 'cell';
             c.onclick = () => tap(i);
-            b.appendChild(c);
+            board.appendChild(c);
         }
     }
 
     function tap(i) {
-        if(board[i] || isGameOver) return;
-        move(i, "X");
-        if(!isGameOver) {
+        if(grid[i] || over) return;
+        play(i, "X");
+        if(!over) {
             document.getElementById('status').innerText = "AI THINKING...";
-            setTimeout(bot, 600);
+            // Dynamic Bot speed based on difficulty
+            const speed = settings.impossible ? 400 : 800;
+            setTimeout(botMove, speed);
         }
     }
 
-    function move(i, s) {
-        board[i] = s;
-        const c = document.getElementById('board').children[i];
-        c.innerText = s;
-        c.classList.add(s.toLowerCase());
+    function play(i, s) {
+        grid[i] = s;
+        const cell = document.getElementById('gameGrid').children[i];
+        cell.innerText = s;
+        cell.classList.add(s.toLowerCase());
         
-        if(check(s)) return end(s);
-        if(!board.includes("")) return end("draw");
+        if(settings.sound) { sndTap.currentTime = 0; sndTap.play(); }
+        if (settings.vibrate && window.navigator.vibrate) window.navigator.vibrate(35);
+
+        let winPattern = checkWin(s);
+        if(winPattern) return end(s, winPattern);
+        if(!grid.includes("")) return end("draw");
     }
 
-    function bot() {
-        let best = find(board, "O") || find(board, "X") || (board[4]===""?4:null) || random();
-        move(best, "O");
+    function botMove() {
+        if(over) return;
+        // AI Logic: 1. Win | 2. Block | 3. Center/Random
+        let move;
+        if(settings.impossible) {
+            // Unbeatable logic
+            move = find(grid, "O") || find(grid, "X") || (grid[4]===""?4:null) || findCorner() || rand();
+        } else {
+            // Normal Logic
+            move = find(grid, "O") || find(grid, "X") || rand();
+        }
+        play(move, "O");
         document.getElementById('status').innerText = "YOUR TURN";
     }
 
+    // --- Helper Functions ---
     function find(b, s) {
         const lines = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
         for(let l of lines) {
@@ -166,37 +279,76 @@
         return null;
     }
 
-    function random() {
-        let a = board.map((v,i) => v===""?i:null).filter(v=>v!==null);
+    function findCorner() {
+        const corners = [0,2,6,8];
+        const avail = corners.filter(i => grid[i] === "");
+        return avail.length > 0 ? avail[Math.floor(Math.random()*avail.length)] : null;
+    }
+
+    function rand() {
+        let a = grid.map((v,i) => v===""?i:null).filter(v=>v!==null);
         return a[Math.floor(Math.random()*a.length)];
     }
 
-    function check(s) {
+    function checkWin(s) {
         const lines = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-        return lines.some(l => l.every(i => board[i] === s));
+        return lines.find(l => l.every(i => grid[i] === s));
     }
 
-    function end(res) {
-        isGameOver = true;
+    // --- End Game & Animations ---
+    function end(res, pattern) {
+        over = true;
+        document.getElementById('status').innerText = "BATTLE OVER";
+        
+        if(settings.sound && res !== "draw") sndWin.play();
+
+        // 1. Colorful Victory Overlay with Glitch Name
+        const overlay = document.getElementById('victoryOverlay');
+        const nameDisplay = document.getElementById('winnerNameDisplay');
+        
         if(res === "X") {
-            confetti();
-            scores.w++;
-            document.getElementById('status').innerText = "VICTORY!";
+            // OWNER WINS
+            nameDisplay.innerText = "RP_GUPTA_07";
+            nameDisplay.className = "victory-name winner-x";
+            score.w++;
+            // Confetti effect
+            confetti({ particleCount: 200, spread: 80, origin: { y: 0.6 }, colors: ['#00f2ff', '#ff0055', '#ffffff'] });
         } else if(res === "O") {
-            scores.l++;
-            document.getElementById('status').innerText = "YOU LOST!";
+            // AI WINS
+            nameDisplay.innerText = "AI BOT CORE";
+            nameDisplay.className = "victory-name winner-o";
+            score.l++;
+            if (settings.vibrate && window.navigator.vibrate) window.navigator.vibrate([100, 50, 100, 50, 300]);
         } else {
-            document.getElementById('status').innerText = "DRAW!";
+            // DRAW
+            nameDisplay.innerText = "SYSTEM DRAW";
+            nameDisplay.className = "victory-name winner-draw";
         }
-        document.getElementById('winScore').innerText = scores.w;
-        document.getElementById('loseScore').innerText = scores.l;
+
+        // 2. Winner Line Animation (Power-up/Flame)
+        if(pattern) {
+            pattern.forEach((idx, i) => {
+                setTimeout(() => {
+                    document.getElementById('gameGrid').children[idx].classList.add('winner-cell');
+                }, i * 150); // Staggered animation
+            });
+        }
+
+        // Update Scores
+        document.getElementById('winScore').innerText = score.w;
+        document.getElementById('loseScore').innerText = score.l;
+
+        // Show Victory Screen after a short delay
+        setTimeout(() => overlay.style.display = 'flex', 1200);
     }
 
-    function resetGame() {
-        initGame();
-        document.getElementById('status').innerText = "YOUR TURN";
+    function closeVictory() {
+        document.getElementById('victoryOverlay').style.display = 'none';
+        reboot();
     }
+
+    function reboot() { startArena(); }
 </script>
 </body>
-</html>
-
+    </html>
+        
