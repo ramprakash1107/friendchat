@@ -2,202 +2,252 @@
 <html lang="hi">
 <head>
     <meta charset="UTF-8">
-    <title>RP_GUPTA_07 | CYBER ARENA</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <title>RP_GUPTA_07 | NEON ARENA</title>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
 
     <style>
         :root {
-            --neon: #00f2ff;
-            --bg: #08080a;
-            --card: #121217;
-            --accent: #ff0055;
+            --neon-blue: #00f2ff;
+            --neon-pink: #ff0055;
+            --glass: rgba(255, 255, 255, 0.05);
+            --bg: #020205;
         }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
 
         body {
-            margin: 0; background: var(--bg); color: white;
-            font-family: 'Orbitron', sans-serif; overflow: hidden;
-        }
-
-        /* Animated Background */
-        .grid-bg {
-            position: fixed; inset: 0;
-            background-image: linear-gradient(to right, #1a1a2e 1px, transparent 1px),
-                              linear-gradient(to bottom, #1a1a2e 1px, transparent 1px);
-            background-size: 40px 40px; transform: perspective(500px) rotateX(60deg);
-            transform-origin: center bottom; z-index: -1; animation: move-bg 3s linear infinite;
-        }
-
-        @keyframes move-bg { from { background-position: 0 0; } to { background-position: 0 40px; } }
-
-        .container { max-width: 400px; margin: auto; height: 100vh; display: flex; flex-direction: column; padding: 20px; }
-
-        h1 { text-align: center; font-size: 28px; text-shadow: 0 0 10px var(--neon); color: var(--neon); margin: 10px 0; }
-
-        .scoreboard {
-            display: flex; justify-content: space-around; background: var(--card);
-            padding: 15px; border-radius: 15px; border: 1px solid #333; margin-bottom: 20px;
-        }
-
-        .board {
-            display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
-            background: rgba(255,255,255,0.02); padding: 10px; border-radius: 20px;
-        }
-
-        .cell {
-            aspect-ratio: 1/1; background: var(--card); border-radius: 15px;
+            margin: 0; padding: 0; background: var(--bg); color: #fff;
+            font-family: 'Rajdhani', sans-serif; height: 100vh; overflow: hidden;
             display: flex; align-items: center; justify-content: center;
-            font-size: 45px; font-weight: 900; border: 1px solid #222;
-            transition: 0.2s; cursor: pointer;
         }
 
-        .cell:hover { border-color: var(--neon); box-shadow: 0 0 15px var(--neon); }
-        .cell.x { color: var(--neon); text-shadow: 0 0 15px var(--neon); }
-        .cell.o { color: var(--accent); text-shadow: 0 0 15px var(--accent); }
-
-        .btn {
-            background: linear-gradient(45deg, var(--neon), var(--accent));
-            border: none; padding: 15px; border-radius: 12px; color: white;
-            font-weight: bold; margin-top: 20px; cursor: pointer; text-transform: uppercase;
+        /* Animated Particles Background */
+        .bg-animate {
+            position: fixed; inset: 0; z-index: -1;
+            background: radial-gradient(circle at 50% 50%, #1a1a2e 0%, #020205 100%);
+        }
+        .bg-animate::after {
+            content: ""; position: absolute; inset: 0;
+            background-image: url('https://www.transparenttextures.com/patterns/carbon-fibre.png');
+            opacity: 0.1;
         }
 
-        #overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.95);
-            display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 100;
+        .app-container {
+            width: 90%; max-width: 400px; padding: 25px;
+            background: var(--glass); border-radius: 30px;
+            backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+            text-align: center; position: relative;
         }
+
+        /* Header Design */
+        .header h1 {
+            font-family: 'Syncopate', sans-serif; font-size: 22px; margin: 0;
+            background: linear-gradient(to right, var(--neon-blue), var(--neon-pink));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            letter-spacing: 2px;
+        }
+        .user-tag { font-size: 12px; color: #888; letter-spacing: 4px; margin-bottom: 20px; }
+
+        /* Stats Dashboard */
+        .dashboard {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 30px;
+        }
+        .stat-card {
+            background: rgba(0,0,0,0.3); padding: 10px; border-radius: 15px;
+            border-bottom: 2px solid #333;
+        }
+        .stat-card span { display: block; font-size: 10px; color: #aaa; text-transform: uppercase; }
+        .stat-card b { font-size: 18px; color: var(--neon-blue); }
+
+        /* Modern Game Board */
+        .board {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
+            margin-bottom: 25px; perspective: 1000px;
+        }
+        .cell {
+            aspect-ratio: 1/1; background: rgba(255,255,255,0.03);
+            border-radius: 18px; display: flex; align-items: center; justify-content: center;
+            font-size: 40px; font-weight: 700; cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .cell:active { transform: scale(0.9); }
+        .cell.x { color: var(--neon-blue); text-shadow: 0 0 15px var(--neon-blue); }
+        .cell.o { color: var(--neon-pink); text-shadow: 0 0 15px var(--neon-pink); }
+        .cell.winner-cell { background: var(--neon-blue); color: #000; box-shadow: 0 0 30px var(--neon-blue); }
+
+        /* Action Buttons */
+        .btn-group { display: flex; gap: 10px; }
+        .primary-btn {
+            flex: 2; padding: 15px; border: none; border-radius: 15px;
+            background: linear-gradient(135deg, var(--neon-blue), #0088ff);
+            color: #000; font-weight: 700; font-family: 'Syncopate'; cursor: pointer;
+            box-shadow: 0 10px 20px rgba(0, 242, 255, 0.3);
+        }
+        .icon-btn {
+            flex: 1; background: #1a1a2e; border: 1px solid #333; border-radius: 15px;
+            color: #fff; cursor: pointer;
+        }
+
+        /* Overlay */
+        .overlay {
+            position: absolute; inset: 0; background: rgba(0,0,0,0.85);
+            border-radius: 30px; display: none; flex-direction: column;
+            align-items: center; justify-content: center; z-index: 10;
+        }
+        .overlay h2 { font-family: 'Syncopate'; font-size: 30px; margin-bottom: 20px; }
     </style>
 </head>
 <body>
 
-<div class="grid-bg"></div>
+<div class="bg-animate"></div>
 
-<div class="container">
-    <h1>CYBER ARENA PRO</h1>
-    
-    <div class="scoreboard">
-        <div>YOU: <span id="pScore">0</span></div>
-        <div>DRAW: <span id="dScore">0</span></div>
-        <div>BOT: <span id="bScore">0</span></div>
+<div class="app-container">
+    <div id="winOverlay" class="overlay">
+        <h2 id="resultText">WINNER</h2>
+        <button class="primary-btn" onclick="resetBoard()">PLAY AGAIN</button>
     </div>
 
-    <div id="status" style="text-align: center; margin-bottom: 10px; font-size: 14px; color: #888;">READY TO FIGHT?</div>
+    <div class="header">
+        <h1>NEON ARENA</h1>
+        <div class="user-tag">@RP_GUPTA_07</div>
+    </div>
 
-    <div class="board" id="board"></div>
+    <div class="dashboard">
+        <div class="stat-card"><span>Win</span><b id="wCount">0</b></div>
+        <div class="stat-card"><span>Draw</span><b id="dCount">0</b></div>
+        <div class="stat-card"><span>Bot</span><b id="lCount">0</b></div>
+    </div>
 
-    <button class="btn" onclick="resetGame()">RESTART MATCH</button>
-    <p style="text-align: center; font-size: 10px; color: #555; margin-top: 20px;">@rp_gupta_07 EDITION</p>
-</div>
+    <div id="status" style="margin-bottom: 15px; color: var(--neon-blue); font-weight: bold; font-size: 14px;">SYSTEM READY...</div>
 
-<div id="overlay">
-    <h2 id="winMsg" style="font-size: 40px;"></h2>
-    <button class="btn" onclick="closeOverlay()" style="width: 200px;">CONTINUE</button>
+    <div class="board" id="gameBoard">
+        </div>
+
+    <div class="btn-group">
+        <button class="primary-btn" onclick="resetBoard()">REBOOT GAME</button>
+        <button class="icon-btn" onclick="toggleMute()">🔊</button>
+    </div>
 </div>
 
 <script>
     let board = Array(9).fill("");
-    let scores = { p: 0, b: 0, d: 0 };
     let isGameOver = false;
+    let scores = { w: 0, d: 0, l: 0 };
+    let mute = false;
 
-    function init() {
-        const boardEl = document.getElementById('board');
+    // Sounds
+    const moveSnd = new Audio('https://cdn.pixabay.com/audio/2022/03/15/audio_7838634a73.mp3');
+
+    function initBoard() {
+        const boardEl = document.getElementById('gameBoard');
         boardEl.innerHTML = '';
         for(let i=0; i<9; i++) {
-            let c = document.createElement('div');
-            c.className = 'cell';
-            c.onclick = () => playerMove(i);
-            boardEl.appendChild(c);
+            let cell = document.createElement('div');
+            cell.className = 'cell';
+            cell.onclick = () => playerTap(i);
+            boardEl.appendChild(cell);
         }
     }
 
-    function playerMove(i) {
+    function playerTap(i) {
         if(board[i] || isGameOver) return;
-        makeMove(i, "X");
+        
+        executeMove(i, "X");
+        
         if(!isGameOver) {
-            document.getElementById('status').innerText = "BOT IS SCANNING...";
-            setTimeout(botMove, 500);
+            document.getElementById('status').innerText = "AI THINKING...";
+            setTimeout(smartBot, 600);
         }
     }
 
-    function makeMove(i, sym) {
+    function executeMove(i, sym) {
         board[i] = sym;
-        const cell = document.getElementById('board').children[i];
+        const cell = document.getElementById('gameBoard').children[i];
         cell.innerText = sym;
         cell.classList.add(sym.toLowerCase());
-        
-        if (window.navigator.vibrate) window.navigator.vibrate(50); // Haptic feedback
+        if(!mute) moveSnd.play();
+        if (window.navigator.vibrate) window.navigator.vibrate(40);
 
-        if(checkWin(sym)) return endGame(sym);
-        if(!board.includes("")) return endGame("draw");
+        let winPattern = checkWinner(sym);
+        if(winPattern) return gameOver(sym, winPattern);
+        if(!board.includes("")) return gameOver("draw");
     }
 
-    function botMove() {
-        // Advanced Logic: 1. Win, 2. Block, 3. Random
-        let move = findBest(board, "O") || findBest(board, "X") || randomMove();
-        makeMove(move, "O");
+    function smartBot() {
+        // AI LOGIC: 1. Win if possible | 2. Block user | 3. Center | 4. Random
+        let move = findBestMove("O") || findBestMove("X") || (board[4] === "" ? 4 : null) || randomMove();
+        executeMove(move, "O");
         document.getElementById('status').innerText = "YOUR TURN";
     }
 
-    function findBest(b, sym) {
+    function findBestMove(s) {
         const lines = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
         for(let l of lines) {
-            let vals = l.map(idx => b[idx]);
-            if(vals.filter(v => v === sym).length === 2 && vals.includes("")) {
-                return l[vals.indexOf("")];
-            }
+            let v = l.map(idx => board[idx]);
+            if(v.filter(x => x === s).length === 2 && v.includes("")) return l[v.indexOf("")];
         }
         return null;
     }
 
     function randomMove() {
-        let empty = board.map((v, i) => v === "" ? i : null).filter(v => v !== null);
-        return empty[Math.floor(Math.random() * empty.length)];
+        let avail = board.map((v,i) => v===""?i:null).filter(v=>v!==null);
+        return avail[Math.floor(Math.random()*avail.length)];
     }
 
-    function checkWin(sym) {
+    function checkWinner(s) {
         const lines = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-        return lines.some(l => l.every(i => board[i] === sym));
+        return lines.find(l => l.every(i => board[i] === s));
     }
 
-    function endGame(res) {
+    function gameOver(res, pattern) {
         isGameOver = true;
-        const msg = document.getElementById('winMsg');
+        const overlay = document.getElementById('winOverlay');
+        const txt = document.getElementById('resultText');
+        
         if(res === "X") {
-            msg.innerText = "YOU DEFEATED BOT!";
-            msg.style.color = "var(--neon)";
-            scores.p++;
-            confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+            txt.innerText = "VICTORY!";
+            txt.style.color = "var(--neon-blue)";
+            scores.w++;
+            confetti({ spread: 80, particleCount: 100, origin: { y: 0.6 }, colors: ['#00f2ff', '#ffffff'] });
+            pattern.forEach(idx => document.getElementById('gameBoard').children[idx].classList.add('winner-cell'));
         } else if(res === "O") {
-            msg.innerText = "BOT DOMINATED!";
-            msg.style.color = "var(--accent)";
-            scores.b++;
+            txt.innerText = "DEFEATED";
+            txt.style.color = "var(--neon-pink)";
+            scores.l++;
         } else {
-            msg.innerText = "SYSTEM DRAW";
-            msg.style.color = "#888";
+            txt.innerText = "DRAW";
+            txt.style.color = "#888";
             scores.d++;
         }
-        updateScore();
-        setTimeout(() => { document.getElementById('overlay').style.display = 'flex'; }, 600);
+
+        updateStats();
+        setTimeout(() => overlay.style.display = 'flex', 800);
     }
 
-    function updateScore() {
-        document.getElementById('pScore').innerText = scores.p;
-        document.getElementById('bScore').innerText = scores.b;
-        document.getElementById('dScore').innerText = scores.d;
+    function updateStats() {
+        document.getElementById('wCount').innerText = scores.w;
+        document.getElementById('dCount').innerText = scores.d;
+        document.getElementById('lCount').innerText = scores.l;
     }
 
-    function resetGame() {
+    function resetBoard() {
         board = Array(9).fill("");
         isGameOver = false;
-        init();
+        document.getElementById('winOverlay').style.display = 'none';
+        document.getElementById('status').innerText = "SYSTEM REBOOTED";
+        initBoard();
     }
 
-    function closeOverlay() {
-        document.getElementById('overlay').style.display = 'none';
-        resetGame();
+    function toggleMute() {
+        mute = !mute;
+        event.target.innerText = mute ? "🔇" : "🔊";
     }
 
-    init();
+    initBoard();
 </script>
-
 </body>
 </html>
