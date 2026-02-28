@@ -3,352 +3,184 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
-    <title>RP_GUPTA_07 | ULTIMATE ARENA</title>
+    <title>RP_GUPTA_07 | LEGENDARY ARENA</title>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
 
     <style>
-        :root {
-            --neon: #00f2ff;
-            --pink: #ff0055;
-            --gold: #ffcc00;
-            --bg: #020205;
-            --card: rgba(255, 255, 255, 0.03);
-        }
-
+        :root { --neon: #00f2ff; --pink: #ff0055; --gold: #ffcc00; --bg: #020205; }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
         body { margin: 0; background: var(--bg); color: #fff; font-family: 'Rajdhani', sans-serif; overflow: hidden; height: 100vh; }
 
-        /* --- Layers Logic --- */
-        .layer { position: fixed; inset: 0; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 30px; z-index: 10; background: var(--bg); transition: 0.5s; }
-        .active { display: flex; animation: pageIn 0.5s ease-out; }
-        @keyframes pageIn { from { opacity: 0; transform: scale(1.1); } to { opacity: 1; transform: scale(1); } }
+        /* Layers */
+        .layer { position: fixed; inset: 0; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 30px; z-index: 10; background: var(--bg); }
+        .active { display: flex; animation: fadeIn 0.5s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(1.1); } to { opacity: 1; transform: scale(1); } }
 
-        /* --- Background Matrix Effect --- */
-        .matrix-bg { position: fixed; inset: 0; opacity: 0.05; background: url('https://www.transparenttextures.com/patterns/carbon-fibre.png'); z-index: -1; }
-
-        /* --- UI Elements --- */
+        /* UI Elements */
         .profile-img { width: 130px; height: 130px; border-radius: 50%; border: 3px solid var(--neon); box-shadow: 0 0 30px var(--neon); margin-bottom: 15px; }
-        
-        .loader-box { width: 250px; height: 6px; background: #111; border-radius: 10px; margin: 20px 0; overflow: hidden; border: 1px solid #333; position: relative; }
-        .bar { width: 0%; height: 100%; background: var(--neon); box-shadow: 0 0 15px var(--neon); transition: 1.8s ease-in-out; }
-        .loader-box::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent); animation: rush 1s infinite; }
-        @keyframes rush { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+        .loader-box { width: 250px; height: 6px; background: #111; border-radius: 10px; margin: 20px 0; overflow: hidden; border: 1px solid #333; }
+        .bar { width: 0%; height: 100%; background: var(--neon); box-shadow: 0 0 15px var(--neon); transition: 1.8s ease; }
+        .btn { padding: 16px 40px; border: none; border-radius: 12px; background: var(--neon); color: #000; font-family: 'Syncopate'; font-size: 11px; font-weight: 900; cursor: pointer; box-shadow: 0 0 20px rgba(0,242,255,0.4); }
 
-        .btn { padding: 16px 40px; border: none; border-radius: 12px; background: linear-gradient(45deg, var(--neon), #00aaff); color: #000; font-family: 'Syncopate'; font-size: 11px; font-weight: 900; cursor: pointer; box-shadow: 0 0 20px rgba(0,242,255,0.3); transition: 0.3s; text-transform: uppercase; }
-        .btn:active { transform: scale(0.9); box-shadow: 0 0 10px rgba(0,242,255,0.5); }
+        /* Board */
+        .board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; width: 100%; max-width: 320px; }
+        .cell { aspect-ratio: 1/1; background: rgba(255,255,255,0.03); border: 1px solid #222; border-radius: 18px; display: flex; align-items: center; justify-content: center; font-size: 50px; font-weight: 700; transition: 0.3s; }
+        .cell.x { color: var(--neon); text-shadow: 0 0 20px var(--neon); }
+        .cell.o { color: var(--pink); text-shadow: 0 0 20px var(--pink); }
 
-        /* --- Game Board --- */
-        .board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; width: 100%; max-width: 330px; perspective: 1000px; }
-        .cell { aspect-ratio: 1/1; background: var(--card); border: 1px solid rgba(255,255,255,0.05); border-radius: 18px; display: flex; align-items: center; justify-content: center; font-size: 50px; font-weight: 700; transition: 0.3s; position: relative; overflow: hidden; }
-        .cell:active { transform: scale(0.95); background: rgba(255,255,255,0.05); }
-        .cell.x { color: var(--neon); text-shadow: 0 0 20px var(--neon); animation: markIn 0.3s ease; }
-        .cell.o { color: var(--pink); text-shadow: 0 0 20px var(--pink); animation: markIn 0.3s ease; }
-        @keyframes markIn { from { opacity: 0; transform: scale(0.5) rotate(10deg); } to { opacity: 1; transform: scale(1) rotate(0); } }
+        /* Winning Animation */
+        .winner-cell { border: 2px solid var(--gold) !important; box-shadow: 0 0 40px var(--gold); animation: pulse 1s infinite alternate; }
+        @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.05); } }
 
-        /* --- POWER-UP WINNING ANIMATION (The 3 Lines) --- */
-        .winner-cell { 
-            border: 2px solid var(--gold) !important; 
-            box-shadow: 0 0 40px var(--gold); 
-            background: rgba(255, 204, 0, 0.1);
-            animation: winnerPulse 1s infinite alternate, winnerFlame 0.5s infinite; 
-        }
-        @keyframes winnerPulse { 
-            0% { transform: scale(1); box-shadow: 0 0 20px var(--gold); } 
-            100% { transform: scale(1.05); box-shadow: 0 0 50px var(--gold); } 
-        }
-        /* Flame Effect inside cell */
-        @keyframes winnerFlame {
-            0%, 100% { background-image: radial-gradient(circle at center, rgba(255,204,0,0.2) 0%, rgba(255,255,255,0) 70%); }
-            50% { background-image: radial-gradient(circle at center, rgba(255,204,0,0.4) 0%, rgba(255,255,255,0) 80%); }
-        }
+        /* Victory Overlay */
+        .victory-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 100; text-align: center; }
+        .victory-name { font-family: 'Syncopate'; font-size: 35px; margin-bottom: 20px; animation: glitch 0.4s infinite; }
+        .winner-x { color: var(--neon); text-shadow: 0 0 30px var(--neon); }
+        .winner-o { color: var(--pink); text-shadow: 0 0 30px var(--pink); }
+        @keyframes glitch { 0%, 100% { transform: translate(0); } 20% { transform: translate(-2px, 2px); } 40% { transform: translate(2px, -2px); } }
 
-        /* --- Victory Overlay (Colorful & Powerful) --- */
-        .victory-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 100; backdrop-filter: blur(10px); }
-        .victory-name { font-family: 'Syncopate'; font-size: 40px; font-weight: 900; text-transform: uppercase; margin-bottom: 20px; text-align: center; line-height: 1; }
-        
-        /* Colorful Glich/Power animation for Winner Name */
-        .winner-x { color: var(--neon); text-shadow: 3px 3px var(--pink), -3px -3px #fff, 0 0 30px var(--neon); animation: victorGlitch 0.4s infinite; }
-        .winner-o { color: var(--pink); text-shadow: 3px 3px var(--neon), -3px -3px #fff, 0 0 30px var(--pink); animation: victorGlitch 0.4s infinite; }
-        .winner-draw { color: #888; text-shadow: 0 0 20px #888; }
-        
-        @keyframes victorGlitch {
-            0% { transform: translate(0); }
-            20% { transform: translate(-2px, 2px); }
-            40% { transform: translate(-2px, -2px); }
-            60% { transform: translate(2px, 2px); }
-            80% { transform: translate(2px, -2px); }
-            100% { transform: translate(0); }
-        }
-
-        /* --- Header & Stats --- */
-        h1 { font-family: 'Syncopate'; font-size: 19px; text-align: center; color: var(--neon); letter-spacing: 1px; margin: 0; }
-        .status-txt { font-size: 13px; color: #888; letter-spacing: 2px; text-transform: uppercase; font-weight: 700; }
-        .score-box { background: rgba(0,0,0,0.3); padding: 10px 20px; border-radius: 12px; border: 1px solid #222; text-align: center; }
-
-        /* --- Settings Panel --- */
-        .settings-btn { position: fixed; top: 20px; right: 20px; background: none; border: none; font-size: 24px; color: #555; cursor: pointer; z-index: 20; transition: 0.3s; }
-        .settings-btn:hover { color: #fff; transform: rotate(90deg); }
-        
-        .settings-panel { position: fixed; right: -300px; top: 0; bottom: 0; width: 280px; background: rgba(10,10,15,0.98); border-left: 1px solid #333; z-index: 30; padding: 60px 20px; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); backdrop-filter: blur(10px); }
-        .settings-panel.open { right: 0; box-shadow: -10px 0 30px rgba(0,0,0,0.5); }
-        .close-settings { position: absolute; top: 20px; left: 20px; background: none; border: none; color: #fff; font-size: 20px; cursor: pointer; }
-        
-        .setting-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; background: rgba(255,255,255,0.03); padding: 15px; border-radius: 10px; border: 1px solid #222; }
-        .setting-item span { font-weight: 700; color: #ccc; }
-        
-        /* Toggle Switch */
-        .switch { position: relative; display: inline-block; width: 45px; height: 24px; }
-        .switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; inset: 0; background-color: #333; transition: .4s; border-radius: 34px; }
-        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
-        input:checked + .slider { background-color: var(--neon); box-shadow: 0 0 10px var(--neon); }
-        input:checked + .slider:before { transform: translateX(21px); }
+        /* Settings */
+        .settings-btn { position: fixed; top: 20px; right: 20px; font-size: 24px; background: none; border: none; color: #555; z-index: 50; }
+        .settings-panel { position: fixed; right: -300px; top: 0; bottom: 0; width: 260px; background: #0a0a0f; z-index: 100; padding: 60px 20px; transition: 0.4s; border-left: 1px solid #333; }
+        .settings-panel.open { right: 0; }
     </style>
 </head>
 <body>
 
-<div class="matrix-bg"></div>
-
-<div id="victoryOverlay" class="victory-overlay">
-    <div id="winnerNameDisplay" class="victory-name">WINNER</div>
-    <p class="status-txt" style="color: #fff; margin-bottom: 30px;">HAS DOMINATED THE ARENA</p>
-    <button class="btn" onclick="closeVictory()">CONTINUE BATTLE</button>
+<div id="vOver" class="victory-overlay">
+    <h1 id="vName" class="victory-name">WINNER</h1>
+    <button class="btn" onclick="closeV()">PLAY AGAIN</button>
 </div>
 
-<button class="settings-btn" onclick="toggleSettings()">⚙️</button>
-<div id="settingsPanel" class="settings-panel">
-    <button class="close-settings" onclick="toggleSettings()">✕</button>
-    <h1 style="margin-bottom: 40px;">CONTROL PANEL</h1>
-    
-    <div class="setting-item">
-        <span>SOUND EFFECTS</span>
-        <label class="switch"><input type="checkbox" id="setSound" checked><span class="slider"></span></label>
-    </div>
-    <div class="setting-item">
-        <span>VIBRATION</span>
-        <label class="switch"><input type="checkbox" id="setVibrate" checked><span class="slider"></span></label>
-    </div>
-    <div class="setting-item">
+<button class="settings-btn" onclick="tSet()">⚙️</button>
+<div id="sPan" class="settings-panel">
+    <h2 style="font-family:'Syncopate'; font-size:15px">SETTINGS</h2>
+    <div style="margin-top:30px; display:flex; justify-content:space-between">
         <span>IMPOSSIBLE AI</span>
-        <label class="switch"><input type="checkbox" id="setImpossible"><span class="slider"></span></label>
+        <input type="checkbox" id="impMode">
     </div>
-    <p style="text-align:center; color:#444; font-size:10px; margin-top:50px;">RP_GUPTA_07 ENGINE V4.0</p>
+    <button class="btn" onclick="tSet()" style="margin-top:50px; width:100%">CLOSE</button>
 </div>
-
 
 <div id="L1" class="layer active">
-    <img src="https://github.com/rp_gupta.png" class="profile-img" onerror="this.src='https://via.placeholder.com/130?text=RP'">
-    <h1 style="margin:0">RP_GUPTA_07</h1>
-    <p class="status-txt" style="color:var(--gold)">SYSTEM OWNER</p>
-    <button class="btn" onclick="go(2)" style="margin-top: 25px;">INITIALIZE</button>
+    <img src="https://github.com/rp_gupta.png" class="profile-img" onerror="this.src='https://via.placeholder.com/130'">
+    <h1>RP_GUPTA_07</h1>
+    <p style="color:var(--gold); letter-spacing:3px">SYSTEM OWNER</p>
+    <button class="btn" onclick="go(2)" style="margin-top:20px">INITIALIZE</button>
 </div>
 
-<div id="L2" class="layer">
-    <div style="font-size: 60px; margin-bottom: 20px; color: var(--neon);">👤</div>
-    <h1>BIOMETRIC SCAN</h1>
-    <div class="loader-box"><div id="b2" class="bar"></div></div>
-    <p id="t2" class="status-txt">VERIFYING ID...</p>
-</div>
+<div id="L2" class="layer"><h1>BIO SCAN</h1><div class="loader-box"><div id="b2" class="bar"></div></div></div>
+<div id="L3" class="layer"><h1>BREACHING</h1><div class="loader-box"><div id="b3" class="bar"></div></div></div>
+<div id="L4" class="layer"><h1>AI SYNCING</h1><div class="loader-box"><div id="b4" class="bar"></div></div></div>
 
-<div id="L3" class="layer">
-    <div style="font-size: 60px; margin-bottom: 20px; color: var(--pink);">🛰️</div>
-    <h1>DATABASE BREACH</h1>
-    <div class="loader-box"><div id="b3" class="bar"></div></div>
-    <p id="t3" class="status-txt">BYPASSING FIREWALL...</p>
-</div>
-
-<div id="L4" class="layer">
-    <div style="font-size: 60px; margin-bottom: 20px; color: #fff;">🤖</div>
-    <h1>AI WAKING UP</h1>
-    <div class="loader-box"><div id="b4" class="bar"></div></div>
-    <p id="t4" class="status-txt">SYNCHRONIZING CORE...</p>
-</div>
-
-<div id="L5" class="layer" style="padding-top: 60px;">
-    <div style="display:flex; justify-content: space-between; width:100%; max-width:320px; margin-bottom:25px;">
-        <div class="score-box">OWNER<br><b id="winScore" style="color:var(--neon); font-size:26px">0</b></div>
-        <div class="score-box">AI BOT<br><b id="loseScore" style="color:var(--pink); font-size:26px">0</b></div>
+<div id="L5" class="layer">
+    <div style="display:flex; gap:40px; margin-bottom:30px">
+        <div style="text-align:center">OWNER<br><b id="wS" style="color:var(--neon); font-size:25px">0</b></div>
+        <div style="text-align:center">AI<br><b id="lS" style="color:var(--pink); font-size:25px">0</b></div>
     </div>
-    <h2 id="status" class="status-txt" style="margin-bottom:15px; color:#fff; font-size: 15px;">YOUR TURN</h2>
-    <div class="board" id="gameGrid"></div>
-    <button class="btn" onclick="reboot()" style="margin-top:25px; background:none; border:1px solid var(--neon); color:var(--neon); font-size:10px; padding: 12px 30px;">RESET ARENA</button>
+    <h2 id="status" style="font-size:14px; letter-spacing:2px; color:#888">YOUR TURN</h2>
+    <div class="board" id="grid"></div>
+    <button class="btn" onclick="reset()" style="margin-top:30px; background:none; border:1px solid var(--neon); color:var(--neon)">REBOOT</button>
 </div>
 
 <script>
-    // Game State & Settings
-    let grid = Array(9).fill("");
+    let board = Array(9).fill("");
     let over = false;
-    let score = { w: 0, l: 0 };
-    const settings = { sound: true, vibrate: true, impossible: false };
+    let score = { w:0, l:0 };
 
-    // Sounds
-    const sndTap = new Audio('https://cdn.pixabay.com/audio/2022/03/15/audio_7838634a73.mp3');
-    const sndWin = new Audio('https://cdn.pixabay.com/audio/2021/08/04/audio_0625c1366b.mp3');
+    function tSet() { document.getElementById('sPan').classList.toggle('open'); }
 
-    // Load Settings from UI
-    document.getElementById('setSound').addEventListener('change', (e) => settings.sound = e.target.checked);
-    document.getElementById('setVibrate').addEventListener('change', (e) => settings.vibrate = e.target.checked);
-    document.getElementById('setImpossible').addEventListener('change', (e) => settings.impossible = e.target.checked);
-
-    function toggleSettings() {
-        if(settings.vibrate && window.navigator.vibrate) window.navigator.vibrate(30);
-        document.getElementById('settingsPanel').classList.toggle('open');
-    }
-
-    // --- Layer Navigation ---
     function go(n) {
-        if (settings.vibrate && window.navigator.vibrate) window.navigator.vibrate(40);
         document.querySelectorAll('.layer').forEach(l => l.classList.remove('active'));
-        document.getElementById('L' + n).classList.add('active');
-
+        document.getElementById('L'+n).classList.add('active');
         if(n >= 2 && n <= 4) {
             setTimeout(() => {
-                document.getElementById('b' + n).style.width = "100%";
-                // Status text updates during loading
-                const txts = {2: "ID VERIFIED", 3: "ACCESS GRANTED", 4: "AI ONLINE"};
-                setTimeout(() => document.getElementById('t'+n).innerText = txts[n], 1000);
-                setTimeout(() => go(n + 1), 2200); // Wait for bar animation
+                document.getElementById('b'+n).style.width = "100%";
+                setTimeout(() => go(n+1), 2000);
             }, 100);
         }
-        if(n === 5) startArena();
+        if(n === 5) start();
     }
 
-    // --- Game Logic ---
-    function startArena() {
-        const board = document.getElementById('gameGrid');
-        board.innerHTML = '';
-        grid = Array(9).fill("");
-        over = false;
-        document.getElementById('status').innerText = "YOUR TURN";
+    function start() {
+        const g = document.getElementById('grid');
+        g.innerHTML = ''; board = Array(9).fill(""); over = false;
         for(let i=0; i<9; i++) {
             let c = document.createElement('div');
             c.className = 'cell';
             c.onclick = () => tap(i);
-            board.appendChild(c);
+            g.appendChild(c);
         }
     }
 
     function tap(i) {
-        if(grid[i] || over) return;
+        if(board[i] || over) return;
         play(i, "X");
         if(!over) {
             document.getElementById('status').innerText = "AI THINKING...";
-            // Dynamic Bot speed based on difficulty
-            const speed = settings.impossible ? 400 : 800;
-            setTimeout(botMove, speed);
+            setTimeout(bot, 600);
         }
     }
 
     function play(i, s) {
-        grid[i] = s;
-        const cell = document.getElementById('gameGrid').children[i];
-        cell.innerText = s;
-        cell.classList.add(s.toLowerCase());
-        
-        if(settings.sound) { sndTap.currentTime = 0; sndTap.play(); }
-        if (settings.vibrate && window.navigator.vibrate) window.navigator.vibrate(35);
-
-        let winPattern = checkWin(s);
-        if(winPattern) return end(s, winPattern);
-        if(!grid.includes("")) return end("draw");
+        board[i] = s;
+        const c = document.getElementById('grid').children[i];
+        c.innerText = s; c.classList.add(s.toLowerCase());
+        if(window.navigator.vibrate) window.navigator.vibrate(30);
+        let win = check(s);
+        if(win) return end(s, win);
+        if(!board.includes("")) return end("draw");
     }
 
-    function botMove() {
+    function bot() {
         if(over) return;
-        // AI Logic: 1. Win | 2. Block | 3. Center/Random
-        let move;
-        if(settings.impossible) {
-            // Unbeatable logic
-            move = find(grid, "O") || find(grid, "X") || (grid[4]===""?4:null) || findCorner() || rand();
-        } else {
-            // Normal Logic
-            move = find(grid, "O") || find(grid, "X") || rand();
-        }
-        play(move, "O");
+        let imp = document.getElementById('impMode').checked;
+        let m = (imp ? find("O") || find("X") || (board[4]===""?4:null) : null) || find("O") || find("X") || rand();
+        play(m, "O");
         document.getElementById('status').innerText = "YOUR TURN";
     }
 
-    // --- Helper Functions ---
-    function find(b, s) {
+    function find(s) {
         const lines = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
         for(let l of lines) {
-            let v = l.map(idx => b[idx]);
-            if(v.filter(x => x === s).length === 2 && v.includes("")) return l[v.indexOf("")];
+            let v = l.map(idx => board[idx]);
+            if(v.filter(x => x===s).length===2 && v.includes("")) return l[v.indexOf("")];
         }
         return null;
     }
 
-    function findCorner() {
-        const corners = [0,2,6,8];
-        const avail = corners.filter(i => grid[i] === "");
-        return avail.length > 0 ? avail[Math.floor(Math.random()*avail.length)] : null;
-    }
-
     function rand() {
-        let a = grid.map((v,i) => v===""?i:null).filter(v=>v!==null);
+        let a = board.map((v,i) => v===""?i:null).filter(v=>v!==null);
         return a[Math.floor(Math.random()*a.length)];
     }
 
-    function checkWin(s) {
+    function check(s) {
         const lines = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-        return lines.find(l => l.every(i => grid[i] === s));
+        return lines.find(l => l.every(i => board[i] === s));
     }
 
-    // --- End Game & Animations ---
-    function end(res, pattern) {
+    function end(res, pat) {
         over = true;
-        document.getElementById('status').innerText = "BATTLE OVER";
-        
-        if(settings.sound && res !== "draw") sndWin.play();
-
-        // 1. Colorful Victory Overlay with Glitch Name
-        const overlay = document.getElementById('victoryOverlay');
-        const nameDisplay = document.getElementById('winnerNameDisplay');
-        
+        const vO = document.getElementById('vOver');
+        const vN = document.getElementById('vName');
         if(res === "X") {
-            // OWNER WINS
-            nameDisplay.innerText = "RP_GUPTA_07";
-            nameDisplay.className = "victory-name winner-x";
-            score.w++;
-            // Confetti effect
-            confetti({ particleCount: 200, spread: 80, origin: { y: 0.6 }, colors: ['#00f2ff', '#ff0055', '#ffffff'] });
+            vN.innerText = "RP_GUPTA_07"; vN.className = "victory-name winner-x";
+            score.w++; confetti();
         } else if(res === "O") {
-            // AI WINS
-            nameDisplay.innerText = "AI BOT CORE";
-            nameDisplay.className = "victory-name winner-o";
+            vN.innerText = "AI DOMINATED"; vN.className = "victory-name winner-o";
             score.l++;
-            if (settings.vibrate && window.navigator.vibrate) window.navigator.vibrate([100, 50, 100, 50, 300]);
-        } else {
-            // DRAW
-            nameDisplay.innerText = "SYSTEM DRAW";
-            nameDisplay.className = "victory-name winner-draw";
-        }
-
-        // 2. Winner Line Animation (Power-up/Flame)
-        if(pattern) {
-            pattern.forEach((idx, i) => {
-                setTimeout(() => {
-                    document.getElementById('gameGrid').children[idx].classList.add('winner-cell');
-                }, i * 150); // Staggered animation
-            });
-        }
-
-        // Update Scores
-        document.getElementById('winScore').innerText = score.w;
-        document.getElementById('loseScore').innerText = score.l;
-
-        // Show Victory Screen after a short delay
-        setTimeout(() => overlay.style.display = 'flex', 1200);
+        } else { vN.innerText = "DRAW"; vN.className = "victory-name"; }
+        
+        if(pat) pat.forEach(idx => document.getElementById('grid').children[idx].classList.add('winner-cell'));
+        document.getElementById('wS').innerText = score.w;
+        document.getElementById('lS').innerText = score.l;
+        setTimeout(() => vO.style.display = 'flex', 1000);
     }
 
-    function closeVictory() {
-        document.getElementById('victoryOverlay').style.display = 'none';
-        reboot();
-    }
-
-    function reboot() { startArena(); }
+    function closeV() { document.getElementById('vOver').style.display = 'none'; start(); }
+    function reset() { start(); }
 </script>
 </body>
-    </html>
-        
+</html>
+
