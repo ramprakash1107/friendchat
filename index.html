@@ -3,251 +3,200 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
-    <title>RP_GUPTA_07 | NEON ARENA</title>
+    <title>RP_GUPTA_07 | LEGENDARY ARENA</title>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
 
     <style>
         :root {
-            --neon-blue: #00f2ff;
-            --neon-pink: #ff0055;
-            --glass: rgba(255, 255, 255, 0.05);
-            --bg: #020205;
+            --neon: #00f2ff;
+            --gold: #ffcc00;
+            --pink: #ff0055;
+            --bg: #050508;
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
+        body { margin: 0; background: var(--bg); color: #fff; font-family: 'Rajdhani', sans-serif; height: 100vh; overflow: hidden; }
 
-        body {
-            margin: 0; padding: 0; background: var(--bg); color: #fff;
-            font-family: 'Rajdhani', sans-serif; height: 100vh; overflow: hidden;
-            display: flex; align-items: center; justify-content: center;
-        }
+        /* Animated Background Elements */
+        .scanline { width: 100%; height: 100px; background: linear-gradient(0deg, transparent, rgba(0,242,255,0.1), transparent); position: fixed; top: -100px; animation: scan 4s linear infinite; z-index: 100; pointer-events: none; }
+        @keyframes scan { 0% { top: -100px; } 100% { top: 100vh; } }
 
-        /* Animated Particles Background */
-        .bg-animate {
-            position: fixed; inset: 0; z-index: -1;
-            background: radial-gradient(circle at 50% 50%, #1a1a2e 0%, #020205 100%);
-        }
-        .bg-animate::after {
-            content: ""; position: absolute; inset: 0;
-            background-image: url('https://www.transparenttextures.com/patterns/carbon-fibre.png');
-            opacity: 0.1;
-        }
+        .screen { position: fixed; inset: 0; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 20px; transition: 0.5s; background: radial-gradient(circle at center, #10101a 0%, #050508 100%); }
+        .active { display: flex; animation: fadeIn 0.8s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(1.1); } to { opacity: 1; transform: scale(1); } }
 
-        .app-container {
-            width: 90%; max-width: 400px; padding: 25px;
-            background: var(--glass); border-radius: 30px;
-            backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1);
-            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
-            text-align: center; position: relative;
-        }
+        /* PAGE 1: INTRO */
+        .photo-frame { width: 150px; height: 150px; border-radius: 50%; border: 4px solid var(--neon); box-shadow: 0 0 20px var(--neon); overflow: hidden; margin-bottom: 20px; }
+        .photo-frame img { width: 100%; height: 100%; object-fit: cover; }
 
-        /* Header Design */
-        .header h1 {
-            font-family: 'Syncopate', sans-serif; font-size: 22px; margin: 0;
-            background: linear-gradient(to right, var(--neon-blue), var(--neon-pink));
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            letter-spacing: 2px;
-        }
-        .user-tag { font-size: 12px; color: #888; letter-spacing: 4px; margin-bottom: 20px; }
+        /* PAGE 2-4: PROGRESS & UNLOCKING */
+        .loader-bar { width: 250px; height: 10px; background: #222; border-radius: 5px; overflow: hidden; margin: 20px 0; border: 1px solid #444; }
+        .fill { width: 0%; height: 100%; background: var(--neon); transition: 2s; box-shadow: 0 0 15px var(--neon); }
 
-        /* Stats Dashboard */
-        .dashboard {
-            display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 30px;
-        }
-        .stat-card {
-            background: rgba(0,0,0,0.3); padding: 10px; border-radius: 15px;
-            border-bottom: 2px solid #333;
-        }
-        .stat-card span { display: block; font-size: 10px; color: #aaa; text-transform: uppercase; }
-        .stat-card b { font-size: 18px; color: var(--neon-blue); }
+        /* COMMON BUTTONS */
+        .btn { padding: 15px 40px; border: none; border-radius: 50px; background: linear-gradient(45deg, var(--neon), #0066ff); color: #000; font-family: 'Orbitron'; font-weight: 900; cursor: pointer; text-transform: uppercase; box-shadow: 0 5px 20px rgba(0,242,255,0.4); margin-top: 20px; }
+        .btn:active { transform: scale(0.95); }
 
-        /* Modern Game Board */
-        .board {
-            display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
-            margin-bottom: 25px; perspective: 1000px;
-        }
-        .cell {
-            aspect-ratio: 1/1; background: rgba(255,255,255,0.03);
-            border-radius: 18px; display: flex; align-items: center; justify-content: center;
-            font-size: 40px; font-weight: 700; cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            border: 1px solid rgba(255,255,255,0.05);
-        }
-        .cell:active { transform: scale(0.9); }
-        .cell.x { color: var(--neon-blue); text-shadow: 0 0 15px var(--neon-blue); }
-        .cell.o { color: var(--neon-pink); text-shadow: 0 0 15px var(--neon-pink); }
-        .cell.winner-cell { background: var(--neon-blue); color: #000; box-shadow: 0 0 30px var(--neon-blue); }
+        /* GAME BOARD (PAGE 5) */
+        .board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; width: 100%; max-width: 320px; margin: 20px 0; }
+        .cell { aspect-ratio: 1/1; background: rgba(255,255,255,0.03); border: 1px solid #333; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 40px; font-weight: bold; transition: 0.3s; }
+        .cell.x { color: var(--neon); text-shadow: 0 0 10px var(--neon); }
+        .cell.o { color: var(--pink); text-shadow: 0 0 10px var(--pink); }
 
-        /* Action Buttons */
-        .btn-group { display: flex; gap: 10px; }
-        .primary-btn {
-            flex: 2; padding: 15px; border: none; border-radius: 15px;
-            background: linear-gradient(135deg, var(--neon-blue), #0088ff);
-            color: #000; font-weight: 700; font-family: 'Syncopate'; cursor: pointer;
-            box-shadow: 0 10px 20px rgba(0, 242, 255, 0.3);
-        }
-        .icon-btn {
-            flex: 1; background: #1a1a2e; border: 1px solid #333; border-radius: 15px;
-            color: #fff; cursor: pointer;
-        }
-
-        /* Overlay */
-        .overlay {
-            position: absolute; inset: 0; background: rgba(0,0,0,0.85);
-            border-radius: 30px; display: none; flex-direction: column;
-            align-items: center; justify-content: center; z-index: 10;
-        }
-        .overlay h2 { font-family: 'Syncopate'; font-size: 30px; margin-bottom: 20px; }
+        h1 { font-family: 'Orbitron'; letter-spacing: 3px; text-align: center; }
+        .glitch { text-shadow: 2px 2px var(--pink), -2px -2px var(--neon); }
     </style>
 </head>
 <body>
 
-<div class="bg-animate"></div>
+<div class="scanline"></div>
 
-<div class="app-container">
-    <div id="winOverlay" class="overlay">
-        <h2 id="resultText">WINNER</h2>
-        <button class="primary-btn" onclick="resetBoard()">PLAY AGAIN</button>
+<div id="p1" class="screen active">
+    <div class="photo-frame">
+        <img src="https://via.placeholder.com/150" alt="RP_GUPTA_07">
     </div>
+    <h1 class="glitch">RP_GUPTA_07</h1>
+    <p style="color: var(--neon)">BORN TO CONQUER</p>
+    <button class="btn" onclick="nextPage(2)">ENTER ARENA</button>
+</div>
 
-    <div class="header">
-        <h1>NEON ARENA</h1>
-        <div class="user-tag">@RP_GUPTA_07</div>
+<div id="p2" class="screen">
+    <h1>LEVEL 1: AUTH</h1>
+    <p>ENCRYPTING PROTOCOLS...</p>
+    <div class="loader-bar"><div id="f1" class="fill"></div></div>
+    <div id="btn2" style="display:none"><button class="btn" onclick="nextPage(3)">PROCEED</button></div>
+</div>
+
+<div id="p3" class="screen">
+    <h1>LEVEL 2: SCAN</h1>
+    <p>AI ANALYSIS IN PROGRESS...</p>
+    <div class="loader-bar"><div id="f2" class="fill"></div></div>
+    <div id="btn3" style="display:none"><button class="btn" onclick="nextPage(4)">NEXT STAGE</button></div>
+</div>
+
+<div id="p4" class="screen">
+    <h1 style="color:var(--gold)">FINAL STAGE</h1>
+    <p>SYNCING NEURAL NETWORK...</p>
+    <div class="loader-bar"><div id="f3" class="fill"></div></div>
+    <div id="btn4" style="display:none"><button class="btn" onclick="nextPage(5)">START BATTLE</button></div>
+</div>
+
+<div id="p5" class="screen">
+    <div style="display:flex; gap:20px; margin-bottom:20px;">
+        <div style="text-align:center">SCORE<br><b id="winScore" style="color:var(--neon); font-size:24px">0</b></div>
+        <div style="text-align:center">LOSS<br><b id="loseScore" style="color:var(--pink); font-size:24px">0</b></div>
     </div>
-
-    <div class="dashboard">
-        <div class="stat-card"><span>Win</span><b id="wCount">0</b></div>
-        <div class="stat-card"><span>Draw</span><b id="dCount">0</b></div>
-        <div class="stat-card"><span>Bot</span><b id="lCount">0</b></div>
-    </div>
-
-    <div id="status" style="margin-bottom: 15px; color: var(--neon-blue); font-weight: bold; font-size: 14px;">SYSTEM READY...</div>
-
-    <div class="board" id="gameBoard">
-        </div>
-
-    <div class="btn-group">
-        <button class="primary-btn" onclick="resetBoard()">REBOOT GAME</button>
-        <button class="icon-btn" onclick="toggleMute()">🔊</button>
-    </div>
+    <h2 id="status">YOUR TURN</h2>
+    <div class="board" id="board"></div>
+    <button class="btn" onclick="resetGame()" style="background:none; color:var(--neon); border:1px solid var(--neon)">RESTART</button>
 </div>
 
 <script>
     let board = Array(9).fill("");
     let isGameOver = false;
-    let scores = { w: 0, d: 0, l: 0 };
-    let mute = false;
+    let scores = { w: 0, l: 0 };
 
-    // Sounds
-    const moveSnd = new Audio('https://cdn.pixabay.com/audio/2022/03/15/audio_7838634a73.mp3');
+    function nextPage(n) {
+        // Haptic feedback
+        if (window.navigator.vibrate) window.navigator.vibrate(50);
+        
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById('p' + n).classList.add('active');
 
-    function initBoard() {
-        const boardEl = document.getElementById('gameBoard');
-        boardEl.innerHTML = '';
+        if(n === 2) startLoad('f1', 'btn2');
+        if(n === 3) startLoad('f2', 'btn3');
+        if(n === 4) startLoad('f3', 'btn4');
+        if(n === 5) initGame();
+    }
+
+    function startLoad(id, btnId) {
+        setTimeout(() => {
+            document.getElementById(id).style.width = "100%";
+            setTimeout(() => {
+                document.getElementById(btnId).style.display = "block";
+            }, 2100);
+        }, 500);
+    }
+
+    function initGame() {
+        const b = document.getElementById('board');
+        b.innerHTML = '';
+        board = Array(9).fill("");
+        isGameOver = false;
         for(let i=0; i<9; i++) {
-            let cell = document.createElement('div');
-            cell.className = 'cell';
-            cell.onclick = () => playerTap(i);
-            boardEl.appendChild(cell);
+            let c = document.createElement('div');
+            c.className = 'cell';
+            c.onclick = () => tap(i);
+            b.appendChild(c);
         }
     }
 
-    function playerTap(i) {
+    function tap(i) {
         if(board[i] || isGameOver) return;
-        
-        executeMove(i, "X");
-        
+        move(i, "X");
         if(!isGameOver) {
             document.getElementById('status').innerText = "AI THINKING...";
-            setTimeout(smartBot, 600);
+            setTimeout(bot, 600);
         }
     }
 
-    function executeMove(i, sym) {
-        board[i] = sym;
-        const cell = document.getElementById('gameBoard').children[i];
-        cell.innerText = sym;
-        cell.classList.add(sym.toLowerCase());
-        if(!mute) moveSnd.play();
-        if (window.navigator.vibrate) window.navigator.vibrate(40);
-
-        let winPattern = checkWinner(sym);
-        if(winPattern) return gameOver(sym, winPattern);
-        if(!board.includes("")) return gameOver("draw");
+    function move(i, s) {
+        board[i] = s;
+        const c = document.getElementById('board').children[i];
+        c.innerText = s;
+        c.classList.add(s.toLowerCase());
+        
+        if(check(s)) return end(s);
+        if(!board.includes("")) return end("draw");
     }
 
-    function smartBot() {
-        // AI LOGIC: 1. Win if possible | 2. Block user | 3. Center | 4. Random
-        let move = findBestMove("O") || findBestMove("X") || (board[4] === "" ? 4 : null) || randomMove();
-        executeMove(move, "O");
+    function bot() {
+        let best = find(board, "O") || find(board, "X") || (board[4]===""?4:null) || random();
+        move(best, "O");
         document.getElementById('status').innerText = "YOUR TURN";
     }
 
-    function findBestMove(s) {
+    function find(b, s) {
         const lines = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
         for(let l of lines) {
-            let v = l.map(idx => board[idx]);
+            let v = l.map(idx => b[idx]);
             if(v.filter(x => x === s).length === 2 && v.includes("")) return l[v.indexOf("")];
         }
         return null;
     }
 
-    function randomMove() {
-        let avail = board.map((v,i) => v===""?i:null).filter(v=>v!==null);
-        return avail[Math.floor(Math.random()*avail.length)];
+    function random() {
+        let a = board.map((v,i) => v===""?i:null).filter(v=>v!==null);
+        return a[Math.floor(Math.random()*a.length)];
     }
 
-    function checkWinner(s) {
+    function check(s) {
         const lines = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-        return lines.find(l => l.every(i => board[i] === s));
+        return lines.some(l => l.every(i => board[i] === s));
     }
 
-    function gameOver(res, pattern) {
+    function end(res) {
         isGameOver = true;
-        const overlay = document.getElementById('winOverlay');
-        const txt = document.getElementById('resultText');
-        
         if(res === "X") {
-            txt.innerText = "VICTORY!";
-            txt.style.color = "var(--neon-blue)";
+            confetti();
             scores.w++;
-            confetti({ spread: 80, particleCount: 100, origin: { y: 0.6 }, colors: ['#00f2ff', '#ffffff'] });
-            pattern.forEach(idx => document.getElementById('gameBoard').children[idx].classList.add('winner-cell'));
+            document.getElementById('status').innerText = "VICTORY!";
         } else if(res === "O") {
-            txt.innerText = "DEFEATED";
-            txt.style.color = "var(--neon-pink)";
             scores.l++;
+            document.getElementById('status').innerText = "YOU LOST!";
         } else {
-            txt.innerText = "DRAW";
-            txt.style.color = "#888";
-            scores.d++;
+            document.getElementById('status').innerText = "DRAW!";
         }
-
-        updateStats();
-        setTimeout(() => overlay.style.display = 'flex', 800);
+        document.getElementById('winScore').innerText = scores.w;
+        document.getElementById('loseScore').innerText = scores.l;
     }
 
-    function updateStats() {
-        document.getElementById('wCount').innerText = scores.w;
-        document.getElementById('dCount').innerText = scores.d;
-        document.getElementById('lCount').innerText = scores.l;
+    function resetGame() {
+        initGame();
+        document.getElementById('status').innerText = "YOUR TURN";
     }
-
-    function resetBoard() {
-        board = Array(9).fill("");
-        isGameOver = false;
-        document.getElementById('winOverlay').style.display = 'none';
-        document.getElementById('status').innerText = "SYSTEM REBOOTED";
-        initBoard();
-    }
-
-    function toggleMute() {
-        mute = !mute;
-        event.target.innerText = mute ? "🔇" : "🔊";
-    }
-
-    initBoard();
 </script>
 </body>
 </html>
+
