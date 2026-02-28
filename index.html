@@ -3,109 +3,124 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
-    <title>RP_GUPTA_07 | LEGENDARY ARENA</title>
+    <title>RP_GUPTA_07 | CYBER PLATFORM</title>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
 
     <style>
-        :root { --neon: #00f2ff; --pink: #ff0055; --gold: #ffcc00; --bg: #020205; }
+        :root { --neon: #00f2ff; --pink: #ff0055; --bg: #020205; --glass: rgba(255,255,255,0.05); }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
         body { margin: 0; background: var(--bg); color: #fff; font-family: 'Rajdhani', sans-serif; overflow: hidden; height: 100vh; }
 
         /* Layers */
         .layer { position: fixed; inset: 0; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 30px; z-index: 10; background: var(--bg); }
-        .active { display: flex; animation: fadeIn 0.5s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: scale(1.1); } to { opacity: 1; transform: scale(1); } }
+        .active { display: flex; animation: slideIn 0.5s ease-out; }
+        @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
 
-        /* UI Elements */
-        .profile-img { width: 130px; height: 130px; border-radius: 50%; border: 3px solid var(--neon); box-shadow: 0 0 30px var(--neon); margin-bottom: 15px; }
-        .loader-box { width: 250px; height: 6px; background: #111; border-radius: 10px; margin: 20px 0; overflow: hidden; border: 1px solid #333; }
-        .bar { width: 0%; height: 100%; background: var(--neon); box-shadow: 0 0 15px var(--neon); transition: 1.8s ease; }
-        .btn { padding: 16px 40px; border: none; border-radius: 12px; background: var(--neon); color: #000; font-family: 'Syncopate'; font-size: 11px; font-weight: 900; cursor: pointer; box-shadow: 0 0 20px rgba(0,242,255,0.4); }
+        /* UI elements */
+        .profile-img { width: 120px; height: 120px; border-radius: 50%; border: 3px solid var(--neon); box-shadow: 0 0 30px var(--neon); margin-bottom: 10px; }
+        .btn { padding: 15px 30px; border: none; border-radius: 12px; background: var(--neon); color: #000; font-family: 'Syncopate'; font-size: 10px; font-weight: 900; cursor: pointer; margin: 5px; transition: 0.3s; }
+        .btn:active { transform: scale(0.9); }
 
         /* Board */
-        .board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; width: 100%; max-width: 320px; }
-        .cell { aspect-ratio: 1/1; background: rgba(255,255,255,0.03); border: 1px solid #222; border-radius: 18px; display: flex; align-items: center; justify-content: center; font-size: 50px; font-weight: 700; transition: 0.3s; }
-        .cell.x { color: var(--neon); text-shadow: 0 0 20px var(--neon); }
-        .cell.o { color: var(--pink); text-shadow: 0 0 20px var(--pink); }
+        .board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; width: 100%; max-width: 320px; margin: 15px 0; }
+        .cell { aspect-ratio: 1/1; background: var(--glass); border: 1px solid #333; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 40px; font-weight: bold; transition: 0.3s; }
+        .cell.x { color: var(--neon); text-shadow: 0 0 15px var(--neon); }
+        .cell.o { color: var(--pink); text-shadow: 0 0 15px var(--pink); }
 
-        /* Winning Animation */
-        .winner-cell { border: 2px solid var(--gold) !important; box-shadow: 0 0 40px var(--gold); animation: pulse 1s infinite alternate; }
-        @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.05); } }
+        /* Instagram Chat Style */
+        .chat-box { width: 100%; max-width: 350px; height: 150px; background: rgba(0,0,0,0.5); border: 1px solid #333; border-radius: 15px; display: flex; flex-direction: column; overflow: hidden; margin-top: 10px; }
+        .messages { flex: 1; overflow-y: auto; padding: 10px; font-size: 13px; }
+        .msg { background: #333; padding: 5px 10px; border-radius: 10px; margin-bottom: 5px; width: fit-content; max-width: 80%; }
+        .msg.me { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); align-self: flex-end; margin-left: auto; }
+        .chat-input { display: flex; border-top: 1px solid #333; }
+        .chat-input input { flex: 1; background: transparent; border: none; color: #fff; padding: 10px; }
 
-        /* Victory Overlay */
-        .victory-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 100; text-align: center; }
-        .victory-name { font-family: 'Syncopate'; font-size: 35px; margin-bottom: 20px; animation: glitch 0.4s infinite; }
-        .winner-x { color: var(--neon); text-shadow: 0 0 30px var(--neon); }
-        .winner-o { color: var(--pink); text-shadow: 0 0 30px var(--pink); }
-        @keyframes glitch { 0%, 100% { transform: translate(0); } 20% { transform: translate(-2px, 2px); } 40% { transform: translate(2px, -2px); } }
-
-        /* Settings */
-        .settings-btn { position: fixed; top: 20px; right: 20px; font-size: 24px; background: none; border: none; color: #555; z-index: 50; }
-        .settings-panel { position: fixed; right: -300px; top: 0; bottom: 0; width: 260px; background: #0a0a0f; z-index: 100; padding: 60px 20px; transition: 0.4s; border-left: 1px solid #333; }
-        .settings-panel.open { right: 0; }
+        /* Admin Panel */
+        #adminPanel { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 1000; display: none; flex-direction: column; align-items: center; justify-content: center; }
+        
+        .loader-bar { width: 250px; height: 5px; background: #111; overflow: hidden; margin: 20px; }
+        .bar { width: 0%; height: 100%; background: var(--neon); transition: 1.5s; }
     </style>
 </head>
-<body>
+<body onclick="handleSecretTap()">
 
-<div id="vOver" class="victory-overlay">
-    <h1 id="vName" class="victory-name">WINNER</h1>
-    <button class="btn" onclick="closeV()">PLAY AGAIN</button>
-</div>
+<audio id="bgMusic" loop src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-15.mp3"></audio>
+<audio id="clickSound" src="https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg"></audio>
 
-<button class="settings-btn" onclick="tSet()">⚙️</button>
-<div id="sPan" class="settings-panel">
-    <h2 style="font-family:'Syncopate'; font-size:15px">SETTINGS</h2>
-    <div style="margin-top:30px; display:flex; justify-content:space-between">
-        <span>IMPOSSIBLE AI</span>
-        <input type="checkbox" id="impMode">
-    </div>
-    <button class="btn" onclick="tSet()" style="margin-top:50px; width:100%">CLOSE</button>
+<div id="adminPanel">
+    <h1 style="color:var(--neon)">ADMIN DASHBOARD</h1>
+    <p>Logged in as: @RP_GUPTA_07</p>
+    <button class="btn" onclick="scoreHack()">HACK SCORE (WIN+10)</button>
+    <button class="btn" onclick="toggleMusic()">TOGGLE MUSIC</button>
+    <button class="btn" onclick="document.getElementById('adminPanel').style.display='none'">EXIT ADMIN</button>
 </div>
 
 <div id="L1" class="layer active">
-    <img src="https://github.com/rp_gupta.png" class="profile-img" onerror="this.src='https://via.placeholder.com/130'">
-    <h1>RP_GUPTA_07</h1>
-    <p style="color:var(--gold); letter-spacing:3px">SYSTEM OWNER</p>
-    <button class="btn" onclick="go(2)" style="margin-top:20px">INITIALIZE</button>
+    <img src="https://github.com/rp_gupta.png" class="profile-img" onerror="this.src='https://via.placeholder.com/120'">
+    <h1 style="margin:0">RP_GUPTA_07</h1>
+    <p style="color:#888; letter-spacing:3px">SELECT BATTLE MODE</p>
+    <button class="btn" onclick="setMode('robot')">SOLO VS AI</button>
+    <button class="btn" onclick="setMode('friend')">VS FRIEND (Local)</button>
 </div>
 
-<div id="L2" class="layer"><h1>BIO SCAN</h1><div class="loader-box"><div id="b2" class="bar"></div></div></div>
-<div id="L3" class="layer"><h1>BREACHING</h1><div class="loader-box"><div id="b3" class="bar"></div></div></div>
-<div id="L4" class="layer"><h1>AI SYNCING</h1><div class="loader-box"><div id="b4" class="bar"></div></div></div>
+<div id="L2" class="layer"><h1>SYNCING CORE</h1><div class="loader-bar"><div id="b2" class="bar"></div></div></div>
+<div id="L3" class="layer"><h1>ENCRYPTING CHAT</h1><div class="loader-box"></div><div class="loader-bar"><div id="b3" class="bar"></div></div></div>
 
-<div id="L5" class="layer">
-    <div style="display:flex; gap:40px; margin-bottom:30px">
-        <div style="text-align:center">OWNER<br><b id="wS" style="color:var(--neon); font-size:25px">0</b></div>
-        <div style="text-align:center">AI<br><b id="lS" style="color:var(--pink); font-size:25px">0</b></div>
+<div id="L4" class="layer">
+    <div style="display:flex; justify-content: space-around; width:100%; max-width:320px;">
+        <div style="text-align:center">P1<br><b id="p1Score" style="color:var(--neon); font-size:22px">0</b></div>
+        <div style="text-align:center">P2/BOT<br><b id="p2Score" style="color:var(--pink); font-size:22px">0</b></div>
     </div>
-    <h2 id="status" style="font-size:14px; letter-spacing:2px; color:#888">YOUR TURN</h2>
+    
     <div class="board" id="grid"></div>
-    <button class="btn" onclick="reset()" style="margin-top:30px; background:none; border:1px solid var(--neon); color:var(--neon)">REBOOT</button>
+
+    <div class="chat-box">
+        <div class="messages" id="chatMsgs">
+            <div class="msg">System: Welcome to Arena!</div>
+        </div>
+        <div class="chat-input">
+            <input type="text" id="msgIn" placeholder="Type like Instagram...">
+            <button onclick="sendMsg()" style="background:none; border:none; color:var(--neon); padding:10px;">Send</button>
+        </div>
+    </div>
+    <button class="btn" onclick="location.reload()" style="background:none; color:var(--pink); border:1px solid var(--pink); margin-top:10px;">EXIT GAME</button>
 </div>
 
 <script>
     let board = Array(9).fill("");
     let over = false;
-    let score = { w:0, l:0 };
+    let mode = 'robot';
+    let turn = "X";
+    let scores = {p1: 0, p2: 0};
+    let tapCount = 0;
 
-    function tSet() { document.getElementById('sPan').classList.toggle('open'); }
+    function handleSecretTap() {
+        tapCount++;
+        setTimeout(() => tapCount = 0, 1000);
+        if(tapCount === 3) document.getElementById('adminPanel').style.display = 'flex';
+    }
+
+    function setMode(m) {
+        mode = m;
+        document.getElementById('bgMusic').play();
+        go(2);
+    }
 
     function go(n) {
         document.querySelectorAll('.layer').forEach(l => l.classList.remove('active'));
         document.getElementById('L'+n).classList.add('active');
-        if(n >= 2 && n <= 4) {
+        if(n < 4) {
             setTimeout(() => {
                 document.getElementById('b'+n).style.width = "100%";
                 setTimeout(() => go(n+1), 2000);
             }, 100);
-        }
-        if(n === 5) start();
+        } else { initBoard(); }
     }
 
-    function start() {
+    function initBoard() {
         const g = document.getElementById('grid');
-        g.innerHTML = ''; board = Array(9).fill(""); over = false;
+        g.innerHTML = ''; board = Array(9).fill(""); over = false; turn = "X";
         for(let i=0; i<9; i++) {
             let c = document.createElement('div');
             c.className = 'cell';
@@ -116,29 +131,37 @@
 
     function tap(i) {
         if(board[i] || over) return;
-        play(i, "X");
+        document.getElementById('clickSound').play();
+        makeMove(i, turn);
         if(!over) {
-            document.getElementById('status').innerText = "AI THINKING...";
-            setTimeout(bot, 600);
+            if(mode === 'robot') {
+                setTimeout(bot, 500);
+            } else {
+                turn = turn === "X" ? "O" : "X";
+            }
         }
     }
 
-    function play(i, s) {
+    function makeMove(i, s) {
         board[i] = s;
         const c = document.getElementById('grid').children[i];
         c.innerText = s; c.classList.add(s.toLowerCase());
-        if(window.navigator.vibrate) window.navigator.vibrate(30);
         let win = check(s);
-        if(win) return end(s, win);
-        if(!board.includes("")) return end("draw");
+        if(win) {
+            over = true;
+            if(s === "X") scores.p1++; else scores.p2++;
+            updateScores();
+            confetti();
+            addChatMsg("System", s + " HAS WON!");
+        } else if(!board.includes("")) {
+            over = true;
+            addChatMsg("System", "ITS A DRAW!");
+        }
     }
 
     function bot() {
-        if(over) return;
-        let imp = document.getElementById('impMode').checked;
-        let m = (imp ? find("O") || find("X") || (board[4]===""?4:null) : null) || find("O") || find("X") || rand();
-        play(m, "O");
-        document.getElementById('status').innerText = "YOUR TURN";
+        let m = find("O") || find("X") || rand();
+        makeMove(m, "O");
     }
 
     function find(s) {
@@ -160,27 +183,34 @@
         return lines.find(l => l.every(i => board[i] === s));
     }
 
-    function end(res, pat) {
-        over = true;
-        const vO = document.getElementById('vOver');
-        const vN = document.getElementById('vName');
-        if(res === "X") {
-            vN.innerText = "RP_GUPTA_07"; vN.className = "victory-name winner-x";
-            score.w++; confetti();
-        } else if(res === "O") {
-            vN.innerText = "AI DOMINATED"; vN.className = "victory-name winner-o";
-            score.l++;
-        } else { vN.innerText = "DRAW"; vN.className = "victory-name"; }
-        
-        if(pat) pat.forEach(idx => document.getElementById('grid').children[idx].classList.add('winner-cell'));
-        document.getElementById('wS').innerText = score.w;
-        document.getElementById('lS').innerText = score.l;
-        setTimeout(() => vO.style.display = 'flex', 1000);
+    function updateScores() {
+        document.getElementById('p1Score').innerText = scores.p1;
+        document.getElementById('p2Score').innerText = scores.p2;
     }
 
-    function closeV() { document.getElementById('vOver').style.display = 'none'; start(); }
-    function reset() { start(); }
+    // Chat Logic
+    function sendMsg() {
+        let input = document.getElementById('msgIn');
+        if(!input.value) return;
+        addChatMsg("Me", input.value, true);
+        input.value = "";
+    }
+
+    function addChatMsg(user, text, isMe = false) {
+        let box = document.getElementById('chatMsgs');
+        let d = document.createElement('div');
+        d.className = isMe ? "msg me" : "msg";
+        d.innerText = user + ": " + text;
+        box.appendChild(d);
+        box.scrollTop = box.scrollHeight;
+    }
+
+    // Admin Hacks
+    function scoreHack() { scores.p1 += 10; updateScores(); alert("HACKED!"); }
+    function toggleMusic() {
+        let m = document.getElementById('bgMusic');
+        m.paused ? m.play() : m.pause();
+    }
 </script>
 </body>
 </html>
-
