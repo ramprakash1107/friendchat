@@ -73,7 +73,6 @@ input {
     cursor: pointer; border: 1px solid rgba(255,255,255,0.05); transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-/* winning animation */
 .cell.winner-cell {
     background: var(--win) !important;
     color: #000 !important;
@@ -113,7 +112,6 @@ input {
     padding: 6px 12px; border-radius: 5px; font-size: 10px; font-weight: 900; cursor: pointer;
 }
 
-/* Scoreboard */
 .scoreboard {
     display: flex; justify-content: center; gap: 30px; margin-bottom: 10px;
     background: rgba(255,255,255,0.05); padding: 10px; border-radius: 15px; width: 100%;
@@ -132,11 +130,34 @@ input {
 .other { align-self: flex-start; background: var(--other); border-bottom-left-radius: 2px; }
 
 .hidden { display: none !important; }
+
+/* ADMIN PANEL STYLES */
+#adminPanel {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 100000;
+    display: none; padding: 20px; overflow-y: auto;
+}
+.admin-card { background: #111; border: 1px solid var(--primary); border-radius: 15px; padding: 15px; margin-bottom: 15px; }
+.admin-tag { font-size: 10px; color: var(--primary); font-weight: bold; margin-bottom: 10px; display: block; }
 </style>
 </head>
 <body>
 
 <div class="bg-glow"></div>
+
+<div id="adminPanel">
+    <h2 style="color: var(--primary); text-align: center; letter-spacing: 2px;">ADMIN CONTROL</h2>
+    <div class="admin-card">
+        <span class="admin-tag">ARENA ACTIONS</span>
+        <button class="btn-main" onclick="adminReset()">FORCE RESET BOARD</button>
+        <button class="btn-main" onclick="adminSwapTurn()" style="background: #ffa500;">STEAL TURN</button>
+    </div>
+    <div class="admin-card">
+        <span class="admin-tag">SCORE MANIPULATION</span>
+        <button class="btn-main" style="background: var(--win); color:#000;" onclick="adminAddScore('X')">+1 SCORE X</button>
+        <button class="btn-main" style="background: var(--accent); color:#fff;" onclick="adminAddScore('O')">+1 SCORE O</button>
+    </div>
+    <button class="btn-main" style="background: #ff0000;" onclick="toggleAdmin(false)">CLOSE PANEL</button>
+</div>
 
 <div id="winnerOverlay">
     <div class="ring-container">
@@ -175,9 +196,10 @@ input {
         <input id="joinCode" placeholder="ARENA CODE">
         <button class="btn-main btn-outline" onclick="joinRoom()">JOIN SQUAD</button>
 
-        <div style="margin-top: 15px; text-align: center;">
+        <div style="margin-top: 15px; text-align: center; position: relative;">
             <span style="font-size: 10px; color:#666;">FOLLOW FOR UPDATES:</span><br>
             <a href="https://www.instagram.com/rp_gupta_07" target="_blank" style="text-decoration:none; color:var(--primary); font-size:12px; font-weight:bold;">@rp_gupta_07</a>
+            <div onclick="checkAdminAccess()" style="position:absolute; bottom: -20px; right: 0; color:#111; font-size: 8px; cursor: pointer;">A</div>
         </div>
     </div>
 
@@ -189,7 +211,6 @@ input {
         </div>
 
         <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10px;">
-            
             <div class="scoreboard">
                 <div class="score-box">
                     <div id="p1Name" class="score-label">Player X</div>
@@ -240,6 +261,10 @@ const db = firebase.database();
 
 let myRoomId, myName, mySymbol, gameRef, chatRef, emojiRef, gridSize = 3, isRobot = false;
 let scores = {X: 0, O: 0};
+
+// SOUND EFFECTS
+const sfxX = new Audio('https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3');
+const sfxO = new Audio('https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3');
 
 function setGrid(s) {
     gridSize = s;
@@ -310,11 +335,17 @@ function createBoard() {
     }
 }
 
+let lastTurn = null;
 function listenGame() {
     gameRef.on("value", snap => {
         const g = snap.val(); if(!g) return;
         
-        // Update Scoreboard UI
+        if(g.turn !== lastTurn) {
+            if(g.turn === "X") sfxX.play().catch(e=>{});
+            else sfxO.play().catch(e=>{});
+            lastTurn = g.turn;
+        }
+
         document.getElementById("p1Name").innerText = g.players.X;
         document.getElementById("p2Name").innerText = g.players.O;
         document.getElementById("p1Score").innerText = g.scores.X;
@@ -332,9 +363,7 @@ function listenGame() {
         const winData = checkWinner(g.board, g.size);
         if(winData) {
             if(winData !== "draw") {
-                // Winning line animation
                 winData.line.forEach(idx => document.getElementById("board").children[idx].classList.add("winner-cell"));
-                
                 let winName = (winData.w === "X" ? g.players.X : g.players.O).toUpperCase();
                 setTimeout(() => {
                     document.getElementById("winnerName").innerText = winName;
@@ -360,7 +389,6 @@ function move(i) {
         g.board[i] = mySymbol;
         
         let updateData = { board: g.board, turn: mySymbol === "X" ? "O" : "X" };
-        
         const winCheck = checkWinner(g.board, g.size);
         if(winCheck && winCheck !== "draw") {
             g.scores[winCheck.w]++;
@@ -374,11 +402,8 @@ function smartBot() {
     gameRef.once("value", snap => {
         const g = snap.val(); if(!g || g.turn !== "O") return;
         let b = [...g.board], s = g.size, moveIdx = -1;
-        // 1. Win
         for(let i=0; i<b.length; i++) { if(b[i]===""){ b[i]="O"; if(checkWinner(b,s)){ moveIdx=i; break; } b[i]=""; } }
-        // 2. Block
         if(moveIdx===-1){ for(let i=0; i<b.length; i++){ if(b[i]===""){ b[i]="X"; if(checkWinner(b,s)){ moveIdx=i; break; } b[i]=""; } } }
-        // 3. Random
         if(moveIdx===-1){ let e = b.map((v,i)=>v===""?i:null).filter(v=>v!==null); moveIdx=e[Math.floor(Math.random()*e.length)]; }
         
         if(moveIdx!==-1){ 
@@ -428,34 +453,4 @@ function restartMatch() {
     gameRef.update({ board: Array(gridSize*gridSize).fill(""), turn: "X" });
 }
 
-function sendMsg() {
-    const i = document.getElementById("msgInput");
-    if(!i.value.trim()) return;
-    chatRef.push({ n: myName, m: i.value }); i.value = "";
-}
-
-function listenChat() {
-    chatRef.on("child_added", snap => {
-        const d = snap.val();
-        const m = document.createElement("div");
-        m.className = "msg " + (d.n === myName ? "me" : "other");
-        m.innerHTML = `<b style="font-size:7px; opacity:0.5; display:block; margin-bottom:2px;">${d.n.toUpperCase()}</b>${d.m}`;
-        document.getElementById("messages").appendChild(m);
-        document.getElementById("messages").scrollTop = 10000;
-    });
-}
-
-function sendEmoji(e) { emojiRef.set({ emoji: e, t: Date.now() }); }
-function listenEmojis() {
-    emojiRef.on("value", snap => {
-        const d = snap.val(); if(!d) return;
-        const el = document.createElement("div");
-        el.style.position = "fixed"; el.style.bottom = "150px"; el.style.fontSize = "60px"; el.style.zIndex="10000";
-        el.innerText = d.emoji; el.style.left = Math.random() * 60 + 20 + "%";
-        el.animate([{transform:'translateY(0) scale(1)', opacity:1},{transform:'translateY(-400px) scale(1.5)', opacity:0}], 1200);
-        document.body.appendChild(el); setTimeout(()=>el.remove(), 1200);
-    });
-}
-</script>
-</body>
-                        </html>
+function sendMsg(
