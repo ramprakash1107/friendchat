@@ -2,45 +2,45 @@
 <html lang="hi">
 <head>
 <meta charset="UTF-8">
-<title>RP_GUPTA_07 | 3D CONNECT ARENA</title>
+<title>RP_GUPTA_07 | NEON CLASH ONLINE</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover">
 
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@900&family=Rajdhani:wght@700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Orbitron:wght@900&display=swap" rel="stylesheet">
 
 <style>
-:root { --p1: #ff0055; --p2: #00f2ff; --gold: #ffb400; --dark: #050505; }
-* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-body, html { margin: 0; padding: 0; height: 100%; background: var(--dark); color: #fff; font-family: 'Rajdhani', sans-serif; overflow: hidden; }
+:root { --p1: #ff0055; --p2: #00f2ff; --gold: #ffb400; --bg: #050505; }
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
+body, html { margin: 0; padding: 0; height: 100%; background: var(--bg); color: #fff; font-family: 'Orbitron', sans-serif; overflow: hidden; }
 
 /* 3D Moving Wallpaper */
-.bg-3d { position: fixed; inset: 0; z-index: -1; background: radial-gradient(circle, #1a1a1a, #000); perspective: 1000px; }
-.bg-grid { position: absolute; width: 200%; height: 200%; top: -50%; left: -50%; background-image: linear-gradient(var(--p2) 1px, transparent 1px), linear-gradient(90deg, var(--p2) 1px, transparent 1px); background-size: 50px 50px; opacity: 0.1; transform: rotateX(60deg); animation: moveGrid 15s linear infinite; }
-@keyframes moveGrid { from { transform: rotateX(60deg) translateY(0); } to { transform: rotateX(60deg) translateY(50px); } }
+.bg-3d { position: fixed; inset: 0; z-index: -1; background: radial-gradient(circle, #1a1a1a, #000); }
+.bg-grid { position: absolute; width: 200%; height: 200%; top: -50%; left: -50%; background-image: linear-gradient(rgba(0, 242, 255, 0.1) 2px, transparent 2px), linear-gradient(90deg, rgba(0, 242, 255, 0.1) 2px, transparent 2px); background-size: 60px 60px; transform: perspective(800px) rotateX(60deg); animation: moveGrid 10s linear infinite; }
+@keyframes moveGrid { from { transform: translateY(0); } to { transform: translateY(60px); } }
 
-.app { width: 100%; max-width: 450px; margin: auto; height: 100%; display: flex; flex-direction: column; background: rgba(0,0,0,0.85); backdrop-filter: blur(25px); border-inline: 1px solid #333; }
+.app { width: 100%; max-width: 450px; margin: auto; height: 100%; display: flex; flex-direction: column; background: rgba(0,0,0,0.8); backdrop-filter: blur(20px); border-inline: 1px solid #333; }
 
-/* Home UI */
+/* Home Page */
 .home { padding: 30px; text-align: center; flex: 1; overflow-y: auto; }
-.logo-3d { font-family: 'Orbitron'; font-size: 45px; color: var(--gold); text-shadow: 0 10px 20px rgba(0,0,0,0.8); transform: rotateX(15deg); margin: 30px 0; }
+.logo-3d { font-family: 'Black Ops One'; font-size: 50px; color: var(--gold); text-shadow: 0 10px 20px #000; transform: rotateX(15deg); margin: 30px 0; }
 .btn-3d { width: 100%; padding: 20px; border: none; font-family: 'Orbitron'; font-weight: 900; border-radius: 12px; margin-bottom: 15px; cursor: pointer; background: linear-gradient(to bottom, var(--gold), #b37e00); box-shadow: 0 8px 0 #664800; transform: translateY(-4px); transition: 0.1s; }
 .btn-3d:active { transform: translateY(0); box-shadow: 0 0 0 #000; }
 
-/* Arena Board */
-#board-scene { perspective: 1200px; margin: 40px auto; position: relative; }
-#board { display: grid; grid-template-columns: repeat(3, 100px); gap: 15px; transform: rotateX(25deg); transform-style: preserve-3d; }
-.cell { width: 100px; height: 100px; background: #111; border: 2px solid #333; display: flex; align-items: center; justify-content: center; font-size: 50px; border-radius: 10px; box-shadow: 0 10px 0 #000; position: relative; transition: 0.2s; }
-.cell.winning { background: #fff !important; color: #000 !important; box-shadow: 0 0 30px #fff; animation: glow 0.5s infinite alternate; }
-@keyframes glow { from { transform: scale(1); } to { transform: scale(1.1); } }
+/* Race Track UI */
+.track { flex: 1; display: flex; flex-direction: column; justify-content: space-around; padding: 20px; perspective: 1000px; }
+.lane { height: 60px; background: rgba(255,255,255,0.05); border: 2px solid #333; border-radius: 15px; position: relative; overflow: hidden; transform: rotateX(20deg); }
+.finish-line { position: absolute; right: 0; top: 0; bottom: 0; width: 20px; background: repeating-linear-gradient(45deg, #000, #000 5px, #fff 5px, #fff 10px); }
+.player-token { width: 40px; height: 40px; border-radius: 8px; position: absolute; top: 8px; left: 0; transition: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 0 15px currentColor; }
 
-/* Match End Controls */
-#matchControls { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) translateZ(100px); display: none; flex-direction: column; gap: 10px; z-index: 100; }
+/* Game Controls */
+.dice-box { padding: 20px; text-align: center; border-top: 1px solid #333; }
+#dice-val { font-size: 40px; font-weight: 900; color: var(--gold); margin-bottom: 10px; }
 
-.cell.X { color: var(--p1); text-shadow: 0 0 20px var(--p1); }
-.cell.O { color: var(--p2); text-shadow: 0 0 20px var(--p2); }
+/* Chat */
+.chat-sec { height: 150px; background: #000; border-top: 2px solid var(--gold); display: flex; flex-direction: column; }
+#msgs { flex: 1; overflow-y: auto; padding: 10px; font-size: 13px; }
 
-.hud { padding: 15px; display: flex; justify-content: space-between; background: #111; border-bottom: 2px solid var(--gold); }
-#chat { height: 140px; background: #000; border-top: 1px solid var(--gold); display: flex; flex-direction: column; }
+.hidden { display: none !important; }
 </style>
 </head>
 <body>
@@ -49,40 +49,51 @@ body, html { margin: 0; padding: 0; height: 100%; background: var(--dark); color
 
 <div class="app">
     <div id="home" class="home">
-        <div class="logo-3d">ARENA 07</div>
+        <div class="logo-3d">NEON CLASH</div>
         <p style="color:var(--gold); font-size:12px; letter-spacing:3px;">ADMIN: @RP_GUPTA_07</p>
 
-        <input id="uNick" style="width:100%; padding:18px; background:#111; border:2px solid #333; color:#fff; border-radius:10px; margin-bottom:15px;" placeholder="YOUR NAME">
+        <input id="uNick" style="width:100%; padding:18px; background:#111; border:2px solid #333; color:#fff; border-radius:10px; margin-bottom:15px;" placeholder="ENTER CALLSIGN">
         
-        <button class="btn-3d" onclick="launch('X', true)">CREATE 3D BATTLE</button>
+        <button class="btn-3d" onclick="init('X', true)">CREATE RACE ROOM</button>
         <div style="display:flex; gap:10px;">
-            <input id="rCode" style="flex:1; padding:18px; background:#111; border:2px solid #333; color:#fff; border-radius:10px;" placeholder="CODE">
-            <button class="btn-3d" style="width:100px; background:var(--p2); box-shadow:0 8px 0 #008ba3;" onclick="launch('O', false)">JOIN</button>
+            <input id="rInp" style="flex:1; padding:18px; background:#111; border:2px solid #333; color:#fff; border-radius:10px;" placeholder="CODE">
+            <button class="btn-3d" style="width:100px; background:var(--p2); box-shadow:0 8px 0 #008ba3;" onclick="init('O', false)">JOIN</button>
         </div>
-        <button class="btn-3d" style="background:var(--p1); box-shadow:0 8px 0 #990033; color:#fff;" onclick="launchBot()">VS ROBOT (RANDOM CHANCE)</button>
         
-        <div style="margin-top:30px; font-size:10px; opacity:0.5;">REAL-TIME 3D ENGINE ACTIVE</div>
+        <div style="margin-top:30px; font-size:11px; opacity:0.6;">
+            <b>HOW TO PLAY:</b> Roll the dice to move your block. Reach the finish line first to win!
+        </div>
     </div>
 
     <div id="arena" class="hidden" style="flex:1; display:flex; flex-direction:column;">
-        <div class="hud">
+        <div style="padding:15px; display:flex; justify-content:space-between; background:#111; border-bottom:1px solid var(--gold);">
             <div onclick="nuke()" style="color:var(--p1); font-weight:900; cursor:pointer;">[ EXIT ]</div>
-            <div id="status" style="color:var(--gold)">READY</div>
-            <div id="roomID" style="opacity:0.4;">#----</div>
+            <div id="turnTag" style="color:var(--gold)">READY</div>
+            <div id="roomTag" style="opacity:0.4;">#----</div>
         </div>
 
-        <div id="board-scene">
-            <div id="board"></div>
-            <div id="matchControls">
-                <button class="btn-3d" style="width:180px;" onclick="resetMatch()">REMATCH</button>
-                <button class="btn-3d" style="width:180px; background:var(--p1); box-shadow:0 8px 0 #80002a;" onclick="nuke()">LEAVE</button>
+        <div class="track">
+            <div class="lane">
+                <div id="p1-token" class="player-token" style="background:var(--p1); color:var(--p1);"></div>
+                <div class="finish-line"></div>
+                <div style="position:absolute; left:10px; top:20px; font-size:10px;" id="p1-name">P1</div>
+            </div>
+            <div class="lane">
+                <div id="p2-token" class="player-token" style="background:var(--p2); color:var(--p2);"></div>
+                <div class="finish-line"></div>
+                <div style="position:absolute; left:10px; top:20px; font-size:10px;" id="p2-name">P2</div>
             </div>
         </div>
 
-        <div id="chat">
-            <div id="msgs" style="flex:1; overflow-y:auto; padding:10px; font-size:14px;"></div>
+        <div class="dice-box">
+            <div id="dice-val">🎲</div>
+            <button id="rollBtn" class="btn-3d" style="width:200px; margin:0 auto;" onclick="roll()">ROLL DICE</button>
+        </div>
+
+        <div class="chat-sec">
+            <div id="msgs"></div>
             <div style="display:flex; padding:8px; background:#111;">
-                <input id="mIn" style="flex:1; background:none; border:none; color:#fff;" placeholder="Chat...">
+                <input id="mIn" style="flex:1; background:none; border:none; color:#fff;" placeholder="Chat with friend...">
                 <button onclick="send()" style="color:var(--gold); background:none; border:none; font-weight:900;">SEND</button>
             </div>
         </div>
@@ -102,113 +113,90 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-let rId, sym, isBot = false, nick;
+let rId, sym, nick;
 
-function launch(s, host) {
+function init(s, host) {
     nick = document.getElementById('uNick').value || "PLAYER";
-    rId = host ? Math.random().toString(36).substr(2,6).toUpperCase() : document.getElementById('rCode').value.toUpperCase();
-    sym = s; start();
-}
-
-function launchBot() {
-    nick = document.getElementById('uNick').value || "USER";
-    rId = "BOT_" + Math.floor(Math.random()*999);
-    isBot = true; sym = "X";
+    rId = host ? Math.random().toString(36).substr(2,6).toUpperCase() : document.getElementById('rInp').value.toUpperCase();
+    sym = s;
     start();
 }
 
 function start() {
     document.getElementById('home').classList.add('hidden');
     document.getElementById('arena').classList.remove('hidden');
-    document.getElementById('roomID').innerText = "#" + rId;
+    document.getElementById('roomTag').innerText = "#" + rId;
 
-    const ref = db.ref("arena_v5/"+rId);
+    const ref = db.ref("clash_arena/"+rId);
     if(sym === "X") {
-        // Random First Turn: X or O
-        let firstTurn = Math.random() > 0.5 ? "X" : "O";
-        let state = { b: Array(9).fill(""), t: firstTurn, p1: nick, p2: isBot ? "GOD-BOT" : "WAITING..." };
-        ref.set(state);
+        ref.set({ pos1: 0, pos2: 0, t: "X", n1: nick, n2: "WAITING...", win: null });
     } else {
-        ref.child("p2").set(nick);
+        ref.child("n2").set(nick);
     }
     sync();
 }
 
 function sync() {
-    db.ref("arena_v5/"+rId).on("value", s => {
+    db.ref("clash_arena/"+rId).on("value", s => {
         const d = s.val(); if(!d) return;
-        document.getElementById('status').innerText = d.t + " TURN";
-        const b = document.getElementById('board'); b.innerHTML = "";
         
-        d.b.forEach((v, i) => {
-            const c = document.createElement('div');
-            c.className = "cell " + v; c.innerText = v;
-            c.onclick = () => move(i); b.appendChild(c);
-        });
-
-        const win = checkWin(d.b);
-        if(win) {
-            document.getElementById('matchControls').style.display = 'flex';
-            if(win !== "DRAW") {
-                win.combo.forEach(idx => b.children[idx].classList.add('winning'));
-                if(d.b[win.combo[0]] === sym) confetti({particleCount: 200});
-            }
-        } else {
-            document.getElementById('matchControls').style.display = 'none';
-            if(isBot && d.t === "O") setTimeout(() => bot(d), 600);
+        // Update Positions (Scale 0-90%)
+        document.getElementById('p1-token').style.left = d.pos1 + "%";
+        document.getElementById('p2-token').style.left = d.pos2 + "%";
+        document.getElementById('p1-name').innerText = d.n1;
+        document.getElementById('p2-name').innerText = d.n2;
+        document.getElementById('turnTag').innerText = d.t === sym ? "YOUR TURN" : "FRIEND'S TURN";
+        
+        if(d.win) {
+            confetti({particleCount: 300});
+            alert(d.win + " WON THE RACE!");
+            db.ref("clash_arena/"+rId).update({ pos1: 0, pos2: 0, win: null });
         }
     });
 
-    db.ref("chat_v5/"+rId).on("child_added", s => {
-        const m = s.val(); const div = document.createElement('div');
+    db.ref("clash_chats/"+rId).on("child_added", s => {
+        const m = s.val();
+        const div = document.createElement('div');
         div.innerHTML = `<b style="color:var(--gold)">${m.n}:</b> ${m.m}`;
         document.getElementById('msgs').appendChild(div);
         document.getElementById('msgs').scrollTop = 999;
     });
 }
 
-function move(i) {
-    db.ref("arena_v5/"+rId).once("value", s => {
+function roll() {
+    db.ref("clash_arena/"+rId).once("value", s => {
         const d = s.val();
-        if(d.t !== sym || d.b[i] !== "" || checkWin(d.b)) return;
-        d.b[i] = sym; d.t = (sym === "X" ? "O" : "X");
-        db.ref("arena_v5/"+rId).update(d);
+        if(d.t !== sym || d.win) return;
+        
+        let move = Math.floor(Math.random() * 6) + 1;
+        document.getElementById('dice-val').innerText = "🎲 " + move;
+        
+        if(sym === "X") {
+            d.pos1 += (move * 5);
+            if(d.pos1 >= 90) { d.pos1 = 90; d.win = d.n1; }
+            d.t = "O";
+        } else {
+            d.pos2 += (move * 5);
+            if(d.pos2 >= 90) { d.pos2 = 90; d.win = d.n2; }
+            d.t = "X";
+        }
+        db.ref("clash_arena/"+rId).update(d);
     });
 }
 
-function bot(d) {
-    let empty = d.b.map((v,i)=>v===""?i:null).filter(v=>v!==null);
-    if(empty.length > 0) {
-        let m = empty[Math.floor(Math.random()*empty.length)];
-        d.b[m] = "O"; d.t = "X";
-        db.ref("arena_v5/"+rId).update(d);
-    }
-}
-
-function checkWin(b) {
-    const lines = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-    for(let l of lines) {
-        if(b[l[0]] && b[l[0]]===b[l[1]] && b[l[1]]===b[l[2]]) return {win: b[l[0]], combo: l};
-    }
-    return b.includes("") ? null : "DRAW";
-}
-
-function resetMatch() {
-    db.ref("arena_v5/"+rId).update({ b: Array(9).fill(""), t: "X" });
-}
-
 function nuke() {
-    if(confirm("EXIT & DELETE ALL DATA?")) {
-        db.ref("arena_v5/"+rId).remove();
-        db.ref("chat_v5/"+rId).remove();
+    if(confirm("EXIT & DELETE MATCH?")) {
+        db.ref("clash_arena/"+rId).remove();
+        db.ref("clash_chats/"+rId).remove();
         location.reload();
     }
 }
 
 function send() {
     const i = document.getElementById('mIn');
-    if(i.value) { db.ref("chat_v5/"+rId).push({ n: nick, m: i.value }); i.value = ""; }
+    if(i.value) { db.ref("clash_chats/"+rId).push({ n: nick, m: i.value }); i.value = ""; }
 }
 </script>
 </body>
 </html>
+
