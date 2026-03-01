@@ -2,141 +2,139 @@
 <html lang="hi">
 <head>
 <meta charset="UTF-8">
-<title>@RP_GUPTA_07 | 3D NEON ARENA</title>
+<title>@RP_GUPTA_07 | GOD MODE ARENA</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
 
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Rajdhani:wght@700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Syncopate:wght@700&display=swap" rel="stylesheet">
 
 <style>
 :root { 
-    --neon: #ff0055; --cyan: #00f2ff; --gold: #ffb400;
-    --bg: #030303; --glass: rgba(255,255,255,0.08);
+    --neon-pink: #ff0055; --neon-cyan: #00f2ff; --neon-gold: #ffb400;
+    --dark: #020202; --panel: rgba(20, 20, 20, 0.95);
 }
 
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 body { 
-    margin: 0; background: var(--bg); color: #fff; font-family: 'Rajdhani', sans-serif;
-    overflow: hidden; height: 100vh; display: flex; flex-direction: column;
+    margin: 0; background: var(--dark); color: #fff; font-family: 'Orbitron', sans-serif;
+    overflow: hidden; height: 100vh;
 }
 
-/* 1MB Feel Background */
-.bg-fx {
+/* 1MB Heavy Visuals */
+.bg-layer {
     position: fixed; inset: 0; z-index: -1;
-    background: radial-gradient(circle at 50% 50%, #1a1a1a 0%, #000 100%);
+    background: radial-gradient(circle at center, #111 0%, #000 100%);
 }
-.bg-fx::after {
-    content: ""; position: absolute; inset: 0;
-    background: repeating-linear-gradient(0deg, transparent 0, rgba(0,255,255,0.05) 1px, transparent 2px);
-    background-size: 100% 3px; pointer-events: none;
+.grid-anim {
+    position: absolute; width: 200%; height: 200%; top: -50%; left: -50%;
+    background-image: linear-gradient(var(--neon-cyan) 1px, transparent 1px), linear-gradient(90deg, var(--neon-cyan) 1px, transparent 1px);
+    background-size: 50px 50px; opacity: 0.05; transform: perspective(500px) rotateX(60deg);
+    animation: move 10s linear infinite;
+}
+@keyframes move { from { transform: perspective(500px) rotateX(60deg) translateY(0); } to { transform: perspective(500px) rotateX(60deg) translateY(50px); } }
+
+.app { width: 100%; max-width: 480px; margin: auto; height: 100vh; border-inline: 2px solid #222; background: var(--panel); position: relative; display: flex; flex-direction: column; }
+
+/* Home UI - Extreme Density */
+.home { padding: 20px; text-align: center; overflow-y: auto; flex: 1; }
+.glitch-title { font-family: 'Syncopate'; font-size: 32px; color: var(--neon-gold); text-shadow: 2px 2px var(--neon-pink); animation: glitch 1s infinite; }
+@keyframes glitch { 0% { transform: skew(0deg); } 20% { transform: skew(3deg); } 40% { transform: skew(-3deg); } 100% { transform: skew(0deg); } }
+
+.status-bar { display: flex; gap: 10px; margin: 20px 0; }
+.stat-box { flex: 1; background: #000; border: 1px solid #333; padding: 10px; border-radius: 4px; border-bottom: 3px solid var(--neon-cyan); }
+
+.pro-input { width: 100%; padding: 18px; background: #000; border: 2px solid #222; color: var(--neon-cyan); font-family: 'Orbitron'; margin-bottom: 15px; outline: none; transition: 0.3s; }
+.pro-input:focus { border-color: var(--neon-gold); box-shadow: 0 0 15px var(--neon-gold); }
+
+.btn-cyber { 
+    width: 100%; padding: 20px; border: none; font-weight: 900; cursor: pointer; position: relative;
+    background: linear-gradient(45deg, var(--neon-pink), #80002a); color: #fff; font-family: 'Syncopate';
+    clip-path: polygon(0 0, 95% 0, 100% 30%, 100% 100%, 5% 100%, 0 70%); margin-bottom: 10px;
 }
 
-.container { width: 100%; max-width: 450px; margin: auto; height: 100%; border: 1px solid #333; background: rgba(0,0,0,0.9); }
-
-/* Home UI - Bhara Hua Look */
-.home-ui { padding: 20px; text-align: center; }
-.header { font-family: 'Press Start 2P', cursive; font-size: 20px; color: var(--gold); text-shadow: 3px 3px 0 var(--neon); margin: 20px 0; }
-.admin-badge { background: var(--neon); padding: 5px 15px; border-radius: 20px; font-size: 12px; margin-bottom: 20px; display: inline-block; }
-
-.stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
-.stat-card { background: var(--glass); padding: 10px; border: 1px solid #444; border-radius: 5px; }
-
-.input-style { 
-    width: 90%; padding: 15px; background: #111; border: 1px solid var(--cyan); 
-    color: #fff; margin-bottom: 10px; font-weight: bold; text-transform: uppercase;
+/* 3D Battleground */
+.arena { display: none; flex-direction: column; height: 100%; }
+.board-3d { 
+    perspective: 1200px; padding: 40px 0; display: flex; justify-content: center;
 }
-
-/* 3D BOARD LOGIC */
-.board-3d-wrap { perspective: 1000px; margin: 20px auto; }
 #board { 
     display: grid; grid-template-columns: repeat(3, 100px); gap: 15px;
-    transform: rotateX(20deg); transform-style: preserve-3d;
+    transform: rotateX(25deg) rotateY(-5deg); transform-style: preserve-3d;
 }
 .cell { 
-    width: 100px; height: 100px; background: #151515; border: 2px solid #333;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 50px; cursor: pointer; transition: 0.3s;
-    box-shadow: 0 5px 0 #000; position: relative;
+    width: 100px; height: 100px; background: #0a0a0a; border: 2px solid #222;
+    display: flex; align-items: center; justify-content: center; font-size: 50px;
+    cursor: pointer; transition: 0.2s; box-shadow: 0 10px 0 #000;
 }
+.cell:hover { background: #111; border-color: var(--neon-cyan); }
 .cell:active { transform: translateZ(-10px); box-shadow: 0 0 0 #000; }
-.cell.X { color: var(--neon); text-shadow: 0 0 20px var(--neon); }
-.cell.O { color: var(--cyan); text-shadow: 0 0 20px var(--cyan); }
+.cell.X { color: var(--neon-pink); text-shadow: 0 0 20px var(--neon-pink); }
+.cell.O { color: var(--neon-cyan); text-shadow: 0 0 20px var(--neon-cyan); }
 
-/* Victory Overlay */
-#winScreen { 
-    position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 100;
+/* Victory Layer */
+#overlay { 
+    position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 999;
     display: none; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; border: 5px solid var(--neon-gold);
 }
 
-.btn-main { 
-    width: 90%; padding: 15px; border: none; font-weight: 900; cursor: pointer; 
-    margin-top: 10px; clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%);
-    background: var(--gold); color: #000; font-size: 16px;
-}
-
-/* Chat */
-.chat-sec { height: 120px; background: #050505; display: flex; flex-direction: column; border-top: 2px solid var(--gold); }
-#msgList { flex: 1; overflow-y: auto; padding: 10px; font-size: 12px; }
-
-.hidden { display: none; }
+.chat { height: 150px; background: #000; border-top: 2px solid var(--neon-gold); display: flex; flex-direction: column; }
+#msgs { flex: 1; overflow-y: auto; padding: 10px; font-size: 13px; color: #888; }
 </style>
 </head>
 <body>
 
-<div class="bg-fx"></div>
+<div class="bg-layer"><div class="grid-anim"></div></div>
 
-<div id="winScreen">
-    <h1 style="font-family:'Press Start 2P'; color:var(--gold);" id="winMsg">VICTORY!</h1>
-    <h2 id="winnerName">----</h2>
-    <button class="btn-main" onclick="rematch()">PLAY AGAIN</button>
+<div id="overlay">
+    <div id="vfx-text" style="font-size:50px; font-family:'Syncopate'; color:var(--neon-gold);">WASTED</div>
+    <h2 id="winner-tag">BOT DEFEATED YOU</h2>
+    <button class="btn-cyber" style="width:250px; background:var(--neon-gold); color:#000;" onclick="rematch()">RE-ENGAGE</button>
 </div>
 
-<div class="container">
-    <div id="homeScreen" class="home-ui">
-        <div class="header">ELITE XO</div>
-        <div class="admin-badge">ADMIN: @RP_GUPTA_07</div>
-        
-        <div class="stat-grid">
-            <div class="stat-card">ONLINE<br><span style="color:var(--cyan)">1,402</span></div>
-            <div class="stat-card">MATCHES<br><span style="color:var(--neon)">24,810</span></div>
+<div class="app">
+    <div id="home" class="home">
+        <div class="glitch-title">NEON ARENA</div>
+        <div style="color:var(--neon-cyan); font-size:10px; letter-spacing:4px; margin-bottom:20px;">GOD MODE ACTIVE | @RP_GUPTA_07</div>
+
+        <div class="status-bar">
+            <div class="stat-box">SERVERS<br><span style="color:var(--neon-gold)">STABLE</span></div>
+            <div class="stat-box">PING<br><span style="color:var(--neon-pink)">12ms</span></div>
         </div>
 
-        <input id="uName" class="input-style" placeholder="ENTER NICKNAME">
-        <button class="btn-main" onclick="start(true)">CREATE PRIVATE BATTLE</button>
+        <input id="uName" class="pro-input" placeholder="ENTER CALLSIGN (EX: RP_GUPTA)">
         
-        <div style="display:flex; width:90%; margin: 10px auto; gap:5px;">
-            <input id="rCode" class="input-style" style="margin:0;" placeholder="ROOM CODE">
-            <button onclick="start(false)" style="background:var(--cyan); border:none; padding:10px;">JOIN</button>
+        <button class="btn-cyber" onclick="setup('X', true)">CREATE PRIVATE SERVER</button>
+        <div style="display:flex; gap:10px;">
+            <input id="rCode" class="pro-input" placeholder="CODE" style="margin:0; flex:1;">
+            <button class="btn-cyber" style="width:120px; background:var(--neon-cyan); color:#000;" onclick="setup('O', false)">JOIN</button>
         </div>
+        <button class="btn-cyber" style="background:#fff; color:#000;" onclick="setupAI()">ENGAGE GOD-BOT (IMPOSSIBLE)</button>
 
-        <button class="btn-main" style="background:transparent; color:#fff; border:1px solid #444;" onclick="startAI()">VS ROBOT AI</button>
-        
-        <p style="font-size:10px; color:#555; margin-top:30px;">V.2.0.6 - ENCRYPTED CONNECTION</p>
+        <div style="margin-top:20px; background:rgba(255,255,255,0.05); padding:10px; font-size:11px; text-align:left;">
+            <span style="color:var(--neon-gold)">SYSTEM LOG:</span> All data is encrypted. Exiting deletes all session records.
+        </div>
     </div>
 
-    <div id="arenaScreen" class="hidden" style="height:100%; display:flex; flex-direction:column;">
-        <div style="display:flex; justify-content:space-between; padding:15px; background:#111;">
-            <div onclick="exitGame()" style="color:var(--neon); cursor:pointer; font-weight:bold;">[ EXIT ]</div>
-            <div id="turnTag" style="color:var(--gold)">X TURN</div>
-            <div id="roomIDShow">#----</div>
+    <div id="game" class="arena">
+        <div style="padding:15px; display:flex; justify-content:space-between; border-bottom:1px solid #333; background:#000;">
+            <div onclick="exit()" style="color:var(--neon-pink); font-weight:900; cursor:pointer;">[ TERMINATE ]</div>
+            <div id="turnInfo" style="color:var(--neon-gold)">WAITING...</div>
+            <div id="roomShow">#----</div>
         </div>
 
-        <div style="display:flex; justify-content:space-around; background:var(--glass); padding:10px;">
-            <div><small>P1</small><div id="s1" style="font-size:24px; color:var(--neon)">0</div></div>
-            <div style="font-size:24px; opacity:0.3;">VS</div>
-            <div><small>P2</small><div id="s2" style="font-size:24px; color:var(--cyan)">0</div></div>
+        <div style="display:flex; padding:20px; text-align:center; background:rgba(0,0,0,0.5);">
+            <div style="flex:1;"><small id="n1">P1</small><div id="s1" style="font-size:35px; color:var(--neon-pink); font-family:'Syncopate';">0</div></div>
+            <div style="flex:1;"><small id="n2">P2</small><div id="s2" style="font-size:35px; color:var(--neon-cyan); font-family:'Syncopate';">0</div></div>
         </div>
 
-        <div style="flex:1; display:flex; align-items:center; justify-content:center;">
-            <div class="board-3d-wrap">
-                <div id="board"></div>
-            </div>
-        </div>
+        <div class="board-3d"><div id="board"></div></div>
 
-        <div class="chat-sec">
-            <div id="msgList"></div>
-            <div style="display:flex; padding:5px;">
-                <input id="chatIn" style="flex:1; background:#1a1a1a; border:none; color:#fff; padding:8px;" placeholder="Message...">
-                <button onclick="sendMsg()" style="background:var(--gold); border:none; padding:0 15px;">></button>
+        <div class="chat">
+            <div id="msgs"></div>
+            <div style="display:flex; padding:10px; gap:5px;">
+                <input id="cInp" style="flex:1; background:#111; border:1px solid #333; color:#fff; padding:10px; outline:none;" placeholder="Secure Message...">
+                <button onclick="send()" style="background:var(--neon-gold); border:none; padding:0 15px; font-weight:900;">SEND</button>
             </div>
         </div>
     </div>
@@ -146,100 +144,126 @@ body {
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
 <script>
-// Firebase Engine
 const firebaseConfig = {
-  apiKey: "AIzaSyARuO_pN2vdYrVKYkKHHaNys7WI8HqM6I4",
-  authDomain: "friendchat-43941.firebaseapp.com",
-  databaseURL: "https://friendchat-43941-default-rtdb.firebaseio.com",
-  projectId: "friendchat-43941",
+    apiKey: "AIzaSyARuO_pN2vdYrVKYkKHHaNys7WI8HqM6I4",
+    authDomain: "friendchat-43941.firebaseapp.com",
+    databaseURL: "https://friendchat-43941-default-rtdb.firebaseio.com",
+    projectId: "friendchat-43941",
 };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-let myId, mySym, isBot = false, myN;
+let myId, mySym, isAI = false, user;
 
-// 1MB Feel Sound System
-function playSound(type) {
-    const ctx = new AudioContext();
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.type = type === 'X' ? 'square' : 'triangle';
-    osc.frequency.setValueAtTime(type === 'X' ? 150 : 300, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.1);
-    osc.connect(gain); gain.connect(ctx.destination);
-    osc.start(); osc.stop(ctx.currentTime + 0.1);
+// Audio Engine (Pro Synth)
+function sfx(f, t) {
+    const a = new AudioContext(); const o = a.createOscillator(); const g = a.createGain();
+    o.type = t; o.frequency.setValueAtTime(f, a.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.00001, a.currentTime + 0.2);
+    o.connect(g); g.connect(a.destination); o.start(); o.stop(a.currentTime + 0.2);
 }
 
-function start(isHost) {
-    myN = document.getElementById('uName').value || "PLAYER";
-    myId = isHost ? Math.random().toString(36).substr(2,6).toUpperCase() : document.getElementById('rCode').value.toUpperCase();
-    mySym = isHost ? "X" : "O";
-    init();
+function setup(s, host) {
+    user = document.getElementById('uName').value || "PLAYER";
+    myId = host ? Math.random().toString(36).substr(2,6).toUpperCase() : document.getElementById('rCode').value.toUpperCase();
+    mySym = s; start();
 }
 
-function startAI() {
-    myN = document.getElementById('uName').value || "PLAYER";
-    myId = "BOT_" + Math.random().toString(10).substr(2,4);
-    isBot = true; mySym = "X";
-    init();
+function setupAI() {
+    user = document.getElementById('uName').value || "USER";
+    myId = "GOD_BOT_" + Math.floor(Math.random()*999);
+    isAI = true; mySym = "X"; start();
 }
 
-function init() {
-    document.getElementById('homeScreen').classList.add('hidden');
-    document.getElementById('arenaScreen').classList.remove('hidden');
-    document.getElementById('roomIDShow').innerText = "#" + myId;
+function start() {
+    document.getElementById('home').style.display = 'none';
+    document.getElementById('game').style.display = 'flex';
+    document.getElementById('roomShow').innerText = "#" + myId;
     
-    const ref = db.ref("games/"+myId);
+    const ref = db.ref("arena_pro/"+myId);
     if(mySym === "X") {
-        ref.set({ b: Array(9).fill(""), t: "X", p1: myN, p2: isBot ? "ROBO-07" : "WAITING...", s1:0, s2:0 });
+        ref.set({ b: Array(9).fill(""), t: "X", p1: user, p2: isAI ? "GOD-BOT v3" : "WAITING...", s1: 0, s2: 0 });
     } else {
-        ref.child("p2").set(myN);
+        ref.child("p2").set(user);
     }
-    sync();
-    syncChat();
+    listen();
 }
 
-function sync() {
-    db.ref("games/"+myId).on("value", s => {
+function listen() {
+    db.ref("arena_pro/"+myId).on("value", s => {
         const d = s.val(); if(!d) return;
-        document.getElementById('s1').innerText = d.s1;
-        document.getElementById('s2').innerText = d.s2;
-        document.getElementById('turnTag').innerText = d.t + " TURN";
+        document.getElementById('n1').innerText = d.p1; document.getElementById('n2').innerText = d.p2;
+        document.getElementById('s1').innerText = d.s1; document.getElementById('s2').innerText = d.s2;
+        document.getElementById('turnInfo').innerText = d.t + " TURN";
         
-        const board = document.getElementById('board');
-        board.innerHTML = "";
+        const b = document.getElementById('board'); b.innerHTML = "";
         d.b.forEach((v, i) => {
             const c = document.createElement('div');
-            c.className = "cell " + v;
-            c.innerText = v;
-            c.onclick = () => tap(i);
-            board.appendChild(c);
+            c.className = "cell " + v; c.innerText = v;
+            c.onclick = () => tap(i); b.appendChild(c);
         });
 
-        const win = check(d.b);
-        if(win) {
-            document.getElementById('winScreen').style.display = "flex";
-            document.getElementById('winnerName').innerText = win === "DRAW" ? "MATCH DRAW" : (win === "X" ? d.p1 : d.p2);
-            if(win === mySym) confetti({particleCount:150});
+        const w = check(d.b);
+        if(w) {
+            const over = document.getElementById('overlay');
+            over.style.display = "flex";
+            if(w === "DRAW") {
+                document.getElementById('vfx-text').innerText = "STALEMATE";
+                document.getElementById('winner-tag').innerText = "NO ONE SURVIVED";
+                sfx(100, 'sawtooth');
+            } else {
+                document.getElementById('vfx-text').innerText = "VICTORY";
+                document.getElementById('winner-tag').innerText = (w === "X" ? d.p1 : d.p2) + " IS SUPREME";
+                if(w === mySym) { confetti({particleCount:300}); sfx(440, 'sine'); } else { sfx(150, 'sawtooth'); }
+            }
         } else {
-            document.getElementById('winScreen').style.display = "none";
-            if(isBot && d.t === "O") setTimeout(() => bot(d), 500);
+            document.getElementById('overlay').style.display = "none";
+            if(isAI && d.t === "O") setTimeout(() => godBotMove(d), 600);
         }
     });
 }
 
 function tap(i) {
-    const ref = db.ref("games/"+myId);
-    ref.once("value", s => {
+    db.ref("arena_pro/"+myId).once("value", s => {
         const d = s.val();
         if(d.t !== mySym || d.b[i] !== "" || check(d.b)) return;
-        playSound(mySym);
-        d.b[i] = mySym;
-        d.t = (mySym === "X" ? "O" : "X");
+        sfx(600, 'square');
+        d.b[i] = mySym; d.t = (mySym === "X" ? "O" : "X");
         const w = check(d.b);
         if(w && w !== "DRAW") { if(w === "X") d.s1++; else d.s2++; }
-        ref.update(d);
+        db.ref("arena_pro/"+myId).update(d);
     });
+}
+
+// Minimax God-Mode AI (Impossible to Beat)
+function godBotMove(d) {
+    let board = [...d.b];
+    let bestScore = -Infinity; let move;
+    for(let i=0; i<9; i++) {
+        if(board[i] === "") {
+            board[i] = "O";
+            let score = minimax(board, 0, false);
+            board[i] = "";
+            if(score > bestScore) { bestScore = score; move = i; }
+        }
+    }
+    d.b[move] = "O"; d.t = "X";
+    const w = check(d.b); if(w === "O") d.s2++;
+    db.ref("arena_pro/"+myId).update(d);
+}
+
+function minimax(b, depth, isMax) {
+    let result = check(b);
+    if(result === "O") return 10; if(result === "X") return -10; if(result === "DRAW") return 0;
+    if(isMax) {
+        let best = -Infinity;
+        for(let i=0; i<9; i++) { if(b[i]==="") { b[i]="O"; best = Math.max(best, minimax(b, depth+1, false)); b[i]=""; } }
+        return best;
+    } else {
+        let best = Infinity;
+        for(let i=0; i<9; i++) { if(b[i]==="") { b[i]="X"; best = Math.min(best, minimax(b, depth+1, true)); b[i]=""; } }
+        return best;
+    }
 }
 
 function check(b) {
@@ -248,41 +272,27 @@ function check(b) {
     return b.includes("") ? null : "DRAW";
 }
 
-function bot(d) {
-    let e = d.board; // Simple Logic
-    let empty = d.b.map((v,i)=>v===""?i:null).filter(v=>v!==null);
-    if(empty.length > 0) {
-        let move = empty[Math.floor(Math.random()*empty.length)];
-        d.b[move] = "O"; d.t = "X";
-        const w = check(d.b); if(w === "O") d.s2++;
-        db.ref("games/"+myId).update(d);
-    }
-}
-
-function exitGame() {
-    if(confirm("DELETE MATCH DATA & EXIT?")) {
-        db.ref("games/"+myId).remove();
-        db.ref("chats/"+myId).remove();
+function exit() {
+    if(confirm("TERMINATE SESSION & ERASE DATA?")) {
+        db.ref("arena_pro/"+myId).remove();
+        db.ref("chats_pro/"+myId).remove();
         location.reload();
     }
 }
 
-function rematch() { db.ref("games/"+myId).update({ b: Array(9).fill(""), t: "X" }); }
+function rematch() { db.ref("arena_pro/"+myId).update({ b: Array(9).fill(""), t: "X" }); }
 
-function sendMsg() {
-    const i = document.getElementById('chatIn');
-    if(i.value) { db.ref("chats/"+myId).push({ n: myN, m: i.value }); i.value = ""; }
+// Chat Logic
+function send() {
+    const i = document.getElementById('cInp');
+    if(i.value) { db.ref("chats_pro/"+myId).push({ n: user, m: i.value }); i.value = ""; }
 }
-
-function syncChat() {
-    db.ref("chats/"+myId).on("child_added", s => {
-        const d = s.val();
-        const div = document.createElement('div');
-        div.innerHTML = `<span style="color:var(--gold)">${d.n}:</span> ${d.m}`;
-        document.getElementById('msgList').appendChild(div);
-        document.getElementById('msgList').scrollTop = 9999;
-    });
-}
+db.ref("chats_pro/"+myId).on("child_added", s => {
+    const d = s.val(); const div = document.createElement('div');
+    div.innerHTML = `<span style="color:var(--neon-cyan)">${d.n}:</span> ${d.m}`;
+    document.getElementById('msgs').appendChild(div);
+    document.getElementById('msgs').scrollTop = 9999;
+});
 </script>
 </body>
 </html>
