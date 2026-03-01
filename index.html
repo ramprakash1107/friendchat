@@ -2,185 +2,141 @@
 <html lang="hi">
 <head>
 <meta charset="UTF-8">
-<title>@rp_gupta_07 | Free Fire Elite Arena</title>
+<title>RP_GUPTA_07 | NEON ARENA</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover">
 
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
 
 <style>
 :root { 
-    --ff-orange: #ffb400; 
-    --ff-red: #ff3c00;
-    --ff-dark: #0a0c10;
-    --ff-grey: #1c222b;
-    --neon: 0 0 20px rgba(255, 180, 0, 0.6);
+    --neon-cyan: #00f2ff; 
+    --neon-pink: #ff007a;
+    --dark-bg: #050505;
+    --glass: rgba(255, 255, 255, 0.05);
 }
 
-* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
 body, html { 
     margin: 0; padding: 0; height: 100%; width: 100%; 
-    background: var(--ff-dark); color: #fff; font-family: 'Rajdhani', sans-serif;
+    background: var(--dark-bg); color: #fff; font-family: 'Rajdhani', sans-serif;
     overflow: hidden; position: fixed;
 }
 
-/* Battleground Background Animation */
-.bg-war {
+/* Cyber Grid Background */
+.bg-grid {
     position: fixed; inset: 0; z-index: -1;
-    background: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), 
-                url('https://www.transparenttextures.com/patterns/asfalt-dark.png');
-    background-size: cover;
+    background-image: linear-gradient(var(--glass) 1px, transparent 1px), linear-gradient(90deg, var(--glass) 1px, transparent 1px);
+    background-size: 30px 30px;
+    transform: perspective(500px) rotateX(60deg) translateY(-100px);
+    animation: grid-move 5s linear infinite;
 }
-.bg-war::before {
-    content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    background: repeating-linear-gradient(0deg, transparent, rgba(255,180,0,0.03) 2px, transparent 4px);
-}
+@keyframes grid-move { 0% { background-position: 0 0; } 100% { background-position: 0 30px; } }
 
-.main-container { 
+.main-app { 
     display: flex; flex-direction: column; height: 100%; max-width: 450px; 
-    margin: auto; border: 2px solid #333; background: rgba(10, 12, 16, 0.95);
-    box-shadow: 0 0 50px #000;
+    margin: auto; border-left: 1px solid var(--glass); border-right: 1px solid var(--glass);
+    background: rgba(5, 5, 5, 0.8); backdrop-filter: blur(10px);
 }
 
-/* Home UI */
-.screen { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px; }
-.ff-logo-box { 
-    width: 120px; height: 120px; background: var(--ff-orange); margin-bottom: 20px;
-    clip-path: polygon(20% 0%, 80% 0%, 100% 20%, 100% 80%, 80% 100%, 20% 100%, 0% 80%, 0% 20%);
-    display: flex; align-items: center; justify-content: center; transform: rotate(-5deg);
-    box-shadow: var(--neon); animation: pulse 2s infinite;
-}
-@keyframes pulse { 0%, 100% { transform: rotate(-5deg) scale(1); } 50% { transform: rotate(-5deg) scale(1.05); } }
+.screen { flex: 1; display: flex; flex-direction: column; padding: 25px; align-items: center; justify-content: center; }
 
-.ff-title { font-family: 'Black Ops One', cursive; font-size: 38px; color: #fff; text-align: center; line-height: 1; margin: 0; }
-.ff-sub { color: var(--ff-orange); font-size: 14px; letter-spacing: 5px; margin-bottom: 30px; font-weight: 900; }
+/* New Neon UI Components */
+.neon-title { font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 32px; text-shadow: 0 0 15px var(--neon-cyan); margin-bottom: 5px; }
+.admin-tag { font-size: 12px; color: var(--neon-cyan); letter-spacing: 3px; margin-bottom: 30px; opacity: 0.8; }
 
-/* FF Style Inputs & Buttons */
-.ff-input { 
-    width: 100%; padding: 18px; border: none; background: var(--ff-grey);
-    color: #fff; font-size: 16px; margin-bottom: 15px; border-left: 4px solid var(--ff-orange);
-    font-family: 'Rajdhani', sans-serif; text-transform: uppercase;
+.input-box {
+    width: 100%; background: var(--glass); border: 1px solid #333; padding: 15px;
+    color: #fff; font-family: 'Orbitron'; font-size: 14px; margin-bottom: 15px; border-radius: 5px;
 }
 
-.btn-ff { 
-    width: 100%; padding: 18px; border: none; font-weight: 900;
-    font-size: 16px; cursor: pointer; margin-bottom: 12px;
-    text-transform: uppercase; transition: 0.2s; position: relative;
-    clip-path: polygon(5% 0%, 100% 0%, 95% 100%, 0% 100%);
+.btn-cyber {
+    width: 100%; padding: 15px; border: none; font-family: 'Orbitron'; font-weight: 900;
+    cursor: pointer; margin-bottom: 10px; border-radius: 5px; transition: 0.3s;
+    text-transform: uppercase; letter-spacing: 2px;
 }
-.btn-orange { background: var(--ff-orange); color: #000; }
-.btn-outline { background: transparent; color: #fff; border: 1px solid #444; }
+.btn-primary { background: var(--neon-cyan); color: #000; box-shadow: 0 0 20px rgba(0,242,255,0.4); }
+.btn-secondary { background: transparent; border: 1px solid var(--neon-pink); color: var(--neon-pink); }
 
-/* Game Board Design */
-#board { display: grid; gap: 8px; margin: 20px auto; padding: 10px; background: #000; border: 1px solid #333; }
+/* Game Elements */
+#board { display: grid; gap: 10px; margin: 20px auto; }
 .cell { 
-    background: var(--ff-grey); display: flex; align-items: center; justify-content: center;
-    font-size: 45px; cursor: pointer; transition: 0.1s; border: 1px solid rgba(255,255,255,0.05);
+    background: var(--glass); border: 1px solid #222; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center; font-size: 40px; font-family: 'Orbitron';
 }
-.cell:active { background: #333; }
-.char-x { color: var(--ff-orange); font-family: 'Black Ops One'; text-shadow: 0 0 10px var(--ff-orange); }
-.char-o { color: #00f2ff; font-family: 'Black Ops One'; text-shadow: 0 0 10px #00f2ff; }
+.cell.X { color: var(--neon-cyan); text-shadow: 0 0 15px var(--neon-cyan); }
+.cell.O { color: var(--neon-pink); text-shadow: 0 0 15px var(--neon-pink); }
 
-.win-cell { background: #fff !important; color: #000 !important; box-shadow: 0 0 30px #fff; }
-
-/* Admin Access Overlay */
-#adminPanel {
-    position: fixed; top: 10%; left: 50%; transform: translateX(-50%);
-    width: 90%; background: rgba(255,0,0,0.9); padding: 20px; z-index: 10001;
-    border: 2px solid #fff; display: none;
-}
-
-/* Scoreboard */
-.ff-score { display: flex; justify-content: space-around; width: 100%; background: #111; padding: 10px; border-top: 2px solid var(--ff-orange); }
-.score-unit { text-align: center; }
-.score-num { font-size: 30px; font-weight: 900; font-family: 'Black Ops One'; }
-
-/* Chat Box */
-.ff-chat { height: 150px; background: #050505; display: flex; flex-direction: column; }
-#msgs { flex: 1; overflow-y: auto; padding: 10px; font-size: 13px; font-weight: bold; color: #aaa; }
-.msg-row { margin-bottom: 5px; }
-.msg-txt { color: #eee; }
-.msg-me { color: var(--ff-orange) !important; }
-
-#booyah { 
-    position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 10000; 
+/* Custom Victory Overlay */
+#victoryLayer {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 1000;
     display: none; flex-direction: column; align-items: center; justify-content: center;
 }
+.vic-text { font-family: 'Orbitron'; font-size: 40px; font-weight: 900; animation: blink 0.5s infinite; }
+
+@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
 
 .hidden { display: none !important; }
+
+/* Chat UI */
+.chat-area { height: 180px; background: rgba(0,0,0,0.5); border-top: 1px solid #222; display: flex; flex-direction: column; }
+#msgBox { flex: 1; overflow-y: auto; padding: 10px; font-size: 14px; }
+.msg-line { margin-bottom: 5px; border-left: 2px solid var(--neon-cyan); padding-left: 8px; }
 </style>
 </head>
 <body>
 
-<div class="bg-war"></div>
+<div class="bg-grid"></div>
 
-<div id="adminPanel">
-    <h2 style="margin:0; text-align:center;">GOD MODE ACTIVE</h2>
-    <p>Admin: @rp_gupta_07</p>
-    <button onclick="document.getElementById('adminPanel').style.display='none'" class="btn-ff btn-orange">CLOSE</button>
+<div id="victoryLayer">
+    <div class="vic-text" id="vicStatus">VICTORY</div>
+    <div style="font-size: 18px; margin: 20px 0;" id="winnerDisp">PLAYER ONE</div>
+    <button class="btn-cyber btn-primary" style="width: 200px;" onclick="resetMatch()">REMATCH</button>
 </div>
 
-<div id="booyah">
-    <div style="font-family:'Black Ops One'; font-size:80px; color:var(--ff-orange); text-shadow:0 0 50px var(--ff-orange); transform:rotate(-10deg);">BOOYAH!</div>
-    <h2 id="winnerName" style="margin-top:20px; font-size:30px;">PLAYER 1</h2>
-    <button onclick="restartGame()" class="btn-ff btn-orange" style="width:250px; margin-top:30px;">PLAY NEXT MATCH</button>
-</div>
-
-<div class="main-container">
-    <div id="homeScreen" class="screen">
-        <div class="ff-logo-box" onclick="adminTrigger()">
-            <span style="font-size:60px; color:#000;">🔥</span>
-        </div>
-        <h1 class="ff-title">ELITE ARENA</h1>
-        <div class="ff-sub" id="adminLabel">@RP_GUPTA_07</div>
+<div class="main-app">
+    <div id="home" class="screen">
+        <div class="neon-title">ARENA 07</div>
+        <div class="admin-tag">CREATED BY @RP_GUPTA_07</div>
         
-        <input id="uName" class="ff-input" placeholder="NICKNAME (Ex: SK SABIR)">
+        <input id="nick" class="input-box" placeholder="ENTER CALLSIGN...">
         
-        <div style="display:flex; gap:10px; width:100%; margin-bottom:15px;">
-            <button class="btn-ff btn-outline active" style="flex:1;" id="g3" onclick="setG(3)">3X3</button>
-            <button class="btn-ff btn-outline" style="flex:1;" id="g5" onclick="setG(5)">5X5</button>
+        <button class="btn-cyber btn-primary" onclick="initGame('X')">CREATE PRIVATE ROOM</button>
+        <div style="display:flex; gap:10px; width:100%;">
+            <input id="roomCode" class="input-box" placeholder="CODE" style="flex:1;">
+            <button class="btn-cyber btn-secondary" style="width:100px;" onclick="joinGame()">JOIN</button>
         </div>
-
-        <button class="btn-ff btn-orange" onclick="createArena()">START BATTLE ROYAL</button>
-        <button class="btn-ff btn-outline" onclick="startGlobal()">RANKED MATCHMAKING</button>
-        <button class="btn-ff btn-outline" style="color:var(--ff-red); border-color:var(--ff-red);" onclick="startBot()">VS ROBOT (AI)</button>
-
-        <div style="display:flex; gap:5px; width:100%;">
-            <input id="roomIn" class="ff-input" placeholder="CODE" style="margin:0; flex:1;">
-            <button class="btn-ff btn-outline" style="width:80px; margin:0;" onclick="joinArena()">JOIN</button>
-        </div>
+        <button class="btn-cyber btn-secondary" onclick="startAI()">PRACTICE VS AI</button>
     </div>
 
-    <div id="arenaScreen" class="hidden" style="display:flex; flex-direction:column; height:100%;">
-        <div style="padding:15px; display:flex; justify-content:space-between; align-items:center; background:#111;">
-            <div onclick="location.reload()" style="font-weight:900; color:var(--ff-red); cursor:pointer;">EXIT</div>
-            <div id="status" style="font-weight:900; font-size:12px; color:var(--ff-orange);">ZONE SHRINKING...</div>
-            <div id="roomIdShow" style="font-size:12px; opacity:0.5;">#0000</div>
+    <div id="arena" class="hidden" style="flex:1; display:flex; flex-direction:column;">
+        <div style="padding:15px; display:flex; justify-content:space-between; border-bottom:1px solid #222;">
+            <div onclick="exitGame()" style="color:var(--neon-pink); font-weight:900; cursor:pointer;">[ EXIT ]</div>
+            <div id="matchID" style="opacity:0.5;">ID: ----</div>
         </div>
 
-        <div class="ff-score">
-            <div class="score-unit"><div id="p1N" style="font-size:10px;">P1</div><div id="p1S" class="score-num" style="color:var(--ff-orange);">0</div></div>
-            <div style="font-family:'Black Ops One'; font-size:20px; align-self:center; opacity:0.2;">VS</div>
-            <div class="score-unit"><div id="p2N" style="font-size:10px;">P2</div><div id="p2S" class="score-num" style="color:#00f2ff;">0</div></div>
-        </div>
-
-        <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;">
-            <div id="board"></div>
-            
-            <div style="display:flex; gap:20px; padding:10px;">
-                <span style="font-size:35px; cursor:pointer;" onclick="sendEmo('👏')">👏</span>
-                <span style="font-size:35px; cursor:pointer;" onclick="sendEmo('😎')">😎</span>
-                <span style="font-size:35px; cursor:pointer;" onclick="sendEmo('🤡')">🤡</span>
-                <span style="font-size:35px; cursor:pointer;" onclick="sendEmo('💥')">💥</span>
+        <div style="display:flex; justify-content:space-around; padding:20px; background:var(--glass);">
+            <div style="text-align:center;">
+                <div id="name1" style="font-size:12px;">P1</div>
+                <div id="score1" style="font-size:30px; font-family:'Orbitron'; color:var(--neon-cyan);">0</div>
+            </div>
+            <div style="align-self:center; font-family:'Orbitron'; opacity:0.3;">VS</div>
+            <div style="text-align:center;">
+                <div id="name2" style="font-size:12px;">P2</div>
+                <div id="score2" style="font-size:30px; font-family:'Orbitron'; color:var(--neon-pink);">0</div>
             </div>
         </div>
 
-        <div class="ff-chat">
-            <div id="msgs"></div>
-            <div style="display:flex; padding:8px; gap:5px;">
-                <input id="msgIn" placeholder="SQUAD CHAT..." style="flex:1; background:#1a1a1a; border:1px solid #333; color:#fff; padding:10px;">
-                <button onclick="sendM()" style="background:var(--ff-orange); border:none; padding:0 15px; font-weight:900;">GO</button>
+        <div style="flex:1; display:flex; align-items:center; justify-content:center;">
+            <div id="board"></div>
+        </div>
+
+        <div class="chat-area">
+            <div id="msgBox"></div>
+            <div style="display:flex; padding:10px; gap:5px;">
+                <input id="mInp" placeholder="Type message..." style="flex:1; background:none; border:1px solid #333; color:#fff; padding:8px;">
+                <button onclick="sendMsg()" style="background:var(--neon-cyan); border:none; padding:0 15px; font-weight:900;">></button>
             </div>
         </div>
     </div>
@@ -190,208 +146,183 @@ body, html {
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
 <script>
+// Firebase Config
 const firebaseConfig = {
   apiKey: "AIzaSyARuO_pN2vdYrVKYkKHHaNys7WI8HqM6I4",
   authDomain: "friendchat-43941.firebaseapp.com",
   databaseURL: "https://friendchat-43941-default-rtdb.firebaseio.com",
   projectId: "friendchat-43941",
-  storageBucket: "friendchat-43941.firebasestorage.app",
-  messagingSenderId: "1026542245723",
-  appId: "1:1026542245723:web:b892bfcc1d2358a018ac7e"
 };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-let myId, myN, mySym, gRef, cRef, eRef, gSize = 3, isBot = false, tapCount = 0;
+let roomID, mySym, isAI = false, userN;
 
-// Battle SFX Engine
-const playFFSound = (f, d) => {
-    const a = new (window.AudioContext || window.webkitAudioContext)();
-    const o = a.createOscillator(); const g = a.createGain();
-    o.type = 'sawtooth'; o.frequency.setValueAtTime(f, a.currentTime);
-    g.gain.exponentialRampToValueAtTime(0.0001, a.currentTime + d);
-    o.connect(g); g.connect(a.destination); o.start(); o.stop(a.currentTime + d);
-};
-
-function adminTrigger() {
-    tapCount++;
-    if(tapCount >= 5) { document.getElementById('adminPanel').style.display='block'; tapCount=0; }
-}
-
-function setG(s) {
-    gSize = s; document.querySelectorAll('.btn-outline').forEach(b => b.classList.remove('active'));
-    if(s===3) document.getElementById('g3').classList.add('active');
-}
-
-function startBot() {
-    myN = document.getElementById("uName").value || "RECRUIT";
-    isBot = true; myId = "TRAINING_" + Math.floor(Math.random()*999);
-    setupArena("X");
-}
-
-function startGlobal() {
-    myN = document.getElementById("uName").value;
-    if(!myN) return alert("ENTER NICKNAME!");
-    db.ref("matchmaking").once("value", s => {
-        let w = s.val();
-        if(w) { myId = w.r; db.ref("matchmaking").remove(); setupArena("O"); }
-        else { myId = Math.floor(1000+Math.random()*8999).toString(); db.ref("matchmaking").set({r: myId}); setupArena("X"); }
-    });
-}
-
-function createArena() {
-    myN = document.getElementById("uName").value;
-    if(!myN) return alert("ENTER NICKNAME!");
-    myId = Math.floor(1000+Math.random()*8999).toString();
-    setupArena("X");
-}
-
-function joinArena() {
-    myN = document.getElementById("uName").value;
-    myId = document.getElementById("roomIn").value;
-    if(!myN || !myId) return alert("MISSING DETAILS!");
-    setupArena("O");
-}
-
-function setupArena(s) {
+function initGame(s) {
+    userN = document.getElementById('nick').value || "PLAYER";
+    roomID = Math.random().toString(36).substring(2, 8).toUpperCase();
     mySym = s;
-    gRef = db.ref("rooms/"+myId+"/g");
-    cRef = db.ref("rooms/"+myId+"/c");
-    eRef = db.ref("rooms/"+myId+"/e");
-
-    if(s === "X") {
-        gRef.set({ b: Array(gSize*gSize).fill(""), t: "X", s: gSize, sc: {X:0, O:0}, p: {X: myN, O: isBot ? "BOT-007" : "CONNECTING..."} });
-    } else {
-        gRef.child("p/O").set(myN);
-    }
-
-    document.getElementById("homeScreen").classList.add("hidden");
-    document.getElementById("arenaScreen").classList.remove("hidden");
-    document.getElementById("roomIdShow").innerText = "ID: "+myId;
-    renderBoard(); listenArena(); listenChat(); listenEmos();
+    startSession();
 }
 
-function renderBoard() {
-    const b = document.getElementById("board");
-    b.innerHTML = "";
-    let cs = gSize === 3 ? 110 : 65;
-    b.style.gridTemplateColumns = `repeat(${gSize}, ${cs}px)`;
-    for(let i=0; i<gSize*gSize; i++) {
-        const d = document.createElement("div");
-        d.className = "cell";
-        d.style.width = cs+"px"; d.style.height = cs+"px";
-        d.onclick = () => tap(i);
-        b.appendChild(d);
-    }
+function joinGame() {
+    userN = document.getElementById('nick').value || "PLAYER";
+    roomID = document.getElementById('roomCode').value.toUpperCase();
+    if(!roomID) return;
+    mySym = "O";
+    startSession();
 }
 
-function listenArena() {
-    gRef.on("value", s => {
-        const d = s.val(); if(!d) return;
-        document.getElementById("p1N").innerText = d.p.X;
-        document.getElementById("p2N").innerText = d.p.O;
-        document.getElementById("p1S").innerText = d.sc.X;
-        document.getElementById("p2S").innerText = d.sc.O;
+function startAI() {
+    isAI = true;
+    userN = document.getElementById('nick').value || "USER";
+    roomID = "LOCAL_BOT";
+    mySym = "X";
+    startSession();
+}
 
-        d.b.forEach((v, i) => {
-            const c = document.getElementById("board").children[i];
-            if(v === "X") { c.innerText = "X"; c.className = "cell char-x"; }
-            else if(v === "O") { c.innerText = "O"; c.className = "cell char-o"; }
-            else { c.innerText = ""; c.className = "cell"; }
+function startSession() {
+    document.getElementById('home').classList.add('hidden');
+    document.getElementById('arena').classList.remove('hidden');
+    document.getElementById('matchID').innerText = "ROOM: " + roomID;
+
+    const rRef = db.ref("arena/" + roomID);
+    if(mySym === "X") {
+        rRef.set({
+            board: Array(9).fill(""),
+            turn: "X",
+            players: { X: userN, O: isAI ? "CYBER-BOT" : "WAITING..." },
+            scores: { X: 0, O: 0 }
         });
+    } else {
+        rRef.child("players/O").set(userN);
+    }
 
-        const win = check(d.b, d.s);
-        if(win) {
-            if(win !== "draw") {
-                playFFSound(150, 0.8);
-                win.l.forEach(idx => document.getElementById("board").children[idx].classList.add("win-cell"));
-                setTimeout(() => {
-                    document.getElementById("winnerName").innerText = (win.w === "X" ? d.p.X : d.p.O);
-                    document.getElementById("booyah").style.display = "flex";
-                    if(win.w === mySym) confetti({particleCount:300, spread:100});
-                }, 800);
-            } else {
-                document.getElementById("winnerName").innerText = "DRAW!";
-                document.getElementById("booyah").style.display = "flex";
-            }
+    syncGame();
+    syncChat();
+}
+
+function syncGame() {
+    const rRef = db.ref("arena/" + roomID);
+    rRef.on("value", snap => {
+        const data = snap.val();
+        if(!data) return;
+
+        document.getElementById('name1').innerText = data.players.X;
+        document.getElementById('name2').innerText = data.players.O;
+        document.getElementById('score1').innerText = data.scores.X;
+        document.getElementById('score2').innerText = data.scores.O;
+
+        renderGrid(data.board);
+
+        const winner = checkWin(data.board);
+        if(winner) {
+            handleEnd(winner, data);
         } else {
-            document.getElementById("booyah").style.display = "none";
-            document.getElementById("status").innerText = d.t === mySym ? ">> YOUR TURN <<" : "ENEMY MOVING...";
-            if(isBot && d.t === "O") setTimeout(aiMove, 600);
+            document.getElementById('victoryLayer').style.display = "none";
+            if(isAI && data.turn === "O") setTimeout(() => botLogic(data), 600);
         }
     });
 }
 
-function tap(i) {
-    gRef.once("value", s => {
-        const d = s.val();
-        if(!d || d.t !== mySym || d.b[i] !== "" || check(d.b, d.s)) return;
-        playFFSound(800, 0.1);
-        d.b[i] = mySym;
-        let update = { b: d.b, t: mySym === "X" ? "O" : "X" };
-        const w = check(d.b, d.s);
-        if(w && w !== "draw") { d.sc[w.w]++; update.sc = d.sc; }
-        gRef.update(update);
+function renderGrid(board) {
+    const container = document.getElementById('board');
+    container.innerHTML = "";
+    container.style.gridTemplateColumns = "repeat(3, 90px)";
+    board.forEach((val, i) => {
+        const div = document.createElement('div');
+        div.className = `cell ${val}`;
+        div.innerText = val;
+        div.onclick = () => makeMove(i);
+        container.appendChild(div);
     });
 }
 
-function aiMove() {
-    gRef.once("value", s => {
-        const d = s.val(); if(!d || d.t !== "O") return;
-        let b = [...d.b], sz = d.s, m = -1;
-        // AI: Win > Block > Random
-        for(let i=0; i<b.length; i++){ if(b[i]===""){ b[i]="O"; if(check(b,sz)){ m=i; break; } b[i]=""; } }
-        if(m===-1){ for(let i=0; i<b.length; i++){ if(b[i]===""){ b[i]="X"; if(check(b,sz)){ m=i; break; } b[i]=""; } } }
-        if(m===-1){ let e = b.map((v,i)=>v===""?i:null).filter(v=>v!==null); m=e[Math.floor(Math.random()*e.length)]; }
-        if(m!==-1){ 
-            d.b[m]="O"; let up = {b:d.b, t:"X"};
-            const w = check(d.b, d.s); if(w && w !== "draw"){ d.sc.O++; up.sc = d.sc; }
-            gRef.update(up);
-        }
+function makeMove(i) {
+    const rRef = db.ref("arena/" + roomID);
+    rRef.once("value", snap => {
+        const d = snap.val();
+        if(d.turn !== mySym || d.board[i] !== "" || checkWin(d.board)) return;
+        
+        d.board[i] = mySym;
+        d.turn = (mySym === "X" ? "O" : "X");
+        
+        const win = checkWin(d.board);
+        if(win && win !== "DRAW") d.scores[win]++;
+        
+        rRef.update(d);
     });
 }
 
-function check(b, sz) {
-    const l = []; let wl = 3;
-    for(let i=0; i<sz; i++) {
-        for(let j=0; j<=sz-wl; j++) {
-            let r = []; for(let k=0; k<wl; k++) r.push(i*sz + j + k); l.push(r);
-            let c = []; for(let k=0; k<wl; k++) c.push((j+k)*sz + i); l.push(c);
-        }
+function checkWin(b) {
+    const lines = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+    for(let l of lines) {
+        if(b[l[0]] && b[l[0]]===b[l[1]] && b[l[1]]===b[l[2]]) return b[l[0]];
     }
-    for(let r=0; r<=sz-wl; r++) {
-        for(let c=0; c<=sz-wl; c++) {
-            let d1 = []; for(let k=0; k<wl; k++) d1.push((r+k)*sz + (c+k)); l.push(d1);
-            let d2 = []; for(let k=0; k<wl; k++) d2.push((r+k)*sz + (c+wl-1-k)); l.push(d2);
-        }
-    }
-    for(let win of l) { if(b[win[0]] && b[win[0]]===b[win[1]] && b[win[1]]===b[win[2]]) return {w: b[win[0]], l: win}; }
-    return b.includes("") ? null : "draw";
+    return b.includes("") ? null : "DRAW";
 }
 
-function restartGame() { gRef.update({ b: Array(gSize*gSize).fill(""), t: "X" }); }
-function sendM() { const i = document.getElementById("msgIn"); if(i.value) { cRef.push({ n: myN, m: i.value }); i.value = ""; } }
-function listenChat() {
-    cRef.on("child_added", s => {
-        const d = s.val(); const div = document.createElement("div");
-        div.className = "msg-row";
-        div.innerHTML = `<span class="${d.n===myN?'msg-me':''}">[${d.n}]:</span> <span class="msg-txt">${d.m}</span>`;
-        document.getElementById("msgs").appendChild(div);
-        document.getElementById("msgs").scrollTop = 9999;
+function handleEnd(w, d) {
+    const layer = document.getElementById('victoryLayer');
+    const status = document.getElementById('vicStatus');
+    const winDisp = document.getElementById('winnerDisp');
+    
+    layer.style.display = "flex";
+    if(w === "DRAW") {
+        status.innerText = "DRAW";
+        winDisp.innerText = "NO ONE SURVIVED";
+    } else {
+        status.innerText = "VICTORY";
+        status.style.color = (w === "X" ? "var(--neon-cyan)" : "var(--neon-pink)");
+        winDisp.innerText = (w === "X" ? d.players.X : d.players.O) + " DOMINATED!";
+        if(w === mySym) confetti({particleCount: 200, spread: 70, origin: { y: 0.6 }});
+    }
+}
+
+function resetMatch() {
+    db.ref("arena/" + roomID).update({ board: Array(9).fill(""), turn: "X" });
+}
+
+// AUTO-NUKE FEATURE (Exit & Delete)
+function exitGame() {
+    if(confirm("Exit and Delete Match Data?")) {
+        db.ref("arena/" + roomID).remove(); // Deletes everything
+        db.ref("chats/" + roomID).remove(); // Deletes chats
+        location.reload();
+    }
+}
+
+// Chat System
+function sendMsg() {
+    const inp = document.getElementById('mInp');
+    if(!inp.value) return;
+    db.ref("chats/" + roomID).push({ n: userN, m: inp.value });
+    inp.value = "";
+}
+
+function syncChat() {
+    db.ref("chats/" + roomID).on("child_added", snap => {
+        const d = snap.val();
+        const div = document.createElement('div');
+        div.className = "msg-line";
+        div.innerHTML = `<strong>${d.n}:</strong> ${d.m}`;
+        document.getElementById('msgBox').appendChild(div);
+        document.getElementById('msgBox').scrollTop = 9999;
     });
 }
-function sendEmo(e) { eRef.set({ e: e, t: Date.now() }); }
-function listenEmos() {
-    eRef.on("value", s => {
-        const d = s.val(); if(!d) return;
-        const div = document.createElement("div");
-        div.style = `position:fixed; bottom:250px; left:${10+Math.random()*70}%; font-size:70px; z-index:100; pointer-events:none;`;
-        div.innerText = d.e; document.body.appendChild(div);
-        div.animate([{transform:'scale(0.5) translateY(0)', opacity:1}, {transform:'scale(2) translateY(-300px)', opacity:0}], 1200);
-        setTimeout(() => div.remove(), 1200);
-    });
+
+// Simple Bot Logic
+function botLogic(d) {
+    let empty = d.board.map((v, i) => v === "" ? i : null).filter(v => v !== null);
+    if(empty.length > 0) {
+        let move = empty[Math.floor(Math.random()*empty.length)];
+        d.board[move] = "O";
+        d.turn = "X";
+        const win = checkWin(d.board);
+        if(win && win !== "DRAW") d.scores.O++;
+        db.ref("arena/" + roomID).update(d);
+    }
 }
 </script>
 </body>
 </html>
-
