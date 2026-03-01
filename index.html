@@ -2,135 +2,147 @@
 <html lang="hi">
 <head>
 <meta charset="UTF-8">
-<title>RP_GUPTA_07 | 3D PRO ARENA</title>
+<title>RP_GUPTA_07 | ULTIMATE 3D ARENA</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover">
 
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Orbitron:wght@900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
 
 <style>
 :root { 
-    --p1: #ff0055; --p2: #00f2ff; --accent: #ffb400;
-    --bg: #050505; --glass: rgba(255, 255, 255, 0.1);
+    --p1: #ff0055; --p2: #00f2ff; --gold: #ffb400;
+    --dark: #000; --glass: rgba(255, 255, 255, 0.05);
 }
 
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
 
 body, html { 
     margin: 0; padding: 0; width: 100%; height: 100%;
-    background: var(--bg); color: #fff; font-family: 'Rajdhani', sans-serif;
-    overflow: hidden; 
+    background: var(--dark); color: #fff; font-family: 'Orbitron', sans-serif;
+    overflow: hidden; -webkit-font-smoothing: antialiased;
 }
 
-/* 3D Moving Wallpaper Background */
-.bg-3d {
-    position: fixed; inset: -50px; z-index: -1;
-    background: radial-gradient(circle at center, #111, #000);
-    perspective: 1000px;
+/* 3D Animated Wallpaper */
+.bg-layer {
+    position: fixed; inset: 0; z-index: -1;
+    background: radial-gradient(circle at center, #111 0%, #000 100%);
 }
 .bg-grid {
-    position: absolute; width: 200%; height: 200%;
-    background-image: linear-gradient(rgba(0, 242, 255, 0.1) 1px, transparent 1px), 
-                      linear-gradient(90deg, rgba(0, 242, 255, 0.1) 1px, transparent 1px);
-    background-size: 60px 60px;
-    transform: rotateX(60deg) translateZ(-200px);
-    animation: scroll 20s linear infinite;
+    position: absolute; width: 300%; height: 300%; top: -100%; left: -100%;
+    background-image: 
+        linear-gradient(rgba(255, 0, 85, 0.1) 2px, transparent 2px),
+        linear-gradient(90deg, rgba(255, 0, 85, 0.1) 2px, transparent 2px);
+    background-size: 80px 80px;
+    transform: perspective(1000px) rotateX(60deg);
+    animation: move-grid 15s linear infinite;
 }
-@keyframes scroll { from { transform: rotateX(60deg) translateY(0); } to { transform: rotateX(60deg) translateY(60px); } }
+@keyframes move-grid { from { transform: perspective(1000px) rotateX(60deg) translateY(0); } to { transform: perspective(1000px) rotateX(60deg) translateY(80px); } }
 
-.main-app {
-    width: 100%; max-width: 450px; margin: auto; height: 100vh;
-    display: flex; flex-direction: column; position: relative;
-    background: rgba(0,0,0,0.8); backdrop-filter: blur(20px);
+.app-container {
+    width: 100%; max-width: 450px; margin: auto; height: 100%;
+    display: flex; flex-direction: column; background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+    border-left: 1px solid #222; border-right: 1px solid #222;
 }
 
-/* 3D Home Text */
-.home-screen { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px; }
-.title-3d { 
-    font-family: 'Black Ops One', cursive; font-size: 50px; color: var(--accent);
-    text-shadow: 0 1px 0 #ccc, 0 2px 0 #c9c9c9, 0 3px 0 #bbb, 0 4px 0 #b9b9b9, 0 5px 0 #aaa, 0 6px 1px rgba(0,0,0,.1), 0 0 5px rgba(0,0,0,.1), 0 1px 3px rgba(0,0,0,.3), 0 3px 5px rgba(0,0,0,.2), 0 5px 10px rgba(0,0,0,.25), 0 10px 10px rgba(0,0,0,.2), 0 20px 20px rgba(0,0,0,.15);
-    transform: rotateX(10deg) rotateY(-10deg); margin-bottom: 20px;
+/* Home Screen - Deep 3D */
+.screen { flex: 1; display: flex; flex-direction: column; padding: 30px; align-items: center; justify-content: center; }
+.hero-text { 
+    font-family: 'Black Ops One', cursive; font-size: 55px; color: #fff;
+    text-shadow: 0 5px 15px var(--p1), 0 10px 30px #000;
+    transform: rotateX(10deg); margin-bottom: 5px;
 }
+.admin-sub { color: var(--gold); font-size: 10px; letter-spacing: 5px; margin-bottom: 40px; text-transform: uppercase; }
+
+.btn-pro {
+    width: 100%; padding: 22px; border: none; font-family: 'Orbitron'; font-weight: 900;
+    font-size: 14px; cursor: pointer; margin-bottom: 15px; border-radius: 15px;
+    background: linear-gradient(145deg, #222, #000); color: #fff;
+    border: 1px solid #333; box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+    transition: 0.2s;
+}
+.btn-pro:active { transform: scale(0.98); background: var(--p1); }
+.btn-gold { background: var(--gold); color: #000; border: none; }
 
 .input-pro {
-    width: 100%; padding: 20px; border: 2px solid var(--accent); background: #000;
-    color: #fff; font-family: 'Orbitron'; font-size: 16px; margin-bottom: 15px;
-    border-radius: 12px; box-shadow: inset 0 0 10px var(--accent);
+    width: 100%; padding: 20px; border-radius: 15px; border: 1px solid #333;
+    background: #000; color: #fff; font-family: 'Orbitron'; margin-bottom: 15px;
+    text-align: center; font-size: 16px;
 }
 
-.btn-3d {
-    width: 100%; padding: 20px; border: none; font-family: 'Orbitron'; font-weight: 900;
-    font-size: 14px; cursor: pointer; border-radius: 12px; margin-bottom: 15px;
-    background: linear-gradient(to bottom, var(--accent), #cc9000);
-    box-shadow: 0 8px 0 #805a00; transform: translateY(-4px); transition: 0.1s;
-}
-.btn-3d:active { transform: translateY(0); box-shadow: 0 0 0 #805a00; }
-
-/* Arena 3D Board */
-.arena-screen { flex: 1; display: flex; flex-direction: column; }
-.board-container { perspective: 1200px; padding: 50px 0; display: flex; justify-content: center; }
+/* 3D Battle Board */
+.board-3d-scene { perspective: 1200px; padding: 40px 0; }
 #board { 
-    display: grid; grid-template-columns: repeat(3, 100px); gap: 15px;
-    transform: rotateX(30deg) rotateY(0deg); transform-style: preserve-3d;
+    display: grid; grid-template-columns: repeat(3, 105px); gap: 12px;
+    transform: rotateX(25deg) rotateY(-5deg); transform-style: preserve-3d;
 }
 .cell { 
-    width: 100px; height: 100px; background: #111; border: 3px solid #222;
-    display: flex; align-items: center; justify-content: center; font-size: 50px;
-    border-radius: 10px; box-shadow: 0 10px 0 #000; transition: 0.1s;
+    width: 105px; height: 105px; background: rgba(15,15,15,0.9);
+    border: 2px solid #222; border-radius: 12px; display: flex;
+    align-items: center; justify-content: center; font-size: 55px;
+    box-shadow: 0 8px 0 #000, 0 15px 25px rgba(0,0,0,0.5); transition: 0.1s;
 }
+.cell:active { transform: translateZ(-10px); box-shadow: 0 0 0 #000; }
 .cell.X { color: var(--p1); text-shadow: 0 0 20px var(--p1); }
 .cell.O { color: var(--p2); text-shadow: 0 0 20px var(--p2); }
 
-/* Chat & HUD */
-.hud { padding: 15px; display: flex; justify-content: space-between; align-items: center; background: #000; border-bottom: 2px solid var(--accent); }
-.score-card { font-family: 'Orbitron'; font-size: 25px; }
+/* HUD & Status */
+.hud { width: 100%; padding: 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #222; }
+.turn-indicator { color: var(--gold); font-size: 14px; font-weight: 900; text-transform: uppercase; }
+
+.chat-box { height: 150px; background: #000; display: flex; flex-direction: column; border-top: 1px solid var(--gold); }
+#msgList { flex: 1; overflow-y: auto; padding: 15px; font-size: 13px; }
 
 .hidden { display: none !important; }
 </style>
 </head>
 <body>
 
-<div class="bg-3d"><div class="bg-grid"></div></div>
+<div class="bg-layer"><div class="bg-grid"></div></div>
 
-<div class="main-app">
-    <div id="home" class="home-screen">
-        <div class="title-3d">ELITE 07</div>
-        <div style="font-size:12px; color:var(--accent); letter-spacing:5px; margin-bottom:40px;">GOD MODE ARENA</div>
+<div class="app-container">
+    <div id="home" class="screen">
+        <div class="hero-text">ARENA 07</div>
+        <div class="admin-sub">ADMIN: @RP_GUPTA_07</div>
 
-        <input id="uName" class="input-pro" placeholder="CALLSIGN (NICKNAME)">
+        <input id="uNick" class="input-pro" placeholder="NICKNAME">
+        <button class="btn-pro btn-gold" onclick="launch('X', true)">CREATE 3D MATCH</button>
         
-        <button class="btn-3d" onclick="init('X', true)">CREATE 3D BATTLE</button>
         <div style="display:flex; gap:10px; width:100%;">
-            <input id="roomCode" class="input-pro" style="margin:0; flex:1;" placeholder="CODE">
-            <button class="btn-3d" style="width:100px; margin:0; background:var(--p2); box-shadow:0 8px 0 #00a2aa;" onclick="init('O', false)">JOIN</button>
+            <input id="rInp" class="input-pro" style="margin:0; flex:1;" placeholder="CODE">
+            <button class="btn-pro" style="width:100px; margin:0; border-color:var(--p2); color:var(--p2);" onclick="launch('O', false)">JOIN</button>
         </div>
-        <button class="btn-3d" style="background:#fff; color:#000; box-shadow:0 8px 0 #888;" onclick="initAI()">VS GOD-BOT (UNBEATABLE)</button>
+
+        <button class="btn-pro" style="background:var(--p1); border:none;" onclick="launchAI()">ENGAGE GOD-BOT (IMPOSSIBLE)</button>
         
-        <div style="margin-top:20px; font-size:10px; opacity:0.5;">ADMIN: @RP_GUPTA_07</div>
+        <div style="margin-top:20px; display:grid; grid-template-columns:1fr 1fr; gap:10px; width:100%;">
+            <div style="background:var(--glass); padding:10px; border-radius:10px; font-size:10px; text-align:center;">SERVERS<br><b style="color:var(--p2)">ONLINE</b></div>
+            <div style="background:var(--glass); padding:10px; border-radius:10px; font-size:10px; text-align:center;">RANK<br><b style="color:var(--gold)">ELITE</b></div>
+        </div>
     </div>
 
-    <div id="arena" class="arena-screen hidden">
+    <div id="arena" class="hidden" style="height:100%; display:flex; flex-direction:column;">
         <div class="hud">
-            <div onclick="exitGame()" style="color:var(--p1); font-weight:900;">[ EXIT ]</div>
-            <div id="turnStatus" style="color:var(--accent)">X TURN</div>
-            <div id="roomID" style="opacity:0.4;">#0000</div>
+            <div onclick="nuke()" style="color:var(--p1); font-weight:900; cursor:pointer;">[ TERMINATE ]</div>
+            <div id="turnTag" class="turn-indicator">X'S TURN</div>
+            <div id="roomTag" style="opacity:0.4; font-size:10px;">#0000</div>
         </div>
 
-        <div style="display:flex; justify-content:space-around; padding:20px;">
-            <div style="text-align:center;"><small id="p1Name">P1</small><div class="score-card" id="s1" style="color:var(--p1)">0</div></div>
-            <div style="align-self:center; opacity:0.2; font-family:'Orbitron'">VS</div>
-            <div style="text-align:center;"><small id="p2Name">P2</small><div class="score-card" id="s2" style="color:var(--p2)">0</div></div>
+        <div style="display:flex; justify-content:space-around; padding:20px; background:rgba(255,255,255,0.02);">
+            <div style="text-align:center;"><small id="p1N">P1</small><div id="s1" style="font-size:32px; color:var(--p1); font-weight:900;">0</div></div>
+            <div style="align-self:center; font-size:20px; opacity:0.1;">VS</div>
+            <div style="text-align:center;"><small id="p2N">P2</small><div id="s2" style="font-size:32px; color:var(--p2); font-weight:900;">0</div></div>
         </div>
 
-        <div class="board-container">
-            <div id="board"></div>
+        <div class="screen" style="padding:0;">
+            <div class="board-3d-scene"><div id="board"></div></div>
         </div>
 
-        <div style="flex:1; background:#000; border-top:1px solid #222; display:flex; flex-direction:column;">
-            <div id="chatBox" style="flex:1; overflow-y:auto; padding:10px; font-size:12px;"></div>
-            <div style="display:flex; padding:10px; border-top:1px solid #111;">
-                <input id="chatInp" style="flex:1; background:none; border:none; color:#fff;" placeholder="Secure message...">
-                <button onclick="sendChat()" style="color:var(--accent); background:none; border:none; font-weight:900;">SEND</button>
+        <div class="chat-box">
+            <div id="msgList"></div>
+            <div style="display:flex; padding:10px; gap:8px;">
+                <input id="cMsg" style="flex:1; background:#111; border:1px solid #222; color:#fff; padding:10px; border-radius:8px;" placeholder="Secure Comms...">
+                <button onclick="sendChat()" style="background:var(--gold); border:none; border-radius:8px; padding:0 15px; font-weight:900;">></button>
             </div>
         </div>
     </div>
@@ -140,6 +152,7 @@ body, html {
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
 <script>
+// Firebase Engine
 const firebaseConfig = {
     apiKey: "AIzaSyARuO_pN2vdYrVKYkKHHaNys7WI8HqM6I4",
     authDomain: "friendchat-43941.firebaseapp.com",
@@ -149,93 +162,92 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-let roomID, mySym, isAI = false, userN;
+let rId, sym, isBot = false, nick;
 
-function init(s, host) {
-    userN = document.getElementById('uName').value || "PLAYER";
-    roomID = host ? Math.random().toString(36).substr(2,6).toUpperCase() : document.getElementById('roomCode').value.toUpperCase();
-    mySym = s; start();
+function launch(s, host) {
+    nick = document.getElementById('uNick').value || "PLAYER";
+    rId = host ? Math.random().toString(36).substr(2,6).toUpperCase() : document.getElementById('rInp').value.toUpperCase();
+    sym = s; start();
 }
 
-function initAI() {
-    userN = document.getElementById('uName').value || "USER";
-    roomID = "BOT_" + Math.floor(Math.random()*9999);
-    isAI = true; mySym = "X"; start();
+function launchAI() {
+    nick = document.getElementById('uNick').value || "USER";
+    rId = "BOT_" + Math.floor(Math.random()*999);
+    isBot = true; sym = "X"; start();
 }
 
 function start() {
     document.getElementById('home').classList.add('hidden');
     document.getElementById('arena').classList.remove('hidden');
-    document.getElementById('roomID').innerText = "#" + roomID;
+    document.getElementById('roomTag').innerText = "#" + rId;
 
-    const ref = db.ref("arena_3d/"+roomID);
-    if(mySym === "X") {
-        ref.set({ b: Array(9).fill(""), t: "X", p1: userN, p2: isAI ? "ROBO-GOD" : "WAITING...", s1: 0, s2: 0 });
+    const ref = db.ref("arena_v2/"+rId);
+    if(sym === "X") {
+        ref.set({ b: Array(9).fill(""), t: "X", p1: nick, p2: isBot ? "GOD-BOT" : "CONNECTING...", s1: 0, s2: 0 });
     } else {
-        ref.child("p2").set(userN);
+        ref.child("p2").set(nick);
     }
     sync();
+    syncChat();
 }
 
 function sync() {
-    db.ref("arena_3d/"+roomID).on("value", s => {
+    db.ref("arena_v2/"+rId).on("value", s => {
         const d = s.val(); if(!d) return;
-        document.getElementById('p1Name').innerText = d.p1;
-        document.getElementById('p2Name').innerText = d.p2;
+        document.getElementById('p1N').innerText = d.p1;
+        document.getElementById('p2N').innerText = d.p2;
         document.getElementById('s1').innerText = d.s1;
         document.getElementById('s2').innerText = d.s2;
-        document.getElementById('turnStatus').innerText = d.t + " TURN";
+        document.getElementById('turnTag').innerText = d.t + "'S TURN";
         
         const b = document.getElementById('board'); b.innerHTML = "";
         d.b.forEach((v, i) => {
             const c = document.createElement('div');
             c.className = "cell " + v; c.innerText = v;
-            c.onclick = () => move(i); b.appendChild(c);
+            c.onclick = () => tap(i); b.appendChild(c);
         });
 
         const win = check(d.b);
         if(win) {
-            if(win === mySym) { confetti({particleCount:200}); }
-            setTimeout(() => { db.ref("arena_3d/"+roomID).update({ b: Array(9).fill(""), t: "X" }); }, 2000);
-        } else if(isAI && d.t === "O") {
-            setTimeout(() => botLogic(d), 600);
+            if(win === sym) confetti({particleCount: 250, spread: 70, origin: { y: 0.6 }});
+            setTimeout(() => { db.ref("arena_v2/"+rId).update({ b: Array(9).fill(""), t: "X" }); }, 2000);
+        } else if(isBot && d.t === "O") {
+            setTimeout(() => botBrain(d), 600);
         }
     });
 }
 
-function move(i) {
-    db.ref("arena_3d/"+roomID).once("value", s => {
+function tap(i) {
+    db.ref("arena_v2/"+rId).once("value", s => {
         const d = s.val();
-        if(d.t !== mySym || d.b[i] !== "" || check(d.b)) return;
-        
-        d.b[i] = mySym;
-        d.t = (mySym === "X" ? "O" : "X"); // Turn Switch
-        
+        if(d.t !== sym || d.b[i] !== "" || check(d.b)) return;
+        d.b[i] = sym;
+        d.t = (sym === "X" ? "O" : "X");
         const w = check(d.b);
         if(w && w !== "DRAW") { if(w === "X") d.s1++; else d.s2++; }
-        db.ref("arena_3d/"+roomID).update(d);
+        db.ref("arena_v2/"+rId).update(d);
     });
 }
 
 function check(b) {
-    const l = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-    for(let i of l) if(b[i[0]] && b[i[0]]===b[i[1]] && b[i[1]]===b[i[2]]) return b[i[0]];
+    const lines = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+    for(let l of lines) if(b[l[0]] && b[l[0]]===b[l[1]] && b[l[1]]===b[l[2]]) return b[l[0]];
     return b.includes("") ? null : "DRAW";
 }
 
-// Bot Logic (Minimax - Unbeatable)
-function botLogic(d) {
+// God-Bot (Impossible Minimax)
+function botBrain(d) {
     let board = [...d.b];
-    let best = -Infinity; let m;
+    let best = -Infinity; let move;
     for(let i=0; i<9; i++) {
         if(board[i] === "") {
             board[i] = "O"; let score = minimax(board, false); board[i] = "";
-            if(score > best) { best = score; m = i; }
+            if(score > best) { best = score; move = i; }
         }
     }
-    d.b[m] = "O"; d.t = "X";
+    d.b[move] = "O"; d.t = "X";
     const w = check(d.b); if(w === "O") d.s2++;
-    db.ref("arena_3d/"+roomID).update(d);
+    db.ref("arena_v2/"+rId).update(d);
 }
 
 function minimax(b, isMax) {
@@ -252,25 +264,26 @@ function minimax(b, isMax) {
     return isMax ? Math.max(...scores) : Math.min(...scores);
 }
 
-function exitGame() {
-    if(confirm("DELETE DATA & EXIT?")) {
-        db.ref("arena_3d/"+roomID).remove();
-        db.ref("chats_3d/"+roomID).remove();
+function nuke() {
+    if(confirm("WIPE DATA & EXIT?")) {
+        db.ref("arena_v2/"+rId).remove();
+        db.ref("chat_v2/"+rId).remove();
         location.reload();
     }
 }
 
-// Chat
 function sendChat() {
-    const i = document.getElementById('chatInp');
-    if(i.value) { db.ref("chats_3d/"+roomID).push({ n: userN, m: i.value }); i.value = ""; }
+    const i = document.getElementById('cMsg');
+    if(i.value) { db.ref("chat_v2/"+rId).push({ n: nick, m: i.value }); i.value = ""; }
 }
-db.ref("chats_3d/"+roomID).on("child_added", s => {
-    const d = s.val(); const div = document.createElement('div');
-    div.innerHTML = `<b style="color:var(--accent)">${d.n}:</b> ${d.m}`;
-    document.getElementById('chatBox').appendChild(div);
-    document.getElementById('chatBox').scrollTop = 999;
-});
+function syncChat() {
+    db.ref("chat_v2/"+rId).on("child_added", s => {
+        const d = s.val(); const div = document.createElement('div');
+        div.innerHTML = `<b style="color:var(--gold)">${d.n}:</b> ${d.m}`;
+        document.getElementById('msgList').appendChild(div);
+        document.getElementById('msgList').scrollTop = 999;
+    });
+}
 </script>
 </body>
 </html>
