@@ -2,199 +2,165 @@
 <html lang="hi">
 <head>
 <meta charset="UTF-8">
-<title>@rp_gupta_07 | Elite Nuts Arena Pro</title>
+<title>@rp_gupta_07 | Nuts Arena Pro Max</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover">
+
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Rajdhani:wght@300;500;700&display=swap" rel="stylesheet">
 
 <style>
 :root { 
-    --primary: #00ff88; /* Green Nut */
-    --secondary: #ffcc00; /* Yellow Nut */
-    --accent: #ff0055; /* Red Nut */
-    --bg-dark: #050505;
-    --neon-blue: #00f2ff;
-    --glass: rgba(255, 255, 255, 0.08);
+    --p1: #00ff88; --p2: #ffcc00; --accent: #ff0055;
+    --bg: #020205; --glass: rgba(255, 255, 255, 0.05);
+    --neon: 0 0 15px var(--p1), 0 0 30px rgba(0,255,136,0.3);
 }
 
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
 
 body, html { 
     margin: 0; padding: 0; height: 100%; width: 100%; 
-    background: var(--bg-dark); color: #fff; 
-    font-family: 'Rajdhani', sans-serif; overflow: hidden; position: fixed;
+    background: var(--bg); color: #fff; font-family: 'Rajdhani', sans-serif;
+    overflow: hidden; position: fixed;
 }
 
-/* Moving Cyber Background */
-.bg-animate {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: radial-gradient(circle at 50% 50%, #112211 0%, #000 100%);
-    z-index: -1;
+/* Heavy Background Animation */
+.bg-vibe {
+    position: fixed; inset: 0; z-index: -1;
+    background: linear-gradient(45deg, #050505 25%, #0a0a0f 25%, #0a0a0f 50%, #050505 50%, #050505 75%, #0a0a0f 75%, #0a0a0f 100%);
+    background-size: 40px 40px; animation: bgMove 4s linear infinite; opacity: 0.3;
 }
-.bg-animate::after {
-    content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    background-image: url('https://www.transparenttextures.com/patterns/carbon-fibre.png');
-    opacity: 0.1;
+@keyframes bgMove { from { background-position: 0 0; } to { background-position: 40px 40px; } }
+
+.main-wrapper { 
+    display: flex; flex-direction: column; height: 100%; max-width: 500px; 
+    margin: auto; border-left: 1px solid rgba(255,255,255,0.05); border-right: 1px solid rgba(255,255,255,0.05);
+    background: rgba(0,0,0,0.6); backdrop-filter: blur(25px);
 }
 
-.container { 
-    display: flex; flex-direction: column; height: 100%; max-width: 480px; 
-    margin: auto; border: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.4);
-    backdrop-filter: blur(20px);
-}
+/* Home Screen UI */
+.screen { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px; }
+.logo-container { position: relative; margin-bottom: 40px; animation: float 3s ease-in-out infinite; }
+@keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
 
-/* Screens */
-.screen { 
-    flex: 1; display: flex; flex-direction: column; align-items: center; 
-    justify-content: center; padding: 30px; animation: zoomIn 0.4s cubic-bezier(0.12, 0, 0.39, 0);
-}
-@keyframes zoomIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.brand-text { font-family: 'Syncopate', sans-serif; font-size: 28px; font-weight: 700; text-align: center; line-height: 1.2; }
+.brand-sub { color: var(--p1); font-size: 12px; letter-spacing: 4px; font-weight: 700; margin-top: 5px; text-shadow: var(--neon); }
 
-/* Logo & Branding */
-.hero-box { text-align: center; margin-bottom: 30px; }
-.hero-title { 
-    font-family: 'Orbitron', sans-serif; font-size: 35px; font-weight: 900; 
-    letter-spacing: 2px; text-shadow: 0 0 20px var(--primary); color: #fff;
+/* Inputs */
+.neon-input { 
+    width: 100%; padding: 18px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.1);
+    background: var(--glass); color: #fff; font-size: 16px; margin-bottom: 20px;
+    text-align: center; transition: 0.3s; box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
 }
-.profile-img {
-    width: 90px; height: 90px; border-radius: 50%; border: 3px solid var(--primary);
-    margin-bottom: 15px; box-shadow: 0 0 30px var(--primary);
-    background: url('https://i.pravatar.cc/150?u=rp_gupta_07') center/cover; /* Replace with your real photo link */
-}
+.neon-input:focus { border-color: var(--p1); box-shadow: 0 0 20px rgba(0,255,136,0.2); }
 
-/* Inputs & Buttons */
-input { 
-    width: 100%; padding: 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.2);
-    background: var(--glass); color: #fff; font-size: 16px; margin-bottom: 15px;
-    text-align: center; font-family: 'Rajdhani', sans-serif;
+/* Buttons */
+.btn-pro { 
+    width: 100%; padding: 18px; border-radius: 15px; border: none; font-weight: 700;
+    font-family: 'Syncopate', sans-serif; font-size: 12px; cursor: pointer; margin-bottom: 12px;
+    text-transform: uppercase; transition: 0.3s; position: relative; overflow: hidden;
 }
-.grid-select { display: flex; gap: 10px; margin-bottom: 20px; width: 100%; }
-.grid-btn { 
-    flex: 1; padding: 12px; background: var(--glass); border: 1px solid rgba(255,255,255,0.1);
-    color: #fff; border-radius: 10px; font-weight: bold; cursor: pointer; transition: 0.3s;
-}
-.grid-btn.active { background: var(--primary); color: #000; box-shadow: 0 0 15px var(--primary); }
+.btn-pro::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: linear-gradient(transparent, rgba(255,255,255,0.1), transparent); transform: rotate(45deg); animation: shine 3s infinite; }
+@keyframes shine { from { left: -150%; } to { left: 150%; } }
 
-.btn-main { 
-    width: 100%; padding: 16px; border-radius: 12px; border: none; font-weight: 800;
-    font-size: 16px; cursor: pointer; text-transform: uppercase; margin-bottom: 12px;
-    font-family: 'Orbitron', sans-serif; transition: 0.2s;
-}
-.btn-primary { background: linear-gradient(90deg, var(--primary), #00ccff); color: #000; }
-.btn-secondary { background: var(--glass); color: #fff; border: 1px solid rgba(255,255,255,0.2); }
+.p-green { background: linear-gradient(90deg, #00ff88, #00bd65); color: #000; box-shadow: 0 10px 25px rgba(0,255,136,0.3); }
+.p-dark { background: #111; color: #fff; border: 1px solid #333; }
 
-/* Game Board */
-#board { display: grid; gap: 10px; margin: 20px auto; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 20px; box-shadow: inset 0 0 20px rgba(0,0,0,0.5); }
+/* Game Board Design */
+#board { display: grid; gap: 12px; margin: 25px auto; padding: 18px; background: rgba(255,255,255,0.02); border-radius: 25px; border: 1px solid rgba(255,255,255,0.05); }
 .cell { 
-    background: var(--glass); border-radius: 15px; display: flex; 
-    align-items: center; justify-content: center; font-weight: 900; 
-    cursor: pointer; border: 1px solid rgba(255,255,255,0.05); 
-    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    font-size: 30px;
+    background: rgba(255,255,255,0.03); border-radius: 20px; display: flex; 
+    align-items: center; justify-content: center; font-size: 40px; cursor: pointer;
+    border: 1px solid rgba(255,255,255,0.05); transition: 0.2s cubic-bezier(0.1, 0.7, 1, 0.1);
 }
-.cell:hover { background: rgba(255,255,255,0.1); }
-.cell:active { transform: scale(0.9); }
+.cell:active { transform: scale(0.85); background: rgba(0,255,136,0.1); }
+.nut-x { color: var(--p1); text-shadow: 0 0 20px var(--p1); }
+.nut-o { color: var(--p2); text-shadow: 0 0 20px var(--p2); }
 
-/* Nut Icons Classes */
-.nut-x { color: var(--primary); text-shadow: 0 0 15px var(--primary); animation: pop 0.3s; }
-.nut-o { color: var(--secondary); text-shadow: 0 0 15px var(--secondary); animation: pop 0.3s; }
-@keyframes pop { from { transform: scale(0); } to { transform: scale(1); } }
+.winner-cell { background: var(--p1) !important; color: #000 !important; box-shadow: 0 0 50px var(--p1); animation: winPulse 0.5s infinite alternate; }
+@keyframes winPulse { from { opacity: 1; } to { opacity: 0.7; } }
 
-/* Win Effects */
-.cell.winner-cell {
-    background: var(--neon-blue) !important;
-    color: #000 !important;
-    box-shadow: 0 0 40px var(--neon-blue);
-    z-index: 10;
-}
-
-/* Chat & Reactions */
-.chat-section { height: 180px; background: rgba(0,0,0,0.8); border-top: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; }
-#messages { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; }
-.msg { max-width: 80%; padding: 10px 15px; border-radius: 15px; font-size: 14px; position: relative; }
-.me { align-self: flex-end; background: linear-gradient(135deg, #0084ff, #00c6ff); }
-.other { align-self: flex-start; background: #333; }
-
-.reaction-bar { display: flex; gap: 15px; padding: 10px; background: rgba(255,255,255,0.03); justify-content: center; }
-.emoji-btn { font-size: 25px; cursor: pointer; transition: 0.2s; }
-.emoji-btn:hover { transform: scale(1.3); }
-
-#winnerOverlay { 
-    position: fixed; inset: 0; background: rgba(0,0,0,0.96); z-index: 9999; 
-    display: none; flex-direction: column; align-items: center; justify-content: center;
-}
+/* Sidebar/Chat */
+.chat-box { height: 180px; background: #000; display: flex; flex-direction: column; border-top: 1px solid #222; }
+#msgs { flex: 1; overflow-y: auto; padding: 15px; font-size: 14px; }
+.m-row { margin-bottom: 8px; display: flex; flex-direction: column; }
+.m-me { align-items: flex-end; }
+.m-txt { background: #222; padding: 8px 15px; border-radius: 12px; max-width: 80%; }
+.m-me .m-txt { background: var(--p1); color: #000; font-weight: 700; }
 
 .hidden { display: none !important; }
+#winOverlay { position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 10000; display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
 </style>
 </head>
 <body>
 
-<div class="bg-animate"></div>
+<div class="bg-vibe"></div>
 
-<div id="winnerOverlay">
-    <h3 style="letter-spacing: 5px; color: var(--primary);">BATTLE FINISHED</h3>
-    <h1 id="winnerName" style="font-size: 60px; margin: 10px 0; font-family: 'Orbitron'; color: #fff;">NAME</h1>
-    <button onclick="restartMatch()" class="btn-main btn-primary" style="width: 280px;">REMATCH NOW</button>
+<div id="winOverlay">
+    <div style="font-size:12px; letter-spacing:8px; color:#555; margin-bottom:10px;">DOMINATION COMPLETE</div>
+    <h1 id="winName" style="font-size:70px; font-family:'Syncopate'; margin:0; text-shadow: 0 0 30px #fff;">WINNER</h1>
+    <div style="width:100px; height:4px; background:var(--p1); margin:30px 0;"></div>
+    <button onclick="restartGame()" class="btn-pro p-green" style="width:250px;">NEXT LEVEL</button>
 </div>
 
-<div class="container">
-    <div id="loginScreen" class="screen">
-        <div class="hero-box">
-            <div class="profile-img"></div>
-            <h1 class="hero-title">NUTS ARENA</h1>
-            <p style="color: var(--primary); font-weight: bold; font-size: 14px;">PRO EDITION BY RP_GUPTA_07</p>
+<div class="main-wrapper">
+    <div id="homeScreen" class="screen">
+        <div class="logo-container">
+            <div style="width:100px; height:100px; border:10px solid var(--p1); border-radius:50%; border-style:double; display:flex; align-items:center; justify-content:center; box-shadow:var(--neon);">
+                <span style="font-size:50px;">⬢</span>
+            </div>
         </div>
-
-        <input id="userName" placeholder="ENTER YOUR STAGE NAME">
-
-        <div class="grid-select">
-            <button class="grid-btn active" id="g3" onclick="setGrid(3)">3x3</button>
-            <button class="grid-btn" id="g5" onclick="setGrid(5)">5x5</button>
-            <button class="grid-btn" id="g7" onclick="setGrid(7)">7x7</button>
-        </div>
-
-        <button class="btn-main btn-primary" onclick="createRoom()">CREATE PRIVATE SQUAD</button>
-        <button class="btn-main btn-secondary" style="background:#ffcc00; color:#000;" onclick="startGlobal()">GLOBAL MATCHMAKING</button>
-        <button class="btn-main btn-secondary" onclick="startRobot()">SOLO VS AI ROBOT</button>
-
-        <div style="width:100%; height:1px; background:rgba(255,255,255,0.1); margin:10px 0;"></div>
-
-        <input id="joinCode" placeholder="ENTER ARENA CODE">
-        <button class="btn-main btn-secondary" style="font-size:12px;" onclick="joinRoom()">JOIN EXISTING ARENA</button>
         
-        <a href="https://instagram.com/rp_gupta_07" style="color:#555; text-decoration:none; font-size:12px; margin-top:10px;">FOLLOW @RP_GUPTA_07</a>
+        <div class="brand-text">NUTS SORT<br>ARENA PRO</div>
+        <div class="brand-sub">BY @RP_GUPTA_07</div>
+        
+        <div style="margin-top:40px; width:100%;">
+            <input id="uName" class="neon-input" placeholder="PLAYER NICKNAME">
+            
+            <div style="display:flex; gap:10px; margin-bottom:20px;">
+                <button class="grid-btn active" id="g3" onclick="setG(3)">3X3</button>
+                <button class="grid-btn" id="g5" onclick="setG(5)">5X5</button>
+                <button class="grid-btn" id="g7" onclick="setG(7)">7X7</button>
+            </div>
+
+            <button class="btn-pro p-green" onclick="createArena()">CREATE PRIVATE ARENA</button>
+            <button class="btn-pro p-dark" onclick="startGlobal()">GLOBAL BATTLEFIELD</button>
+            <button class="btn-pro p-dark" style="border-color:var(--accent); color:var(--accent);" onclick="startBot()">TRAINING VS ROBOT</button>
+
+            <div style="display:flex; gap:10px; margin-top:10px;">
+                <input id="roomIn" class="neon-input" placeholder="ARENA CODE" style="margin:0; flex:1;">
+                <button class="btn-pro p-dark" style="width:100px; margin:0;" onclick="joinArena()">JOIN</button>
+            </div>
+        </div>
     </div>
 
-    <div id="gameScreen" class="hidden" style="display:flex; flex-direction:column; height: 100%;">
-        <div style="padding: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); background: rgba(0,0,0,0.3);">
-            <button onclick="exitArena()" style="background:none; border:1px solid var(--accent); color:var(--accent); padding:5px 10px; border-radius:5px; cursor:pointer;">EXIT</button>
-            <div id="status" style="font-weight:bold; color:var(--primary); font-family:'Orbitron'; font-size:12px;">MATCH STARTING...</div>
-            <div style="font-size:10px; color:#666;">ID: <span id="displayRoomCode" style="color:#fff;">0000</span></div>
+    <div id="arenaScreen" class="hidden" style="display:flex; flex-direction:column; height:100%;">
+        <div style="padding:20px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #222;">
+            <div onclick="location.reload()" style="font-weight:700; color:var(--accent); cursor:pointer;">QUIT</div>
+            <div id="status" style="font-family:'Syncopate'; font-size:10px; color:var(--p1);">SYNCING...</div>
+            <div id="roomIdShow" style="font-size:12px; opacity:0.3;">#0000</div>
         </div>
 
-        <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10px;">
-            <div style="display:flex; gap:30px; margin-bottom:15px; background:var(--glass); padding:10px 30px; border-radius:15px;">
-                <div style="text-align:center;"><div id="p1Name" style="font-size:10px; color:#aaa;">P1</div><div id="p1Score" style="font-size:20px; font-weight:900; color:var(--primary);">0</div></div>
-                <div style="font-size:20px; align-self:center; opacity:0.2;">VS</div>
-                <div style="text-align:center;"><div id="p2Name" style="font-size:10px; color:#aaa;">P2</div><div id="p2Score" style="font-size:20px; font-weight:900; color:var(--secondary);">0</div></div>
+        <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+            <div style="display:flex; justify-content:space-around; width:100%; margin-bottom:20px; background:var(--glass); padding:15px 0;">
+                <div style="text-align:center;"><div id="p1N" style="font-size:10px;">P1</div><div id="p1S" style="font-size:25px; font-weight:900; color:var(--p1);">0</div></div>
+                <div style="text-align:center;"><div id="p2N" style="font-size:10px;">P2</div><div id="p2S" style="font-size:25px; font-weight:900; color:var(--p2);">0</div></div>
             </div>
 
             <div id="board"></div>
-
-            <div class="reaction-bar">
-                <span class="emoji-btn" onclick="sendEmoji('😂')">😂</span>
-                <span class="emoji-btn" onclick="sendEmoji('🔥')">🔥</span>
-                <span class="emoji-btn" onclick="sendEmoji('👑')">👑</span>
-                <span class="emoji-btn" onclick="sendEmoji('⚡')">⚡</span>
-                <span class="emoji-btn" onclick="sendEmoji('💀')">💀</span>
+            
+            <div style="display:flex; gap:20px; padding:15px;">
+                <span style="font-size:30px; cursor:pointer;" onclick="sendEmo('🔥')">🔥</span>
+                <span style="font-size:30px; cursor:pointer;" onclick="sendEmo('😂')">😂</span>
+                <span style="font-size:30px; cursor:pointer;" onclick="sendEmo('👑')">👑</span>
+                <span style="font-size:30px; cursor:pointer;" onclick="sendEmo('💀')">💀</span>
             </div>
         </div>
 
-        <div class="chat-section">
-            <div id="messages"></div>
-            <div style="display:flex; padding:10px; gap:8px;">
-                <input id="msgInput" placeholder="Send a war cry..." style="margin:0; flex:1; text-align:left; padding-left:15px;">
-                <button onclick="sendMsg()" style="background:var(--primary); border:none; width:50px; border-radius:12px; font-weight:bold;">➤</button>
+        <div class="chat-box">
+            <div id="msgs"></div>
+            <div style="display:flex; padding:10px; gap:10px; background:#050505;">
+                <input id="msgIn" placeholder="Type message..." style="margin:0; flex:1; background:#111; border:1px solid #333; color:#fff; padding:12px; border-radius:10px;">
+                <button onclick="sendM()" style="background:var(--p1); border:none; width:60px; border-radius:10px; font-weight:900;">GO</button>
             </div>
         </div>
     </div>
@@ -204,6 +170,7 @@ input {
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
 <script>
+// Firebase Config
 const firebaseConfig = {
   apiKey: "AIzaSyARuO_pN2vdYrVKYkKHHaNys7WI8HqM6I4",
   authDomain: "friendchat-43941.firebaseapp.com",
@@ -216,205 +183,188 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-let myRoomId, myName, mySymbol, gameRef, chatRef, emojiRef, gridSize = 3, isRobot = false;
+let myId, myN, mySym, gRef, cRef, eRef, gSize = 3, isBot = false;
 
-// Awesome Audio Generator
-const playAudio = (freq, type, duration) => {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.type = type;
-    osc.frequency.setValueAtTime(freq, ctx.currentTime);
-    gain.gain.setValueAtTime(0.1, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + duration);
-    osc.connect(gain); gain.connect(ctx.destination);
-    osc.start(); osc.stop(ctx.currentTime + duration);
+// Pro Sound Engine (Synthesized to save space)
+const playSFX = (f, t) => {
+    const a = new (window.AudioContext || window.webkitAudioContext)();
+    const o = a.createOscillator(); const g = a.createGain();
+    o.type = t; o.frequency.setValueAtTime(f, a.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.0001, a.currentTime + 0.5);
+    o.connect(g); g.connect(a.destination); o.start(); o.stop(a.currentTime + 0.5);
 };
 
-function setGrid(s) {
-    gridSize = s;
-    document.querySelectorAll('.grid-btn').forEach(b => b.classList.remove('active'));
+function setG(s) {
+    gSize = s; document.querySelectorAll('.grid-btn').forEach(b => b.classList.remove('active'));
     document.getElementById('g'+s).classList.add('active');
 }
 
-function startRobot() {
-    myName = document.getElementById("userName").value.trim() || "Player";
-    isRobot = true; myRoomId = "BOT_" + Math.floor(Math.random()*9999);
-    setupGame("X");
+function startBot() {
+    myN = document.getElementById("uName").value || "Player";
+    isBot = true; myId = "BOT_" + Math.random().toString(36).substr(2,4);
+    setupArena("X");
 }
 
 function startGlobal() {
-    myName = document.getElementById("userName").value.trim();
-    if(!myName) return alert("Pehle naam likho Boss!");
-    db.ref("global_waiting").once("value", snap => {
-        let waiting = snap.val();
-        if(waiting) { myRoomId = waiting.room; db.ref("global_waiting").remove(); setupGame("O"); }
-        else { myRoomId = Math.floor(1000 + Math.random()*8999).toString(); db.ref("global_waiting").set({room: myRoomId}); setupGame("X"); }
+    myN = document.getElementById("uName").value;
+    if(!myN) return alert("Name please!");
+    db.ref("matchmaking").once("value", s => {
+        let w = s.val();
+        if(w) { myId = w.r; db.ref("matchmaking").remove(); setupArena("O"); }
+        else { myId = Math.floor(1000+Math.random()*8999).toString(); db.ref("matchmaking").set({r: myId}); setupArena("X"); }
     });
 }
 
-function createRoom() {
-    myName = document.getElementById("userName").value.trim();
-    if(!myName) return alert("Naam toh likho!");
-    myRoomId = Math.floor(1000 + Math.random()*8999).toString();
-    setupGame("X");
+function createArena() {
+    myN = document.getElementById("uName").value;
+    if(!myN) return alert("Enter Name!");
+    myId = Math.floor(1000+Math.random()*8999).toString();
+    setupArena("X");
 }
 
-function joinRoom() {
-    myName = document.getElementById("userName").value.trim();
-    myRoomId = document.getElementById("joinCode").value.trim();
-    if(!myName || !myRoomId) return alert("Code aur Name dono chahiye!");
-    setupGame("O");
+function joinArena() {
+    myN = document.getElementById("uName").value;
+    myId = document.getElementById("roomIn").value;
+    if(!myN || !myId) return alert("Details missing!");
+    setupArena("O");
 }
 
-function setupGame(sym) {
-    mySymbol = sym;
-    gameRef = db.ref("rooms/" + myRoomId + "/game");
-    chatRef = db.ref("rooms/" + myRoomId + "/chat");
-    emojiRef = db.ref("rooms/" + myRoomId + "/emojis");
+function setupArena(s) {
+    mySym = s;
+    gRef = db.ref("rooms/"+myId+"/g");
+    cRef = db.ref("rooms/"+myId+"/c");
+    eRef = db.ref("rooms/"+myId+"/e");
 
-    if(sym === "X") {
-        gameRef.set({ board: Array(gridSize*gridSize).fill(""), turn: "X", size: gridSize, scores: {X:0, O:0}, players: {X: myName, O: isRobot ? "ROBOT-AI" : "WAITING..."} });
+    if(s === "X") {
+        gRef.set({ b: Array(gSize*gSize).fill(""), t: "X", s: gSize, sc: {X:0, O:0}, p: {X: myN, O: isBot ? "ROBOT_AI" : "WAITING..."} });
     } else {
-        gameRef.child("players/O").set(myName);
+        gRef.child("p/O").set(myN);
     }
 
-    document.getElementById("loginScreen").classList.add("hidden");
-    document.getElementById("gameScreen").classList.remove("hidden");
-    document.getElementById("displayRoomCode").innerText = isRobot ? "BOT-MODE" : myRoomId;
-    createBoard(); listenGame(); listenChat(); listenEmojis();
+    document.getElementById("homeScreen").classList.add("hidden");
+    document.getElementById("arenaScreen").classList.remove("hidden");
+    document.getElementById("roomIdShow").innerText = "#"+myId;
+    renderBoard(); listenArena(); listenChat(); listenEmos();
 }
 
-function createBoard() {
-    const board = document.getElementById("board");
-    board.innerHTML = "";
-    let cellSize = gridSize === 3 ? 95 : gridSize === 5 ? 60 : 42;
-    board.style.gridTemplateColumns = `repeat(${gridSize}, ${cellSize}px)`;
-    for(let i=0; i < gridSize * gridSize; i++) {
-        const cell = document.createElement("div");
-        cell.className = "cell";
-        cell.style.width = cellSize + "px"; cell.style.height = cellSize + "px";
-        cell.onclick = () => move(i);
-        board.appendChild(cell);
+function renderBoard() {
+    const b = document.getElementById("board");
+    b.innerHTML = "";
+    let cs = gSize === 3 ? 100 : gSize === 5 ? 65 : 45;
+    b.style.gridTemplateColumns = `repeat(${gSize}, ${cs}px)`;
+    for(let i=0; i<gSize*gSize; i++) {
+        const div = document.createElement("div");
+        div.className = "cell";
+        div.style.width = cs+"px"; div.style.height = cs+"px";
+        div.onclick = () => tap(i);
+        b.appendChild(div);
     }
 }
 
-function listenGame() {
-    gameRef.on("value", snap => {
-        const g = snap.val(); if(!g) return;
-        
-        document.getElementById("p1Name").innerText = g.players.X.substring(0,8);
-        document.getElementById("p2Name").innerText = g.players.O.substring(0,8);
-        document.getElementById("p1Score").innerText = g.scores.X;
-        document.getElementById("p2Score").innerText = g.scores.O;
+function listenArena() {
+    gRef.on("value", s => {
+        const data = s.val(); if(!data) return;
+        document.getElementById("p1N").innerText = data.p.X;
+        document.getElementById("p2N").innerText = data.p.O;
+        document.getElementById("p1S").innerText = data.sc.X;
+        document.getElementById("p2S").innerText = data.sc.O;
 
-        g.board.forEach((v, i) => { 
+        data.b.forEach((v, i) => {
             const c = document.getElementById("board").children[i];
-            if(c) { 
-                if(v === "X") { c.innerText = "⬢"; c.className = "cell nut-x"; }
-                else if(v === "O") { c.innerText = "⬣"; c.className = "cell nut-o"; }
-                else { c.innerText = ""; c.classList.remove("nut-x", "nut-o", "winner-cell"); }
-            }
+            if(v === "X") { c.innerText = "⬢"; c.className = "cell nut-x"; }
+            else if(v === "O") { c.innerText = "⬣"; c.className = "cell nut-o"; }
+            else { c.innerText = ""; c.className = "cell"; }
         });
 
-        const winData = checkWinner(g.board, g.size);
-        if(winData) {
-            if(winData !== "draw") {
-                playAudio(600, 'square', 0.5);
-                winData.line.forEach(idx => document.getElementById("board").children[idx].classList.add("winner-cell"));
-                let winName = (winData.w === "X" ? g.players.X : g.players.O).toUpperCase();
+        const win = check(data.b, data.s);
+        if(win) {
+            if(win !== "draw") {
+                playSFX(800, 'square');
+                win.l.forEach(idx => document.getElementById("board").children[idx].classList.add("winner-cell"));
                 setTimeout(() => {
-                    document.getElementById("winnerName").innerText = winName;
-                    document.getElementById("winnerOverlay").style.display = "flex";
-                    if(winData.w === mySymbol) confetti({ particleCount: 200, spread: 100, origin: { y: 0.6 } });
+                    document.getElementById("winName").innerText = (win.w === "X" ? data.p.X : data.p.O).toUpperCase();
+                    document.getElementById("winOverlay").style.display = "flex";
+                    if(win.w === mySym) confetti({particleCount:200});
                 }, 800);
             } else {
-                document.getElementById("winnerName").innerText = "TIE!";
-                document.getElementById("winnerOverlay").style.display = "flex";
+                document.getElementById("winName").innerText = "TIE!";
+                document.getElementById("winOverlay").style.display = "flex";
             }
         } else {
-            document.getElementById("winnerOverlay").style.display = "none";
-            document.getElementById("status").innerText = g.turn === mySymbol ? "★ YOUR TURN ★" : "OPPONENT THINKING...";
-            if(isRobot && g.turn === "O") setTimeout(smartBot, 800);
+            document.getElementById("winOverlay").style.display = "none";
+            document.getElementById("status").innerText = data.t === mySym ? "★ YOUR TURN ★" : "SYNCING ARENA...";
+            if(isBot && data.t === "O") setTimeout(aiMove, 700);
         }
     });
 }
 
-function move(i) {
-    gameRef.once("value", snap => {
-        const g = snap.val();
-        if(!g || g.turn !== mySymbol || g.board[i] !== "" || checkWinner(g.board, g.size)) return;
-        playAudio(400, 'sine', 0.1);
-        g.board[i] = mySymbol;
-        let updateData = { board: g.board, turn: mySymbol === "X" ? "O" : "X" };
-        const winCheck = checkWinner(g.board, g.size);
-        if(winCheck && winCheck !== "draw") { g.scores[winCheck.w]++; updateData.scores = g.scores; }
-        gameRef.update(updateData);
+function tap(i) {
+    gRef.once("value", s => {
+        const d = s.val();
+        if(!d || d.t !== mySym || d.b[i] !== "" || check(d.b, d.s)) return;
+        playSFX(400, 'sine');
+        d.b[i] = mySym;
+        let update = { b: d.b, t: mySym === "X" ? "O" : "X" };
+        const w = check(d.b, d.s);
+        if(w && w !== "draw") { d.sc[w.w]++; update.sc = d.sc; }
+        gRef.update(update);
     });
 }
 
-function smartBot() {
-    gameRef.once("value", snap => {
-        const g = snap.val(); if(!g || g.turn !== "O") return;
-        let b = [...g.board], s = g.size, moveIdx = -1;
-        // Logic: Win > Block > Random
-        for(let i=0; i<b.length; i++){ if(b[i]===""){ b[i]="O"; if(checkWinner(b,s)){ moveIdx=i; break; } b[i]=""; } }
-        if(moveIdx===-1){ for(let i=0; i<b.length; i++){ if(b[i]===""){ b[i]="X"; if(checkWinner(b,s)){ moveIdx=i; break; } b[i]=""; } } }
-        if(moveIdx===-1){ let e = b.map((v,i)=>v===""?i:null).filter(v=>v!==null); moveIdx=e[Math.floor(Math.random()*e.length)]; }
-        if(moveIdx!==-1) {
-            g.board[moveIdx]="O";
-            let ud = {board:g.board, turn:"X"};
-            const wc = checkWinner(g.board, g.size);
-            if(wc && wc !== "draw") { g.scores.O++; ud.scores = g.scores; }
-            gameRef.update(ud);
+function aiMove() {
+    gRef.once("value", s => {
+        const d = s.val(); if(!d || d.t !== "O") return;
+        let b = [...d.b], sz = d.s, m = -1;
+        // AI Logic
+        for(let i=0; i<b.length; i++){ if(b[i]===""){ b[i]="O"; if(check(b,sz)){ m=i; break; } b[i]=""; } }
+        if(m===-1){ for(let i=0; i<b.length; i++){ if(b[i]===""){ b[i]="X"; if(check(b,sz)){ m=i; break; } b[i]=""; } } }
+        if(m===-1){ let e = b.map((v,i)=>v===""?i:null).filter(v=>v!==null); m=e[Math.floor(Math.random()*e.length)]; }
+        if(m!==-1){ 
+            d.b[m]="O"; let up = {b:d.b, t:"X"};
+            const w = check(d.b, d.s); if(w && w !== "draw"){ d.sc.O++; up.sc = d.sc; }
+            gRef.update(up);
         }
     });
 }
 
-function checkWinner(b, size) {
-    const lines = []; let winLen = 3; 
-    for(let i=0; i<size; i++) {
-        for(let j=0; j<=size-winLen; j++) {
-            let row = []; for(let k=0; k<winLen; k++) row.push(i*size + j + k); lines.push(row);
-            let col = []; for(let k=0; k<winLen; k++) col.push((j+k)*size + i); lines.push(col);
+function check(b, sz) {
+    const l = []; let wl = 3;
+    for(let i=0; i<sz; i++) {
+        for(let j=0; j<=sz-wl; j++) {
+            let r = []; for(let k=0; k<wl; k++) r.push(i*sz + j + k); l.push(r);
+            let c = []; for(let k=0; k<wl; k++) c.push((j+k)*sz + i); l.push(c);
         }
     }
-    for(let r=0; r<=size-winLen; r++) {
-        for(let c=0; c<=size-winLen; c++) {
-            let d1 = []; for(let k=0; k<winLen; k++) d1.push((r+k)*size + (c+k)); lines.push(d1);
-            let d2 = []; for(let k=0; k<winLen; k++) d2.push((r+k)*size + (c+winLen-1-k)); lines.push(d2);
+    for(let r=0; r<=sz-wl; r++) {
+        for(let c=0; c<=sz-wl; c++) {
+            let d1 = []; for(let k=0; k<wl; k++) d1.push((r+k)*sz + (c+k)); l.push(d1);
+            let d2 = []; for(let k=0; k<wl; k++) d2.push((r+k)*sz + (c+wl-1-k)); l.push(d2);
         }
     }
-    for(let l of lines) { if(b[l[0]] && b[l[0]]===b[l[1]] && b[l[1]]===b[l[2]]) return {w: b[l[0]], line: l}; }
+    for(let win of l) { if(b[win[0]] && b[win[0]]===b[win[1]] && b[win[1]]===b[win[2]]) return {w: b[win[0]], l: win}; }
     return b.includes("") ? null : "draw";
 }
 
-function exitArena() { if(confirm("Quit Arena?")) location.reload(); }
-function restartMatch() { gameRef.update({ board: Array(gridSize*gridSize).fill(""), turn: "X" }); }
-function sendMsg() {
-    const i = document.getElementById("msgInput");
-    if(!i.value.trim()) return;
-    chatRef.push({ n: myName, m: i.value }); i.value = "";
-}
+function restartGame() { gRef.update({ b: Array(gSize*gSize).fill(""), t: "X" }); }
+function sendM() { const i = document.getElementById("msgIn"); if(i.value) { cRef.push({ n: myN, m: i.value }); i.value = ""; } }
 function listenChat() {
-    chatRef.on("child_added", snap => {
-        const d = snap.val();
-        const m = document.createElement("div");
-        m.className = "msg " + (d.n === myName ? "me" : "other");
-        m.innerHTML = `<b style="font-size:8px; opacity:0.5; display:block;">${d.n}</b>${d.m}`;
-        document.getElementById("messages").appendChild(m);
-        document.getElementById("messages").scrollTop = 10000;
+    cRef.on("child_added", s => {
+        const d = s.val(); const div = document.createElement("div");
+        div.className = "m-row " + (d.n === myN ? "m-me" : "");
+        div.innerHTML = `<div class="m-txt"><small style="font-size:8px; display:block; opacity:0.5;">${d.n}</small>${d.m}</div>`;
+        document.getElementById("msgs").appendChild(div);
+        document.getElementById("msgs").scrollTop = 99999;
     });
 }
-function sendEmoji(e) { emojiRef.set({ emoji: e, t: Date.now() }); }
-function listenEmojis() {
-    emojiRef.on("value", snap => {
-        const d = snap.val(); if(!d) return;
-        const el = document.createElement("div");
-        el.style.position = "fixed"; el.style.bottom = "150px"; el.style.fontSize = "60px"; el.style.zIndex="10000";
-        el.innerText = d.emoji; el.style.left = Math.random() * 60 + 20 + "%";
-        el.animate([{transform:'translateY(0) scale(1)', opacity:1},{transform:'translateY(-400px) scale(2)', opacity:0}], 1500);
-        document.body.appendChild(el); setTimeout(()=>el.remove(), 1500);
+function sendEmo(e) { eRef.set({ e: e, t: Date.now() }); }
+function listenEmos() {
+    eRef.on("value", s => {
+        const d = s.val(); if(!d) return;
+        const div = document.createElement("div");
+        div.style = `position:fixed; bottom:200px; left:${20+Math.random()*60}%; font-size:60px; z-index:100;`;
+        div.innerText = d.e; document.body.appendChild(div);
+        div.animate([{transform:'translateY(0) scale(1)', opacity:1}, {transform:'translateY(-400px) scale(2)', opacity:0}], 1500);
+        setTimeout(() => div.remove(), 1500);
     });
 }
 </script>
