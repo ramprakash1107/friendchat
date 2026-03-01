@@ -2,165 +2,185 @@
 <html lang="hi">
 <head>
 <meta charset="UTF-8">
-<title>@rp_gupta_07 | Nuts Arena Pro Max</title>
+<title>@rp_gupta_07 | Free Fire Elite Arena</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover">
 
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&family=Rajdhani:wght@300;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
 
 <style>
 :root { 
-    --p1: #00ff88; --p2: #ffcc00; --accent: #ff0055;
-    --bg: #020205; --glass: rgba(255, 255, 255, 0.05);
-    --neon: 0 0 15px var(--p1), 0 0 30px rgba(0,255,136,0.3);
+    --ff-orange: #ffb400; 
+    --ff-red: #ff3c00;
+    --ff-dark: #0a0c10;
+    --ff-grey: #1c222b;
+    --neon: 0 0 20px rgba(255, 180, 0, 0.6);
 }
 
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
 
 body, html { 
     margin: 0; padding: 0; height: 100%; width: 100%; 
-    background: var(--bg); color: #fff; font-family: 'Rajdhani', sans-serif;
+    background: var(--ff-dark); color: #fff; font-family: 'Rajdhani', sans-serif;
     overflow: hidden; position: fixed;
 }
 
-/* Heavy Background Animation */
-.bg-vibe {
+/* Battleground Background Animation */
+.bg-war {
     position: fixed; inset: 0; z-index: -1;
-    background: linear-gradient(45deg, #050505 25%, #0a0a0f 25%, #0a0a0f 50%, #050505 50%, #050505 75%, #0a0a0f 75%, #0a0a0f 100%);
-    background-size: 40px 40px; animation: bgMove 4s linear infinite; opacity: 0.3;
+    background: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), 
+                url('https://www.transparenttextures.com/patterns/asfalt-dark.png');
+    background-size: cover;
 }
-@keyframes bgMove { from { background-position: 0 0; } to { background-position: 40px 40px; } }
-
-.main-wrapper { 
-    display: flex; flex-direction: column; height: 100%; max-width: 500px; 
-    margin: auto; border-left: 1px solid rgba(255,255,255,0.05); border-right: 1px solid rgba(255,255,255,0.05);
-    background: rgba(0,0,0,0.6); backdrop-filter: blur(25px);
+.bg-war::before {
+    content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background: repeating-linear-gradient(0deg, transparent, rgba(255,180,0,0.03) 2px, transparent 4px);
 }
 
-/* Home Screen UI */
-.screen { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px; }
-.logo-container { position: relative; margin-bottom: 40px; animation: float 3s ease-in-out infinite; }
-@keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-15px); } }
-
-.brand-text { font-family: 'Syncopate', sans-serif; font-size: 28px; font-weight: 700; text-align: center; line-height: 1.2; }
-.brand-sub { color: var(--p1); font-size: 12px; letter-spacing: 4px; font-weight: 700; margin-top: 5px; text-shadow: var(--neon); }
-
-/* Inputs */
-.neon-input { 
-    width: 100%; padding: 18px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.1);
-    background: var(--glass); color: #fff; font-size: 16px; margin-bottom: 20px;
-    text-align: center; transition: 0.3s; box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+.main-container { 
+    display: flex; flex-direction: column; height: 100%; max-width: 450px; 
+    margin: auto; border: 2px solid #333; background: rgba(10, 12, 16, 0.95);
+    box-shadow: 0 0 50px #000;
 }
-.neon-input:focus { border-color: var(--p1); box-shadow: 0 0 20px rgba(0,255,136,0.2); }
 
-/* Buttons */
-.btn-pro { 
-    width: 100%; padding: 18px; border-radius: 15px; border: none; font-weight: 700;
-    font-family: 'Syncopate', sans-serif; font-size: 12px; cursor: pointer; margin-bottom: 12px;
-    text-transform: uppercase; transition: 0.3s; position: relative; overflow: hidden;
+/* Home UI */
+.screen { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px; }
+.ff-logo-box { 
+    width: 120px; height: 120px; background: var(--ff-orange); margin-bottom: 20px;
+    clip-path: polygon(20% 0%, 80% 0%, 100% 20%, 100% 80%, 80% 100%, 20% 100%, 0% 80%, 0% 20%);
+    display: flex; align-items: center; justify-content: center; transform: rotate(-5deg);
+    box-shadow: var(--neon); animation: pulse 2s infinite;
 }
-.btn-pro::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: linear-gradient(transparent, rgba(255,255,255,0.1), transparent); transform: rotate(45deg); animation: shine 3s infinite; }
-@keyframes shine { from { left: -150%; } to { left: 150%; } }
+@keyframes pulse { 0%, 100% { transform: rotate(-5deg) scale(1); } 50% { transform: rotate(-5deg) scale(1.05); } }
 
-.p-green { background: linear-gradient(90deg, #00ff88, #00bd65); color: #000; box-shadow: 0 10px 25px rgba(0,255,136,0.3); }
-.p-dark { background: #111; color: #fff; border: 1px solid #333; }
+.ff-title { font-family: 'Black Ops One', cursive; font-size: 38px; color: #fff; text-align: center; line-height: 1; margin: 0; }
+.ff-sub { color: var(--ff-orange); font-size: 14px; letter-spacing: 5px; margin-bottom: 30px; font-weight: 900; }
+
+/* FF Style Inputs & Buttons */
+.ff-input { 
+    width: 100%; padding: 18px; border: none; background: var(--ff-grey);
+    color: #fff; font-size: 16px; margin-bottom: 15px; border-left: 4px solid var(--ff-orange);
+    font-family: 'Rajdhani', sans-serif; text-transform: uppercase;
+}
+
+.btn-ff { 
+    width: 100%; padding: 18px; border: none; font-weight: 900;
+    font-size: 16px; cursor: pointer; margin-bottom: 12px;
+    text-transform: uppercase; transition: 0.2s; position: relative;
+    clip-path: polygon(5% 0%, 100% 0%, 95% 100%, 0% 100%);
+}
+.btn-orange { background: var(--ff-orange); color: #000; }
+.btn-outline { background: transparent; color: #fff; border: 1px solid #444; }
 
 /* Game Board Design */
-#board { display: grid; gap: 12px; margin: 25px auto; padding: 18px; background: rgba(255,255,255,0.02); border-radius: 25px; border: 1px solid rgba(255,255,255,0.05); }
+#board { display: grid; gap: 8px; margin: 20px auto; padding: 10px; background: #000; border: 1px solid #333; }
 .cell { 
-    background: rgba(255,255,255,0.03); border-radius: 20px; display: flex; 
-    align-items: center; justify-content: center; font-size: 40px; cursor: pointer;
-    border: 1px solid rgba(255,255,255,0.05); transition: 0.2s cubic-bezier(0.1, 0.7, 1, 0.1);
+    background: var(--ff-grey); display: flex; align-items: center; justify-content: center;
+    font-size: 45px; cursor: pointer; transition: 0.1s; border: 1px solid rgba(255,255,255,0.05);
 }
-.cell:active { transform: scale(0.85); background: rgba(0,255,136,0.1); }
-.nut-x { color: var(--p1); text-shadow: 0 0 20px var(--p1); }
-.nut-o { color: var(--p2); text-shadow: 0 0 20px var(--p2); }
+.cell:active { background: #333; }
+.char-x { color: var(--ff-orange); font-family: 'Black Ops One'; text-shadow: 0 0 10px var(--ff-orange); }
+.char-o { color: #00f2ff; font-family: 'Black Ops One'; text-shadow: 0 0 10px #00f2ff; }
 
-.winner-cell { background: var(--p1) !important; color: #000 !important; box-shadow: 0 0 50px var(--p1); animation: winPulse 0.5s infinite alternate; }
-@keyframes winPulse { from { opacity: 1; } to { opacity: 0.7; } }
+.win-cell { background: #fff !important; color: #000 !important; box-shadow: 0 0 30px #fff; }
 
-/* Sidebar/Chat */
-.chat-box { height: 180px; background: #000; display: flex; flex-direction: column; border-top: 1px solid #222; }
-#msgs { flex: 1; overflow-y: auto; padding: 15px; font-size: 14px; }
-.m-row { margin-bottom: 8px; display: flex; flex-direction: column; }
-.m-me { align-items: flex-end; }
-.m-txt { background: #222; padding: 8px 15px; border-radius: 12px; max-width: 80%; }
-.m-me .m-txt { background: var(--p1); color: #000; font-weight: 700; }
+/* Admin Access Overlay */
+#adminPanel {
+    position: fixed; top: 10%; left: 50%; transform: translateX(-50%);
+    width: 90%; background: rgba(255,0,0,0.9); padding: 20px; z-index: 10001;
+    border: 2px solid #fff; display: none;
+}
+
+/* Scoreboard */
+.ff-score { display: flex; justify-content: space-around; width: 100%; background: #111; padding: 10px; border-top: 2px solid var(--ff-orange); }
+.score-unit { text-align: center; }
+.score-num { font-size: 30px; font-weight: 900; font-family: 'Black Ops One'; }
+
+/* Chat Box */
+.ff-chat { height: 150px; background: #050505; display: flex; flex-direction: column; }
+#msgs { flex: 1; overflow-y: auto; padding: 10px; font-size: 13px; font-weight: bold; color: #aaa; }
+.msg-row { margin-bottom: 5px; }
+.msg-txt { color: #eee; }
+.msg-me { color: var(--ff-orange) !important; }
+
+#booyah { 
+    position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 10000; 
+    display: none; flex-direction: column; align-items: center; justify-content: center;
+}
 
 .hidden { display: none !important; }
-#winOverlay { position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 10000; display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
 </style>
 </head>
 <body>
 
-<div class="bg-vibe"></div>
+<div class="bg-war"></div>
 
-<div id="winOverlay">
-    <div style="font-size:12px; letter-spacing:8px; color:#555; margin-bottom:10px;">DOMINATION COMPLETE</div>
-    <h1 id="winName" style="font-size:70px; font-family:'Syncopate'; margin:0; text-shadow: 0 0 30px #fff;">WINNER</h1>
-    <div style="width:100px; height:4px; background:var(--p1); margin:30px 0;"></div>
-    <button onclick="restartGame()" class="btn-pro p-green" style="width:250px;">NEXT LEVEL</button>
+<div id="adminPanel">
+    <h2 style="margin:0; text-align:center;">GOD MODE ACTIVE</h2>
+    <p>Admin: @rp_gupta_07</p>
+    <button onclick="document.getElementById('adminPanel').style.display='none'" class="btn-ff btn-orange">CLOSE</button>
 </div>
 
-<div class="main-wrapper">
+<div id="booyah">
+    <div style="font-family:'Black Ops One'; font-size:80px; color:var(--ff-orange); text-shadow:0 0 50px var(--ff-orange); transform:rotate(-10deg);">BOOYAH!</div>
+    <h2 id="winnerName" style="margin-top:20px; font-size:30px;">PLAYER 1</h2>
+    <button onclick="restartGame()" class="btn-ff btn-orange" style="width:250px; margin-top:30px;">PLAY NEXT MATCH</button>
+</div>
+
+<div class="main-container">
     <div id="homeScreen" class="screen">
-        <div class="logo-container">
-            <div style="width:100px; height:100px; border:10px solid var(--p1); border-radius:50%; border-style:double; display:flex; align-items:center; justify-content:center; box-shadow:var(--neon);">
-                <span style="font-size:50px;">⬢</span>
-            </div>
+        <div class="ff-logo-box" onclick="adminTrigger()">
+            <span style="font-size:60px; color:#000;">🔥</span>
         </div>
+        <h1 class="ff-title">ELITE ARENA</h1>
+        <div class="ff-sub" id="adminLabel">@RP_GUPTA_07</div>
         
-        <div class="brand-text">NUTS SORT<br>ARENA PRO</div>
-        <div class="brand-sub">BY @RP_GUPTA_07</div>
+        <input id="uName" class="ff-input" placeholder="NICKNAME (Ex: SK SABIR)">
         
-        <div style="margin-top:40px; width:100%;">
-            <input id="uName" class="neon-input" placeholder="PLAYER NICKNAME">
-            
-            <div style="display:flex; gap:10px; margin-bottom:20px;">
-                <button class="grid-btn active" id="g3" onclick="setG(3)">3X3</button>
-                <button class="grid-btn" id="g5" onclick="setG(5)">5X5</button>
-                <button class="grid-btn" id="g7" onclick="setG(7)">7X7</button>
-            </div>
+        <div style="display:flex; gap:10px; width:100%; margin-bottom:15px;">
+            <button class="btn-ff btn-outline active" style="flex:1;" id="g3" onclick="setG(3)">3X3</button>
+            <button class="btn-ff btn-outline" style="flex:1;" id="g5" onclick="setG(5)">5X5</button>
+        </div>
 
-            <button class="btn-pro p-green" onclick="createArena()">CREATE PRIVATE ARENA</button>
-            <button class="btn-pro p-dark" onclick="startGlobal()">GLOBAL BATTLEFIELD</button>
-            <button class="btn-pro p-dark" style="border-color:var(--accent); color:var(--accent);" onclick="startBot()">TRAINING VS ROBOT</button>
+        <button class="btn-ff btn-orange" onclick="createArena()">START BATTLE ROYAL</button>
+        <button class="btn-ff btn-outline" onclick="startGlobal()">RANKED MATCHMAKING</button>
+        <button class="btn-ff btn-outline" style="color:var(--ff-red); border-color:var(--ff-red);" onclick="startBot()">VS ROBOT (AI)</button>
 
-            <div style="display:flex; gap:10px; margin-top:10px;">
-                <input id="roomIn" class="neon-input" placeholder="ARENA CODE" style="margin:0; flex:1;">
-                <button class="btn-pro p-dark" style="width:100px; margin:0;" onclick="joinArena()">JOIN</button>
-            </div>
+        <div style="display:flex; gap:5px; width:100%;">
+            <input id="roomIn" class="ff-input" placeholder="CODE" style="margin:0; flex:1;">
+            <button class="btn-ff btn-outline" style="width:80px; margin:0;" onclick="joinArena()">JOIN</button>
         </div>
     </div>
 
     <div id="arenaScreen" class="hidden" style="display:flex; flex-direction:column; height:100%;">
-        <div style="padding:20px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #222;">
-            <div onclick="location.reload()" style="font-weight:700; color:var(--accent); cursor:pointer;">QUIT</div>
-            <div id="status" style="font-family:'Syncopate'; font-size:10px; color:var(--p1);">SYNCING...</div>
-            <div id="roomIdShow" style="font-size:12px; opacity:0.3;">#0000</div>
+        <div style="padding:15px; display:flex; justify-content:space-between; align-items:center; background:#111;">
+            <div onclick="location.reload()" style="font-weight:900; color:var(--ff-red); cursor:pointer;">EXIT</div>
+            <div id="status" style="font-weight:900; font-size:12px; color:var(--ff-orange);">ZONE SHRINKING...</div>
+            <div id="roomIdShow" style="font-size:12px; opacity:0.5;">#0000</div>
+        </div>
+
+        <div class="ff-score">
+            <div class="score-unit"><div id="p1N" style="font-size:10px;">P1</div><div id="p1S" class="score-num" style="color:var(--ff-orange);">0</div></div>
+            <div style="font-family:'Black Ops One'; font-size:20px; align-self:center; opacity:0.2;">VS</div>
+            <div class="score-unit"><div id="p2N" style="font-size:10px;">P2</div><div id="p2S" class="score-num" style="color:#00f2ff;">0</div></div>
         </div>
 
         <div style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;">
-            <div style="display:flex; justify-content:space-around; width:100%; margin-bottom:20px; background:var(--glass); padding:15px 0;">
-                <div style="text-align:center;"><div id="p1N" style="font-size:10px;">P1</div><div id="p1S" style="font-size:25px; font-weight:900; color:var(--p1);">0</div></div>
-                <div style="text-align:center;"><div id="p2N" style="font-size:10px;">P2</div><div id="p2S" style="font-size:25px; font-weight:900; color:var(--p2);">0</div></div>
-            </div>
-
             <div id="board"></div>
             
-            <div style="display:flex; gap:20px; padding:15px;">
-                <span style="font-size:30px; cursor:pointer;" onclick="sendEmo('🔥')">🔥</span>
-                <span style="font-size:30px; cursor:pointer;" onclick="sendEmo('😂')">😂</span>
-                <span style="font-size:30px; cursor:pointer;" onclick="sendEmo('👑')">👑</span>
-                <span style="font-size:30px; cursor:pointer;" onclick="sendEmo('💀')">💀</span>
+            <div style="display:flex; gap:20px; padding:10px;">
+                <span style="font-size:35px; cursor:pointer;" onclick="sendEmo('👏')">👏</span>
+                <span style="font-size:35px; cursor:pointer;" onclick="sendEmo('😎')">😎</span>
+                <span style="font-size:35px; cursor:pointer;" onclick="sendEmo('🤡')">🤡</span>
+                <span style="font-size:35px; cursor:pointer;" onclick="sendEmo('💥')">💥</span>
             </div>
         </div>
 
-        <div class="chat-box">
+        <div class="ff-chat">
             <div id="msgs"></div>
-            <div style="display:flex; padding:10px; gap:10px; background:#050505;">
-                <input id="msgIn" placeholder="Type message..." style="margin:0; flex:1; background:#111; border:1px solid #333; color:#fff; padding:12px; border-radius:10px;">
-                <button onclick="sendM()" style="background:var(--p1); border:none; width:60px; border-radius:10px; font-weight:900;">GO</button>
+            <div style="display:flex; padding:8px; gap:5px;">
+                <input id="msgIn" placeholder="SQUAD CHAT..." style="flex:1; background:#1a1a1a; border:1px solid #333; color:#fff; padding:10px;">
+                <button onclick="sendM()" style="background:var(--ff-orange); border:none; padding:0 15px; font-weight:900;">GO</button>
             </div>
         </div>
     </div>
@@ -170,7 +190,6 @@ body, html {
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
 <script>
-// Firebase Config
 const firebaseConfig = {
   apiKey: "AIzaSyARuO_pN2vdYrVKYkKHHaNys7WI8HqM6I4",
   authDomain: "friendchat-43941.firebaseapp.com",
@@ -183,31 +202,36 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-let myId, myN, mySym, gRef, cRef, eRef, gSize = 3, isBot = false;
+let myId, myN, mySym, gRef, cRef, eRef, gSize = 3, isBot = false, tapCount = 0;
 
-// Pro Sound Engine (Synthesized to save space)
-const playSFX = (f, t) => {
+// Battle SFX Engine
+const playFFSound = (f, d) => {
     const a = new (window.AudioContext || window.webkitAudioContext)();
     const o = a.createOscillator(); const g = a.createGain();
-    o.type = t; o.frequency.setValueAtTime(f, a.currentTime);
-    g.gain.exponentialRampToValueAtTime(0.0001, a.currentTime + 0.5);
-    o.connect(g); g.connect(a.destination); o.start(); o.stop(a.currentTime + 0.5);
+    o.type = 'sawtooth'; o.frequency.setValueAtTime(f, a.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.0001, a.currentTime + d);
+    o.connect(g); g.connect(a.destination); o.start(); o.stop(a.currentTime + d);
 };
 
+function adminTrigger() {
+    tapCount++;
+    if(tapCount >= 5) { document.getElementById('adminPanel').style.display='block'; tapCount=0; }
+}
+
 function setG(s) {
-    gSize = s; document.querySelectorAll('.grid-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById('g'+s).classList.add('active');
+    gSize = s; document.querySelectorAll('.btn-outline').forEach(b => b.classList.remove('active'));
+    if(s===3) document.getElementById('g3').classList.add('active');
 }
 
 function startBot() {
-    myN = document.getElementById("uName").value || "Player";
-    isBot = true; myId = "BOT_" + Math.random().toString(36).substr(2,4);
+    myN = document.getElementById("uName").value || "RECRUIT";
+    isBot = true; myId = "TRAINING_" + Math.floor(Math.random()*999);
     setupArena("X");
 }
 
 function startGlobal() {
     myN = document.getElementById("uName").value;
-    if(!myN) return alert("Name please!");
+    if(!myN) return alert("ENTER NICKNAME!");
     db.ref("matchmaking").once("value", s => {
         let w = s.val();
         if(w) { myId = w.r; db.ref("matchmaking").remove(); setupArena("O"); }
@@ -217,7 +241,7 @@ function startGlobal() {
 
 function createArena() {
     myN = document.getElementById("uName").value;
-    if(!myN) return alert("Enter Name!");
+    if(!myN) return alert("ENTER NICKNAME!");
     myId = Math.floor(1000+Math.random()*8999).toString();
     setupArena("X");
 }
@@ -225,7 +249,7 @@ function createArena() {
 function joinArena() {
     myN = document.getElementById("uName").value;
     myId = document.getElementById("roomIn").value;
-    if(!myN || !myId) return alert("Details missing!");
+    if(!myN || !myId) return alert("MISSING DETAILS!");
     setupArena("O");
 }
 
@@ -236,64 +260,64 @@ function setupArena(s) {
     eRef = db.ref("rooms/"+myId+"/e");
 
     if(s === "X") {
-        gRef.set({ b: Array(gSize*gSize).fill(""), t: "X", s: gSize, sc: {X:0, O:0}, p: {X: myN, O: isBot ? "ROBOT_AI" : "WAITING..."} });
+        gRef.set({ b: Array(gSize*gSize).fill(""), t: "X", s: gSize, sc: {X:0, O:0}, p: {X: myN, O: isBot ? "BOT-007" : "CONNECTING..."} });
     } else {
         gRef.child("p/O").set(myN);
     }
 
     document.getElementById("homeScreen").classList.add("hidden");
     document.getElementById("arenaScreen").classList.remove("hidden");
-    document.getElementById("roomIdShow").innerText = "#"+myId;
+    document.getElementById("roomIdShow").innerText = "ID: "+myId;
     renderBoard(); listenArena(); listenChat(); listenEmos();
 }
 
 function renderBoard() {
     const b = document.getElementById("board");
     b.innerHTML = "";
-    let cs = gSize === 3 ? 100 : gSize === 5 ? 65 : 45;
+    let cs = gSize === 3 ? 110 : 65;
     b.style.gridTemplateColumns = `repeat(${gSize}, ${cs}px)`;
     for(let i=0; i<gSize*gSize; i++) {
-        const div = document.createElement("div");
-        div.className = "cell";
-        div.style.width = cs+"px"; div.style.height = cs+"px";
-        div.onclick = () => tap(i);
-        b.appendChild(div);
+        const d = document.createElement("div");
+        d.className = "cell";
+        d.style.width = cs+"px"; d.style.height = cs+"px";
+        d.onclick = () => tap(i);
+        b.appendChild(d);
     }
 }
 
 function listenArena() {
     gRef.on("value", s => {
-        const data = s.val(); if(!data) return;
-        document.getElementById("p1N").innerText = data.p.X;
-        document.getElementById("p2N").innerText = data.p.O;
-        document.getElementById("p1S").innerText = data.sc.X;
-        document.getElementById("p2S").innerText = data.sc.O;
+        const d = s.val(); if(!d) return;
+        document.getElementById("p1N").innerText = d.p.X;
+        document.getElementById("p2N").innerText = d.p.O;
+        document.getElementById("p1S").innerText = d.sc.X;
+        document.getElementById("p2S").innerText = d.sc.O;
 
-        data.b.forEach((v, i) => {
+        d.b.forEach((v, i) => {
             const c = document.getElementById("board").children[i];
-            if(v === "X") { c.innerText = "⬢"; c.className = "cell nut-x"; }
-            else if(v === "O") { c.innerText = "⬣"; c.className = "cell nut-o"; }
+            if(v === "X") { c.innerText = "X"; c.className = "cell char-x"; }
+            else if(v === "O") { c.innerText = "O"; c.className = "cell char-o"; }
             else { c.innerText = ""; c.className = "cell"; }
         });
 
-        const win = check(data.b, data.s);
+        const win = check(d.b, d.s);
         if(win) {
             if(win !== "draw") {
-                playSFX(800, 'square');
-                win.l.forEach(idx => document.getElementById("board").children[idx].classList.add("winner-cell"));
+                playFFSound(150, 0.8);
+                win.l.forEach(idx => document.getElementById("board").children[idx].classList.add("win-cell"));
                 setTimeout(() => {
-                    document.getElementById("winName").innerText = (win.w === "X" ? data.p.X : data.p.O).toUpperCase();
-                    document.getElementById("winOverlay").style.display = "flex";
-                    if(win.w === mySym) confetti({particleCount:200});
+                    document.getElementById("winnerName").innerText = (win.w === "X" ? d.p.X : d.p.O);
+                    document.getElementById("booyah").style.display = "flex";
+                    if(win.w === mySym) confetti({particleCount:300, spread:100});
                 }, 800);
             } else {
-                document.getElementById("winName").innerText = "TIE!";
-                document.getElementById("winOverlay").style.display = "flex";
+                document.getElementById("winnerName").innerText = "DRAW!";
+                document.getElementById("booyah").style.display = "flex";
             }
         } else {
-            document.getElementById("winOverlay").style.display = "none";
-            document.getElementById("status").innerText = data.t === mySym ? "★ YOUR TURN ★" : "SYNCING ARENA...";
-            if(isBot && data.t === "O") setTimeout(aiMove, 700);
+            document.getElementById("booyah").style.display = "none";
+            document.getElementById("status").innerText = d.t === mySym ? ">> YOUR TURN <<" : "ENEMY MOVING...";
+            if(isBot && d.t === "O") setTimeout(aiMove, 600);
         }
     });
 }
@@ -302,7 +326,7 @@ function tap(i) {
     gRef.once("value", s => {
         const d = s.val();
         if(!d || d.t !== mySym || d.b[i] !== "" || check(d.b, d.s)) return;
-        playSFX(400, 'sine');
+        playFFSound(800, 0.1);
         d.b[i] = mySym;
         let update = { b: d.b, t: mySym === "X" ? "O" : "X" };
         const w = check(d.b, d.s);
@@ -315,7 +339,7 @@ function aiMove() {
     gRef.once("value", s => {
         const d = s.val(); if(!d || d.t !== "O") return;
         let b = [...d.b], sz = d.s, m = -1;
-        // AI Logic
+        // AI: Win > Block > Random
         for(let i=0; i<b.length; i++){ if(b[i]===""){ b[i]="O"; if(check(b,sz)){ m=i; break; } b[i]=""; } }
         if(m===-1){ for(let i=0; i<b.length; i++){ if(b[i]===""){ b[i]="X"; if(check(b,sz)){ m=i; break; } b[i]=""; } } }
         if(m===-1){ let e = b.map((v,i)=>v===""?i:null).filter(v=>v!==null); m=e[Math.floor(Math.random()*e.length)]; }
@@ -350,10 +374,10 @@ function sendM() { const i = document.getElementById("msgIn"); if(i.value) { cRe
 function listenChat() {
     cRef.on("child_added", s => {
         const d = s.val(); const div = document.createElement("div");
-        div.className = "m-row " + (d.n === myN ? "m-me" : "");
-        div.innerHTML = `<div class="m-txt"><small style="font-size:8px; display:block; opacity:0.5;">${d.n}</small>${d.m}</div>`;
+        div.className = "msg-row";
+        div.innerHTML = `<span class="${d.n===myN?'msg-me':''}">[${d.n}]:</span> <span class="msg-txt">${d.m}</span>`;
         document.getElementById("msgs").appendChild(div);
-        document.getElementById("msgs").scrollTop = 99999;
+        document.getElementById("msgs").scrollTop = 9999;
     });
 }
 function sendEmo(e) { eRef.set({ e: e, t: Date.now() }); }
@@ -361,10 +385,10 @@ function listenEmos() {
     eRef.on("value", s => {
         const d = s.val(); if(!d) return;
         const div = document.createElement("div");
-        div.style = `position:fixed; bottom:200px; left:${20+Math.random()*60}%; font-size:60px; z-index:100;`;
+        div.style = `position:fixed; bottom:250px; left:${10+Math.random()*70}%; font-size:70px; z-index:100; pointer-events:none;`;
         div.innerText = d.e; document.body.appendChild(div);
-        div.animate([{transform:'translateY(0) scale(1)', opacity:1}, {transform:'translateY(-400px) scale(2)', opacity:0}], 1500);
-        setTimeout(() => div.remove(), 1500);
+        div.animate([{transform:'scale(0.5) translateY(0)', opacity:1}, {transform:'scale(2) translateY(-300px)', opacity:0}], 1200);
+        setTimeout(() => div.remove(), 1200);
     });
 }
 </script>
