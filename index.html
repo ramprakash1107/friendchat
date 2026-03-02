@@ -1,58 +1,29 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Cyber Strike: Phantom | @rp_gupta_07</title>
+    <title>Neon Rush Multiplayer | @rp_gupta_07</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
     <style>
-        :root { --p: #00ffcc; --s: #ff00ff; --bg: #050508; }
-        body, html { margin: 0; padding: 0; overflow: hidden; background: var(--bg); font-family: 'Inter', sans-serif; color: #fff; }
-        
-        #ui { position: fixed; inset: 0; pointer-events: none; z-index: 10; }
-        #overlay { 
-            position: fixed; inset: 0; background: radial-gradient(circle, rgba(10,10,20,0.8) 0%, #000 100%);
-            display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 100; pointer-events: all;
-        }
-
-        .input-box {
-            background: rgba(255,255,255,0.05); border: 2px solid var(--p);
-            padding: 15px; border-radius: 12px; color: #fff; width: 280px; text-align: center;
-            font-size: 18px; margin-bottom: 15px; outline: none; transition: 0.3s;
-        }
-        .input-box:focus { box-shadow: 0 0 20px var(--p); }
-
-        .btn-play {
-            padding: 15px 60px; background: var(--p); color: #000; border: none;
-            border-radius: 12px; font-weight: 900; font-size: 20px; cursor: pointer;
-            text-transform: uppercase; transition: 0.3s;
-        }
-        .btn-play:hover { transform: scale(1.05); box-shadow: 0 0 30px var(--p); }
-
-        #stats { position: absolute; bottom: 30px; left: 30px; }
-        .bar-outer { width: 250px; height: 12px; background: rgba(255,255,255,0.1); border-radius: 6px; overflow: hidden; }
-        #hp-bar { width: 100%; height: 100%; background: linear-gradient(90deg, #ff0055, #ff7700); transition: 0.3s; }
-        
-        #killfeed { position: absolute; top: 30px; right: 30px; text-align: right; color: var(--p); font-size: 14px; }
-        canvas { display: block; cursor: crosshair; }
+        body { margin: 0; background: #000; color: #fff; font-family: sans-serif; overflow: hidden; touch-action: none; }
+        canvas { display: block; }
+        #ui { position: fixed; top: 20px; width: 100%; text-align: center; pointer-events: none; }
+        #score { font-size: 50px; font-weight: 900; text-shadow: 0 0 20px #0ff; }
+        #lobby { position: fixed; inset: 0; background: rgba(0,0,0,0.9); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 100; }
+        input { padding: 12px; border-radius: 8px; border: 2px solid #0ff; background: #111; color: #fff; margin: 10px; text-align: center; }
+        button { padding: 12px 40px; border-radius: 8px; border: none; background: #0ff; color: #000; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
 
-<div id="overlay">
-    <h1 style="font-size: 50px; margin: 0; font-style: italic; letter-spacing: -2px;">CYBER <span style="color:var(--p)">STRIKE</span></h1>
-    <p style="opacity: 0.5; margin-bottom: 40px;">NEXT-GEN MULTIPLAYER BY @RP_GUPTA_07</p>
-    <input type="text" id="nick" class="input-box" placeholder="PLAYER NICKNAME">
-    <input type="text" id="room" class="input-box" placeholder="ARENA CODE">
-    <button class="btn-play" onclick="init()">JOIN BATTLE</button>
+<div id="lobby">
+    <h1 style="color:#0ff; letter-spacing: 5px;">NEON RUSH</h1>
+    <input type="text" id="room" placeholder="Enter Room Name">
+    <button onclick="join()">START RACE</button>
 </div>
 
 <div id="ui">
-    <div id="stats">
-        <div style="font-size: 12px; margin-bottom: 5px; letter-spacing: 2px;">SYSTEM INTEGRITY</div>
-        <div class="bar-outer"><div id="hp-bar"></div></div>
-        <h2 id="kills">KILLS: 0</h2>
-    </div>
-    <div id="killfeed"></div>
+    <div id="score">0</div>
+    <div id="players" style="font-size: 12px; opacity: 0.6;">Waiting for rivals...</div>
 </div>
 
 <canvas id="game"></canvas>
@@ -71,157 +42,87 @@ const db = firebase.database();
 
 const canvas = document.getElementById('game');
 const ctx = canvas.getContext('2d');
-let w, h, player, players = {}, bullets = [], particles = [], roomID, active = false;
-let mouse = { x: 0, y: 0 };
-let keys = {};
+let bird = { y: 300, v: 0, g: 0.6, jump: -8, x: 100 };
+let pipes = [];
+let score = 0;
+let roomID, myID, players = {}, active = false;
 
-function init() {
-    const nick = document.getElementById('nick').value || "Unit_"+Math.floor(Math.random()*99);
+function join() {
     roomID = document.getElementById('room').value || "Global";
-    document.getElementById('overlay').style.display = 'none';
-    
-    player = {
-        id: Math.random().toString(36).substr(2, 7),
-        name: nick,
-        x: Math.random() * 2000,
-        y: Math.random() * 2000,
-        angle: 0,
-        hp: 100,
-        kills: 0,
-        color: `hsl(${Math.random()*360}, 100%, 60%)`,
-        lastFire: 0
-    };
-
+    myID = Math.random().toString(36).substr(2, 5);
+    document.getElementById('lobby').style.display = 'none';
     active = true;
-    window.addEventListener('keydown', e => keys[e.code] = true);
-    window.addEventListener('keyup', e => keys[e.code] = false);
-    window.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
-    window.addEventListener('mousedown', fire);
-
-    // Network Sync
-    const pRef = db.ref(`cyber/${roomID}/players/${player.id}`);
-    pRef.onDisconnect().remove();
     
-    db.ref(`cyber/${roomID}/players`).on('value', s => { players = s.val() || {}; });
-    db.ref(`cyber/${roomID}/bullets`).on('child_added', s => {
-        const b = s.val();
-        if(b.owner !== player.id) bullets.push(b);
-    });
-
-    setInterval(() => {
-        if(active && player.hp > 0) pRef.set(player);
-    }, 40);
-
-    resize();
-    loop();
-}
-
-function fire() {
-    if(!active || player.hp <= 0 || Date.now() - player.lastFire < 150) return;
-    const bId = Math.random().toString(36).substr(2, 5);
-    const b = {
-        id: bId, owner: player.id,
-        x: player.x, y: player.y,
-        vx: Math.cos(player.angle) * 15,
-        vy: Math.sin(player.angle) * 15,
-        life: 100
-    };
-    db.ref(`cyber/${roomID}/bullets/${bId}`).set(b);
-    setTimeout(() => db.ref(`cyber/${roomID}/bullets/${bId}`).remove(), 1500);
-    bullets.push(b);
-    player.lastFire = Date.now();
-}
-
-function update() {
-    if(player.hp <= 0) return;
-
-    if(keys['KeyW']) player.y -= 5;
-    if(keys['KeyS']) player.y += 5;
-    if(keys['KeyA']) player.x -= 5;
-    if(keys['KeyD']) player.x += 5;
-
-    // Smooth Look
-    const dx = mouse.x - w/2;
-    const dy = mouse.y - h/2;
-    player.angle = Math.atan2(dy, dx);
-
-    // Bullet Logic
-    bullets.forEach((b, i) => {
-        b.x += b.vx; b.y += b.vy; b.life--;
-        if(b.life <= 0) bullets.splice(i, 1);
-
-        // Check Hit on ME
-        if(b.owner !== player.id) {
-            const dist = Math.hypot(b.x - player.x, b.y - player.y);
-            if(dist < 20) {
-                player.hp -= 10;
-                bullets.splice(i, 1);
-                if(player.hp <= 0) {
-                    db.ref(`cyber/${roomID}/players/${b.owner}/kills`).transaction(k => (k||0)+1);
-                    setTimeout(() => location.reload(), 3000);
-                }
-            }
-        }
-    });
-
-    document.getElementById('hp-bar').style.width = player.hp + "%";
-    document.getElementById('kills').innerText = "KILLS: " + (players[player.id]?.kills || 0);
-}
-
-function draw() {
-    ctx.fillStyle = '#050508';
-    ctx.fillRect(0,0,w,h);
-
-    const camX = w/2 - player.x;
-    const camY = h/2 - player.y;
-
-    // Grid
-    ctx.strokeStyle = '#11111a';
-    for(let i=0; i<4000; i+=100) {
-        ctx.beginPath(); ctx.moveTo(i + camX, camY); ctx.lineTo(i + camX, 2000 + camY); ctx.stroke();
-        ctx.beginPath(); ctx.moveTo(camX, i + camY); ctx.lineTo(2000 + camX, i + camY); ctx.stroke();
+    // Firebase Sync
+    const pRef = db.ref(`neon/${roomID}/players/${myID}`);
+    pRef.onDisconnect().remove();
+    db.ref(`neon/${roomID}/players`).on('value', s => players = s.val() || {});
+    
+    // Pipe Sync (Host creates pipes)
+    if(Object.keys(players).length === 0) {
+        setInterval(spawnPipe, 2000);
     }
+    db.ref(`neon/${roomID}/pipes`).on('value', s => pipes = s.val() || []);
 
-    // Draw Others
-    Object.values(players).forEach(p => {
-        if(p.id === player.id) return;
-        drawUnit(p.x + camX, p.y + camY, p.angle, p.color, p.name, p.hp);
+    requestAnimationFrame(loop);
+}
+
+function spawnPipe() {
+    if(!active) return;
+    const gap = 150;
+    const pos = Math.random() * (canvas.height - 300) + 100;
+    pipes.push({ x: canvas.width, pos, gap });
+    if(pipes.length > 5) pipes.shift();
+    db.ref(`neon/${roomID}/pipes`).set(pipes);
+}
+
+window.addEventListener('mousedown', () => bird.v = bird.jump);
+window.addEventListener('keydown', (e) => { if(e.code === 'Space') bird.v = bird.jump; });
+
+function loop() {
+    if(!active) return;
+    
+    // Physics
+    bird.v += bird.g;
+    bird.y += bird.v;
+    
+    // Update Firebase
+    db.ref(`neon/${roomID}/players/${myID}`).set({ y: bird.y, score: score });
+
+    // Canvas Logic
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    ctx.fillStyle = '#050505';
+    ctx.fillRect(0,0,canvas.width, canvas.height);
+
+    // Draw Pipes
+    pipes.forEach(p => {
+        p.x -= 3;
+        ctx.fillStyle = '#0ff';
+        ctx.shadowBlur = 15; ctx.shadowColor = '#0ff';
+        ctx.fillRect(p.x, 0, 50, p.pos); // Top
+        ctx.fillRect(p.x, p.pos + p.gap, 50, canvas.height); // Bottom
+        
+        // Score & Collision (Simple)
+        if(p.x === 100) score++;
+    });
+
+    // Draw Rival Ghosts
+    Object.keys(players).forEach(id => {
+        if(id === myID) return;
+        ctx.globalAlpha = 0.4;
+        ctx.fillStyle = '#f0f';
+        ctx.beginPath(); ctx.arc(100, players[id].y, 20, 0, 7); ctx.fill();
     });
 
     // Draw Me
-    if(player.hp > 0) drawUnit(w/2, h/2, player.angle, player.color, player.name, player.hp);
-
-    // Bullets
-    bullets.forEach(b => {
-        ctx.fillStyle = '#fff';
-        ctx.shadowBlur = 10; ctx.shadowColor = '#0ff';
-        ctx.beginPath(); ctx.arc(b.x + camX, b.y + camY, 3, 0, 7); ctx.fill();
-        ctx.shadowBlur = 0;
-    });
+    ctx.globalAlpha = 1;
+    ctx.fillStyle = '#0ff';
+    ctx.beginPath(); ctx.arc(100, bird.y, 20, 0, 7); ctx.fill();
+    
+    document.getElementById('score').innerText = score;
+    requestAnimationFrame(loop);
 }
-
-function drawUnit(x, y, a, c, n, hp) {
-    ctx.save();
-    ctx.translate(x, y);
-    
-    // UI
-    ctx.fillStyle = "#fff"; ctx.textAlign = "center"; ctx.font = "10px Monospace";
-    ctx.fillText(n.toUpperCase(), 0, -30);
-    
-    // Unit Body
-    ctx.rotate(a);
-    ctx.shadowBlur = 15; ctx.shadowColor = c;
-    ctx.fillStyle = c;
-    ctx.beginPath(); ctx.moveTo(15, 0); ctx.lineTo(-10, -10); ctx.lineTo(-10, 10); ctx.closePath(); ctx.fill();
-    
-    // Direction Light
-    ctx.fillStyle = "#fff"; ctx.fillRect(5, -2, 10, 4);
-    ctx.restore();
-}
-
-function loop() { update(); draw(); requestAnimationFrame(loop); }
-function resize() { w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight; }
-window.onresize = resize;
 </script>
 </body>
 </html>
