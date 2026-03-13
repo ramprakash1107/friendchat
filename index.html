@@ -2,117 +2,143 @@
 <html lang="hi">
 <head>
 <meta charset="UTF-8">
-<title>Elite Arena Pro | @rp_gupta_07</title>
+<title>ELITE ARENA PRO | @RP_GUPTA_07</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover">
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
 <style>
 :root { 
-    --primary: #00f2ff; --secondary: #7000ff; --bg: #030303; 
-    --card: rgba(255, 255, 255, 0.03); --win: #00ff88; 
-    --me: linear-gradient(135deg, #0084ff, #00c6ff); --other: #1a1a1a; --accent: #ff0055;
+    --primary: #00f2ff; --secondary: #7000ff; --bg: #020202; 
+    --win: #00ff88; --accent: #ff0055; --text: #ffffff;
+    --card-bg: rgba(255, 255, 255, 0.05);
 }
-* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
-body, html { margin: 0; padding: 0; height: 100%; width: 100%; background: var(--bg); color: #fff; font-family: 'Segoe UI', system-ui; overflow: hidden; }
 
-/* 1. Dynamic Background */
-.bg-glow { position: fixed; inset: 0; background: radial-gradient(circle at center, #111 0%, #000 100%); z-index: -1; }
-.bg-glow::after { content: ''; position: absolute; width: 200%; height: 200%; background: url('https://www.transparenttextures.com/patterns/carbon-fibre.png'); opacity: 0.1; }
+* { box-sizing: border-box; font-family: 'Inter', 'Segoe UI', sans-serif; -webkit-tap-highlight-color: transparent; }
 
-.container { display: flex; flex-direction: column; height: 100%; max-width: 450px; margin: auto; border: 1px solid rgba(255,255,255,0.05); background: rgba(0,0,0,0.5); backdrop-filter: blur(20px); }
+body { 
+    background: var(--bg); color: var(--text); margin: 0; overflow: hidden; 
+    display: flex; justify-content: center; height: 100vh;
+}
 
-/* 2. Professional UI elements */
-.hero-title { font-size: 45px; font-weight: 900; text-align: center; letter-spacing: -2px; line-height: 0.8; margin-bottom: 20px; text-transform: uppercase; font-style: italic; }
-.hero-title span { display: block; font-size: 20px; color: var(--primary); letter-spacing: 5px; font-style: normal; margin-top: 5px; }
+/* Background Effects */
+.scanline { width: 100%; height: 100px; z-index: 10; background: linear-gradient(0deg, rgba(0,0,0,0) 0%, rgba(0,242,255,0.02) 50%, rgba(0,0,0,0) 100%); opacity: 0.1; position: absolute; pointer-events: none; animation: scan 4s linear infinite; }
+@keyframes scan { from { top: -100px; } to { top: 100vh; } }
 
-input { width: 100%; padding: 15px; border-radius: 15px; border: 2px solid #222; background: #111; color: #fff; font-size: 16px; transition: 0.3s; }
-input:focus { border-color: var(--primary); box-shadow: 0 0 15px rgba(0,242,255,0.2); }
+.container { 
+    width: 100%; max-width: 450px; background: rgba(0,0,0,0.8); height: 100%;
+    position: relative; display: flex; flex-direction: column; border: 1px solid rgba(255,255,255,0.1);
+}
 
-.grid-select { display: flex; gap: 10px; margin: 15px 0; width: 100%; }
-.grid-btn { flex: 1; padding: 15px; background: #111; border: 2px solid #222; color: #fff; border-radius: 12px; cursor: pointer; font-weight: 900; transition: 0.3s; }
-.grid-btn.active { border-color: var(--primary); background: rgba(0,242,255,0.1); color: var(--primary); }
+/* Screens */
+.screen { padding: 30px; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; transition: 0.5s; }
+.hidden { display: none !important; opacity: 0; pointer-events: none; }
 
-.btn-main { width: 100%; padding: 18px; border-radius: 15px; border: none; font-weight: 900; cursor: pointer; text-transform: uppercase; transition: 0.2s; position: relative; overflow: hidden; }
-.btn-primary { background: var(--primary); color: #000; }
-.btn-primary:active { transform: scale(0.95); }
+/* 3D Neumorphic UI */
+.hero-box { text-align: center; margin-bottom: 40px; text-shadow: 0 0 20px var(--primary); }
+.hero-box h1 { font-size: 50px; font-weight: 900; letter-spacing: -3px; margin: 0; color: #fff; }
+.hero-box span { color: var(--primary); font-size: 14px; letter-spacing: 4px; font-weight: bold; }
 
-/* 3. Game Board Enhancements */
-#board { display: grid; gap: 10px; margin: 20px auto; padding: 10px; border-radius: 20px; background: rgba(255,255,255,0.02); }
-.cell { background: #0a0a0a; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-weight: 900; cursor: pointer; border: 2px solid #1a1a1a; transition: 0.2s; position: relative; }
-.cell:hover { background: #151515; }
-.cell.winner-cell { background: var(--win) !important; color: #000 !important; box-shadow: 0 0 40px var(--win); z-index: 5; }
+.btn { 
+    width: 100%; padding: 18px; border-radius: 12px; border: none; font-weight: 800; cursor: pointer; 
+    text-transform: uppercase; margin: 8px 0; transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+}
+.btn-p { background: var(--primary); color: #000; box-shadow: 0 0 30px rgba(0, 242, 255, 0.3); }
+.btn-p:hover { transform: scale(1.02); filter: brightness(1.1); }
+.btn-s { background: var(--secondary); color: #fff; }
 
-/* 4. Scoreboard Glow */
-.score-box { text-align: center; padding: 10px; border-radius: 15px; flex: 1; border: 2px solid #1a1a1a; transition: 0.5s; }
-.active-turn { border-color: var(--primary); box-shadow: 0 0 20px rgba(0,242,255,0.2); background: rgba(0,242,255,0.05); }
+input { 
+    width: 100%; padding: 16px; background: #111; border: 2px solid #222; border-radius: 12px; 
+    color: #fff; font-size: 16px; margin-bottom: 15px; transition: 0.3s;
+}
+input:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 10px rgba(0,242,255,0.2); }
 
-/* 5. Chat UI */
-.chat-section { height: 150px; background: #000; border-top: 1px solid #222; display: flex; flex-direction: column; }
-#messages { flex: 1; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 8px; }
-.msg { max-width: 85%; padding: 8px 15px; border-radius: 18px; font-size: 13px; font-weight: 500; }
-.me { align-self: flex-end; background: var(--me); color: #fff; }
-.other { align-self: flex-start; background: #222; }
+/* Game Board */
+.scoreboard { display: flex; width: 100%; gap: 15px; margin-bottom: 20px; }
+.score-card { flex: 1; padding: 15px; background: #0a0a0a; border-radius: 15px; border: 1px solid #222; text-align: center; position: relative; overflow: hidden; }
+.active-p { border-color: var(--primary); box-shadow: 0 0 20px rgba(0,242,255,0.1); }
+.active-p::after { content: 'THINKING...'; position: absolute; bottom: 0; left: 0; width: 100%; font-size: 8px; background: var(--primary); color: #000; font-weight: 900; }
 
-.hidden { display: none !important; }
+#board { display: grid; gap: 8px; margin: auto; perspective: 1000px; }
+.cell { 
+    background: #0f0f0f; border: 1px solid #222; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center; cursor: pointer;
+    font-size: 40px; font-weight: 900; transition: 0.2s; position: relative;
+}
+.cell:hover { background: #151515; border-color: var(--primary); }
+.cell.winner-cell { background: var(--win) !important; color: #000 !important; transform: scale(1.05); box-shadow: 0 0 40px var(--win); animation: pulse 0.5s infinite alternate; }
+@keyframes pulse { from { transform: scale(1.05); } to { transform: scale(1.1); } }
+
+/* Chat */
+.chat-container { height: 150px; background: #000; border-top: 1px solid #111; display: flex; flex-direction: column; }
+#chat-msgs { flex: 1; overflow-y: auto; padding: 10px; font-size: 12px; display: flex; flex-direction: column; gap: 5px; }
+.m-box { padding: 8px 12px; border-radius: 12px; max-width: 80%; line-height: 1.4; position: relative; }
+.m-me { align-self: flex-end; background: var(--secondary); color: #fff; }
+.m-bot { align-self: flex-start; background: #1a1a1a; color: #aaa; border-left: 3px solid var(--primary); }
+
+#win-screen { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 100; display: none; flex-direction: column; align-items: center; justify-content: center; }
 </style>
 </head>
 <body>
 
-<div class="bg-glow"></div>
-
-<div id="winnerOverlay" style="position:fixed; inset:0; background:rgba(0,0,0,0.9); z-index:9999; display:none; flex-direction:column; align-items:center; justify-content:center; backdrop-filter:blur(10px);">
-    <h2 style="letter-spacing:5px; color:#555;">MATCH ENDED</h2>
-    <h1 id="winnerName" style="font-size: 60px; color: var(--win); text-shadow: 0 0 30px var(--win); margin: 10px 0;">YOU WIN</h1>
-    <button onclick="restartMatch()" class="btn-main btn-primary" style="width: 250px;">REMATCH</button>
+<div class="scanline"></div>
+<div id="win-screen">
+    <h1 style="font-size: 60px; color: var(--win); margin: 0; text-shadow: 0 0 30px var(--win);" id="winner-txt">PLAYER X WINS</h1>
+    <p style="color: #666; letter-spacing: 5px;">ELITE DOMINATION</p>
+    <button class="btn btn-p" style="width: 250px; margin-top: 30px;" onclick="resetGame()">REMATCH</button>
 </div>
 
 <div class="container">
-    <div id="loginScreen" class="screen">
-        <h1 class="hero-title">ELITE<span>ARENA PRO</span></h1>
-        <p style="color:#444; font-size:12px; margin-bottom:30px; font-weight:bold;">CREATED BY @RP_GUPTA_07</p>
-        
-        <input id="userName" placeholder="ENTER YOUR NAME">
-        
-        <div class="grid-select">
-            <button class="grid-btn active" id="g3" onclick="setGrid(3)">3 X 3</button>
-            <button class="grid-btn" id="g5" onclick="setGrid(5)">5 X 5</button>
+    <div id="screen-home" class="screen">
+        <div class="hero-box">
+            <h1>ARENA PRO</h1>
+            <span>ULTIMATE AI EDITION</span>
         </div>
-
-        <button class="btn-main btn-primary" onclick="createRoom()">CREATE ONLINE ARENA</button>
-        <button class="btn-main" style="background:#1a1a1a; color:var(--secondary); border:1px solid var(--secondary); margin-top:5px;" onclick="startRobot()">SOLO VS AI (EXPERT)</button>
         
-        <div style="display:flex; gap:10px; margin-top:20px; width:100%;">
-            <input id="joinCode" placeholder="ARENA CODE" style="flex:1;">
-            <button onclick="joinRoom()" style="background:#fff; color:#000; border:none; padding:0 20px; border-radius:15px; font-weight:900;">JOIN</button>
+        <input id="p-name" placeholder="IDENTIFY YOURSELF (NAME)">
+        
+        <div style="display: flex; gap: 10px; width: 100%; margin-bottom: 10px;">
+            <button class="btn btn-s" onclick="setGrid(3)">3X3</button>
+            <button class="btn btn-s" onclick="setGrid(5)">5X5</button>
         </div>
+        
+        <button class="btn btn-p" onclick="initGame('robot')">⚡ VS SUPREME AI</button>
+        <button class="btn btn-s" onclick="initGame('online')">🌐 CREATE ONLINE ARENA</button>
+        
+        <div style="width: 100%; height: 1px; background: #222; margin: 20px 0;"></div>
+        
+        <div style="display: flex; gap: 5px; width: 100%;">
+            <input id="join-id" placeholder="ARENA ID" style="margin:0;">
+            <button class="btn btn-p" style="width: 80px; margin:0;" onclick="initGame('join')">JOIN</button>
+        </div>
+        <p style="font-size: 10px; color: #444; margin-top: 20px;">@RP_GUPTA_07 | BUILD v4.0.0-GOD_MODE</p>
     </div>
 
-    <div id="gameScreen" class="hidden" style="display:flex; flex-direction:column; height: 100%;">
-        <div style="padding: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #111;">
-            <button onclick="location.reload()" style="background:none; border:1px solid #333; color:#fff; padding:8px 15px; border-radius:10px; font-size:12px; font-weight:bold;">EXIT</button>
-            <div id="status" style="color:var(--primary); font-weight:900; font-size:14px; letter-spacing:1px;">YOUR TURN</div>
-            <div id="displayRoomCode" style="color:#555; font-weight:bold;">ID: 0000</div>
+    <div id="screen-game" class="screen hidden">
+        <div style="width:100%; display:flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <span id="arena-tag" style="font-size: 10px; color: var(--primary);">ID: 0000</span>
+            <span id="game-status" style="font-weight: 900;">YOUR TURN</span>
+            <button onclick="location.reload()" style="background:none; border:none; color:var(--accent); cursor:pointer;">EXIT</button>
         </div>
 
-        <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px;">
-            <div style="display:flex; width:100%; gap:15px; margin-bottom:20px;">
-                <div id="boxX" class="score-box">
-                    <div id="p1Name" style="font-size:10px; color:#666; text-transform:uppercase;">Player X</div>
-                    <div id="p1Score" style="font-size:24px; font-weight:900; color:var(--primary);">0</div>
-                </div>
-                <div id="boxO" class="score-box">
-                    <div id="p2Name" style="font-size:10px; color:#666; text-transform:uppercase;">Player O</div>
-                    <div id="p2Score" style="font-size:24px; font-weight:900; color:var(--accent);">0</div>
-                </div>
+        <div class="scoreboard">
+            <div class="score-card" id="card-X">
+                <div style="font-size: 10px; opacity: 0.5;" id="name-X">PLAYER X</div>
+                <div style="font-size: 24px; font-weight: 900; color: var(--primary);" id="score-X">0</div>
             </div>
-            <div id="board"></div>
+            <div class="score-card" id="card-O">
+                <div style="font-size: 10px; opacity: 0.5;" id="name-O">ROBOT</div>
+                <div style="font-size: 24px; font-weight: 900; color: var(--accent);" id="score-O">0</div>
+            </div>
         </div>
 
-        <div class="chat-section">
-            <div id="messages"></div>
-            <div style="display:flex; padding:10px; gap:8px; background:#050505;">
-                <input id="msgInput" placeholder="Send a message..." style="margin:0; flex:1; padding:12px; border:none; border-radius:12px;">
-                <button onclick="sendMsg()" style="background:var(--primary); border:none; width:50px; border-radius:12px; color:#000; font-weight:900;">➤</button>
+        <div id="board"></div>
+
+        <div class="chat-container">
+            <div id="chat-msgs"></div>
+            <div style="display:flex; padding: 5px;">
+                <input id="chat-input" placeholder="Trash talk..." style="margin:0; flex:1; padding: 10px; font-size: 12px; border-radius: 8px;">
+                <button onclick="sendChat()" style="background:var(--primary); border:none; margin-left:5px; padding: 0 15px; border-radius: 8px;">➤</button>
             </div>
         </div>
     </div>
@@ -122,232 +148,321 @@ input:focus { border-color: var(--primary); box-shadow: 0 0 15px rgba(0,242,255,
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
 <script>
-// Firebase initialization
+// --- CORE CONFIG ---
 const firebaseConfig = {
-  apiKey: "AIzaSyARuO_pN2vdYrVKYkKHHaNys7WI8HqM6I4",
-  authDomain: "friendchat-43941.firebaseapp.com",
-  databaseURL: "https://friendchat-43941-default-rtdb.firebaseio.com",
-  projectId: "friendchat-43941",
-  storageBucket: "friendchat-43941.firebasestorage.app",
-  messagingSenderId: "1026542245723",
-  appId: "1:1026542245723:web:b892bfcc1d2358a018ac7e"
+    apiKey: "AIzaSyARuO_pN2vdYrVKYkKHHaNys7WI8HqM6I4",
+    authDomain: "friendchat-43941.firebaseapp.com",
+    databaseURL: "https://friendchat-43941-default-rtdb.firebaseio.com",
+    projectId: "friendchat-43941",
+    storageBucket: "friendchat-43941.firebasestorage.app",
+    messagingSenderId: "1026542245723",
+    appId: "1:1026542245723:web:b892bfcc1d2358a018ac7e"
 };
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-let myRoomId, myName, mySymbol, gameRef, chatRef, gridSize = 3, isRobot = false;
-
-// 6. Audio System फिक्स (Browser policy के लिए यूजर इंटरैक्शन जरूरी है)
-const sounds = {
-    move: new Howl({ src: ['https://cdn.pixabay.com/audio/2022/03/15/audio_78390a1391.mp3'], volume: 0.5 }),
-    win: new Howl({ src: ['https://cdn.pixabay.com/audio/2021/08/04/audio_0625906354.mp3'], volume: 0.8 }),
-    lose: new Howl({ src: ['https://cdn.pixabay.com/audio/2021/08/04/audio_3e02917711.mp3'], volume: 0.5 }),
-    msg: new Howl({ src: ['https://cdn.pixabay.com/audio/2022/03/10/audio_c35278d35a.mp3'], volume: 0.3 })
+let state = {
+    mode: 'robot', grid: 3, symbol: 'X', roomId: null, 
+    board: [], scores: {X:0, O:0}, players: {X:'', O:''},
+    turn: 'X', isActive: true
 };
 
-function setGrid(s) {
-    gridSize = s;
-    document.querySelectorAll('.grid-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById('g'+s).classList.add('active');
-}
+const audio = {
+    click: new Howl({ src: ['https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3'] }),
+    win: new Howl({ src: ['https://assets.mixkit.co/active_storage/sfx/1435/1435-preview.mp3'] }),
+    lose: new Howl({ src: ['https://assets.mixkit.co/active_storage/sfx/2573/2573-preview.mp3'] }),
+    chat: new Howl({ src: ['https://assets.mixkit.co/active_storage/sfx/2358/2358-preview.mp3'] })
+};
 
-function startRobot() {
-    myName = document.getElementById("userName").value.trim() || "Pro_Player";
-    isRobot = true; myRoomId = "AI_ARENA_" + Math.floor(Math.random()*999);
-    setupGame("X");
-}
+// --- INITIALIZATION ---
+function setGrid(n) { state.grid = n; }
 
-function createRoom() {
-    myName = document.getElementById("userName").value.trim() || "Host";
-    myRoomId = Math.floor(1000 + Math.random()*8999).toString();
-    isRobot = false; setupGame("X");
-}
-
-function joinRoom() {
-    myName = document.getElementById("userName").value.trim() || "Guest";
-    myRoomId = document.getElementById("joinCode").value.trim();
-    if(!myRoomId) return;
-    isRobot = false; setupGame("O");
-}
-
-function setupGame(sym) {
-    mySymbol = sym;
-    gameRef = db.ref("rooms/" + myRoomId + "/game");
-    chatRef = db.ref("rooms/" + myRoomId + "/chat");
-
-    if(sym === "X") {
-        gameRef.set({ 
-            board: Array(gridSize*gridSize).fill(""), 
-            turn: "X", size: gridSize, scores: {X:0, O:0}, 
-            players: {X: myName, O: isRobot ? "ROBOT_AI" : "WAITING..."} 
-        });
+function initGame(type) {
+    state.mode = type;
+    state.players.X = document.getElementById('p-name').value || "ProPlayer";
+    
+    if(type === 'robot') {
+        state.roomId = "SOLO_" + Math.random().toString(36).substr(2, 5);
+        state.players.O = "SUPREME AI";
+        startMatch();
+    } else if(type === 'online') {
+        state.roomId = Math.floor(1000 + Math.random()*8999).toString();
+        state.symbol = 'X';
+        state.players.O = "WAITING...";
+        startMatch(true);
     } else {
-        gameRef.child("players/O").set(myName);
-    }
-
-    document.getElementById("loginScreen").classList.add("hidden");
-    document.getElementById("gameScreen").classList.remove("hidden");
-    document.getElementById("displayRoomCode").innerText = "ARENA: " + myRoomId;
-    createBoard(); listenGame(); listenChat();
-}
-
-function createBoard() {
-    const board = document.getElementById("board");
-    board.innerHTML = "";
-    let cellSize = gridSize === 3 ? 100 : 70;
-    board.style.gridTemplateColumns = `repeat(${gridSize}, ${cellSize}px)`;
-    for(let i=0; i < gridSize * gridSize; i++) {
-        const cell = document.createElement("div");
-        cell.className = "cell"; cell.id = "c" + i;
-        cell.style.width = cellSize + "px"; cell.style.height = cellSize + "px";
-        cell.style.fontSize = (cellSize/1.8) + "px";
-        cell.onclick = () => move(i);
-        board.appendChild(cell);
+        state.roomId = document.getElementById('join-id').value;
+        state.symbol = 'O';
+        startMatch(false);
     }
 }
 
-function move(i) {
-    gameRef.once("value", snap => {
-        const g = snap.val();
-        if(!g || g.turn !== mySymbol || g.board[i] !== "" || checkWinner(g.board, g.size)) return;
-        
-        // Vibration for mobile
-        if(navigator.vibrate) navigator.vibrate(50);
-        
-        sounds.move.play();
-        g.board[i] = mySymbol;
-        updateGameState(g);
-    });
-}
-
-function updateGameState(g) {
-    let nextTurn = g.turn === "X" ? "O" : "X";
-    let updateData = { board: g.board, turn: nextTurn };
+function startMatch(isHost = true) {
+    document.getElementById('screen-home').classList.add('hidden');
+    document.getElementById('screen-game').classList.remove('hidden');
+    document.getElementById('arena-tag').innerText = "ARENA ID: " + state.roomId;
     
-    const win = checkWinner(g.board, g.size);
-    if(win && win !== "draw") {
-        g.scores[win.w]++;
-        updateData.scores = g.scores;
-        sounds.win.play();
-    }
-    gameRef.update(updateData);
-}
-
-// 7. Unbeatable Robot AI (Minimax Algorithm)
-function getBestMove(board, size) {
-    let emptyCells = board.map((v, i) => v === "" ? i : null).filter(v => v !== null);
+    const gameRef = db.ref('arenas/' + state.roomId);
     
-    // 1. Check if AI can win in next move
-    for(let i of emptyCells) {
-        let b = [...board]; b[i] = "O";
-        if(checkWinner(b, size)) return i;
-    }
-    // 2. Block Player if they are winning
-    for(let i of emptyCells) {
-        let b = [...board]; b[i] = "X";
-        if(checkWinner(b, size)) return i;
-    }
-    // 3. Center is priority
-    let center = Math.floor((size*size)/2);
-    if(board[center] === "") return center;
-    
-    // 4. Random but smart
-    return emptyCells[Math.floor(Math.random() * emptyCells.length)];
-}
-
-function listenGame() {
-    gameRef.on("value", snap => {
-        const g = snap.val(); if(!g) return;
-        
-        document.getElementById("p1Name").innerText = g.players.X;
-        document.getElementById("p2Name").innerText = g.players.O;
-        document.getElementById("p1Score").innerText = g.scores.X;
-        document.getElementById("p2Score").innerText = g.scores.O;
-
-        document.getElementById("boxX").className = "score-box " + (g.turn === "X" ? "active-turn" : "");
-        document.getElementById("boxO").className = "score-box " + (g.turn === "O" ? "active-turn" : "");
-
-        g.board.forEach((v, i) => { 
-            const c = document.getElementById("c"+i);
-            if(c.innerText !== v) {
-                c.innerText = v;
-                c.style.transform = "scale(1.1)";
-                setTimeout(() => c.style.transform = "scale(1)", 200);
-            }
-            c.style.color = v === 'X' ? 'var(--primary)' : 'var(--accent)'; 
-        });
-
-        const winData = checkWinner(g.board, g.size);
-        if(winData) {
-            if(winData !== "draw") {
-                winData.line.forEach(idx => document.getElementById("c"+idx).classList.add("winner-cell"));
-                document.getElementById("winnerName").innerText = (winData.w === "X" ? g.players.X : g.players.O).toUpperCase();
-                setTimeout(() => {
-                    document.getElementById("winnerOverlay").style.display = "flex";
-                    if(winData.w === mySymbol) confetti({particleCount: 200, spread: 70});
-                }, 1000);
-            } else {
-                document.getElementById("winnerName").innerText = "DRAW";
-                document.getElementById("winnerOverlay").style.display = "flex";
-            }
+    if(state.mode === 'robot') {
+        renderBoard();
+        updateUI();
+    } else {
+        if(isHost) {
+            gameRef.set({
+                board: Array(state.grid*state.grid).fill(''),
+                turn: 'X', scores: {X:0, O:0}, players: state.players, grid: state.grid
+            });
         } else {
-            document.getElementById("winnerOverlay").style.display = "none";
-            document.getElementById("status").innerText = g.turn === mySymbol ? "YOUR TURN" : "OPPONENT THINKING...";
-            
-            if(isRobot && g.turn === "O") {
-                setTimeout(() => {
-                    let moveIdx = getBestMove(g.board, g.size);
-                    if(moveIdx !== undefined) {
-                        sounds.move.play();
-                        g.board[moveIdx] = "O";
-                        updateGameState(g);
-                    }
-                }, 1000);
-            }
+            gameRef.child('players/O').set(state.players.X);
+        }
+        syncOnline();
+    }
+}
+
+// --- RENDER ENGINE ---
+function renderBoard() {
+    const boardEl = document.getElementById('board');
+    boardEl.innerHTML = "";
+    let size = state.grid === 3 ? 100 : 70;
+    boardEl.style.gridTemplateColumns = `repeat(${state.grid}, ${size}px)`;
+    
+    for(let i=0; i<state.grid*state.grid; i++) {
+        let cell = document.createElement('div');
+        cell.className = 'cell';
+        cell.id = 'cell-' + i;
+        cell.onclick = () => handleMove(i);
+        boardEl.appendChild(cell);
+    }
+}
+
+function updateUI() {
+    document.getElementById('name-X').innerText = state.players.X;
+    document.getElementById('name-O').innerText = state.players.O;
+    document.getElementById('score-X').innerText = state.scores.X;
+    document.getElementById('score-O').innerText = state.scores.O;
+    
+    document.getElementById('card-X').className = 'score-card ' + (state.turn === 'X' ? 'active-p' : '');
+    document.getElementById('card-O').className = 'score-card ' + (state.turn === 'O' ? 'active-p' : '');
+
+    state.board.forEach((val, i) => {
+        const el = document.getElementById('cell-' + i);
+        if(el) {
+            el.innerText = val;
+            el.style.color = val === 'X' ? 'var(--primary)' : 'var(--accent)';
         }
     });
 }
 
-function checkWinner(b, size) {
-    const lines = [];
-    if(size === 3) {
-        lines.push([0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]);
+// --- GAME LOGIC ---
+function handleMove(i) {
+    if(!state.isActive || state.board[i] !== '' || state.turn !== state.symbol) return;
+    
+    if(state.mode === 'robot') {
+        state.board[i] = 'X';
+        audio.click.play();
+        checkResult();
+        if(state.isActive) {
+            state.turn = 'O';
+            updateUI();
+            setTimeout(aiMove, 600);
+        }
     } else {
-        // 5x5 simple logic (4 in a row)
+        db.ref('arenas/' + state.roomId).once('value', snap => {
+            let data = snap.val();
+            if(data.turn === state.symbol && data.board[i] === '') {
+                data.board[i] = state.symbol;
+                data.turn = state.symbol === 'X' ? 'O' : 'X';
+                db.ref('arenas/' + state.roomId).update(data);
+            }
+        });
+    }
+}
+
+// --- SUPREME AI (MINIMAX) ---
+function aiMove() {
+    let bestScore = -Infinity;
+    let move;
+    
+    // Minimax for 3x3 (For 5x5 we use smart logic to avoid lag)
+    if(state.grid === 3) {
+        for(let i=0; i<9; i++) {
+            if(state.board[i] === '') {
+                state.board[i] = 'O';
+                let score = minimax(state.board, 0, false);
+                state.board[i] = '';
+                if(score > bestScore) { bestScore = score; move = i; }
+            }
+        }
+    } else {
+        // Smart blocking for 5x5
+        let empty = state.board.map((v,i) => v==='' ? i : null).filter(v => v!==null);
+        move = empty[Math.floor(Math.random()*empty.length)];
+    }
+    
+    state.board[move] = 'O';
+    audio.click.play();
+    state.turn = 'X';
+    checkResult();
+    updateUI();
+    if(Math.random() > 0.7) botTalk();
+}
+
+function minimax(board, depth, isMaximizing) {
+    let result = checkWinnerRaw(board);
+    if(result === 'O') return 10;
+    if(result === 'X') return -10;
+    if(result === 'draw') return 0;
+
+    if(isMaximizing) {
+        let bestScore = -Infinity;
+        for(let i=0; i<9; i++) {
+            if(board[i] === '') {
+                board[i] = 'O';
+                let score = minimax(board, depth + 1, false);
+                board[i] = '';
+                bestScore = Math.max(score, bestScore);
+            }
+        }
+        return bestScore;
+    } else {
+        let bestScore = Infinity;
+        for(let i=0; i<9; i++) {
+            if(board[i] === '') {
+                board[i] = 'X';
+                let score = minimax(board, depth + 1, true);
+                board[i] = '';
+                bestScore = Math.min(score, bestScore);
+            }
+        }
+        return bestScore;
+    }
+}
+
+// --- WIN CHECKER ---
+function checkWinnerRaw(b) {
+    const wins = state.grid === 3 ? [
+        [0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]
+    ] : []; // 5x5 logic added dynamically
+    
+    if(state.grid === 5) {
         for(let i=0; i<5; i++) {
             for(let j=0; j<2; j++) {
-                lines.push([i*5+j, i*5+j+1, i*5+j+2, i*5+j+3]);
-                lines.push([j*5+i, (j+1)*5+i, (j+2)*5+i, (j+3)*5+i]);
+                wins.push([i*5+j, i*5+j+1, i*5+j+2, i*5+j+3]);
+                wins.push([j*5+i, (j+1)*5+i, (j+2)*5+i, (j+3)*5+i]);
             }
         }
     }
-    for(let l of lines) {
-        if(b[l[0]] && l.every(idx => b[idx] === b[l[0]])) return {w: b[l[0]], line: l};
+
+    for(let combo of wins) {
+        if(b[combo[0]] && combo.every(idx => b[idx] === b[combo[0]])) return b[combo[0]];
     }
-    return b.includes("") ? null : "draw";
+    return b.includes('') ? null : 'draw';
 }
 
-function restartMatch() { 
-    gameRef.update({ board: Array(gridSize*gridSize).fill(""), turn: "X" }); 
+function checkResult() {
+    let win = checkWinnerRaw(state.board);
+    if(win) {
+        state.isActive = false;
+        if(win !== 'draw') {
+            state.scores[win]++;
+            showWin(win);
+        } else {
+            showWin("DRAW");
+        }
+    }
 }
 
-function sendMsg() {
-    const i = document.getElementById("msgInput");
-    if(!i.value) return;
-    chatRef.push({ n: myName, m: i.value }); i.value = "";
+function showWin(winner) {
+    const el = document.getElementById('win-screen');
+    const txt = document.getElementById('winner-txt');
+    el.style.display = "flex";
+    if(winner === 'DRAW') {
+        txt.innerText = "IT'S A DRAW!";
+        txt.style.color = "#888";
+    } else {
+        txt.innerText = winner === 'X' ? state.players.X + " WINS!" : state.players.O + " WINS!";
+        txt.style.color = winner === 'X' ? 'var(--win)' : 'var(--accent)';
+        if(winner === state.symbol) {
+            confetti({ particleCount: 150, spread: 70 });
+            audio.win.play();
+        } else {
+            audio.lose.play();
+        }
+    }
 }
 
-function listenChat() {
-    chatRef.on("child_added", snap => {
-        const d = snap.val();
-        sounds.msg.play();
-        const m = document.createElement("div");
-        m.className = "msg " + (d.n === myName ? "me" : "other");
-        m.innerHTML = `<span style="font-size:8px; opacity:0.5; display:block;">${d.n}</span>${d.m}`;
-        document.getElementById("messages").appendChild(m);
-        document.getElementById("messages").scrollTop = 1000;
+function resetGame() {
+    document.getElementById('win-screen').style.display = "none";
+    state.board = Array(state.grid*state.grid).fill('');
+    state.isActive = true;
+    state.turn = 'X';
+    if(state.mode !== 'robot') {
+        db.ref('arenas/' + state.roomId).update({ board: state.board, turn: 'X' });
+    } else {
+        renderBoard();
+        updateUI();
+    }
+}
+
+// --- ONLINE SYNC ---
+function syncOnline() {
+    db.ref('arenas/' + state.roomId).on('value', snap => {
+        let data = snap.val();
+        if(!data) return;
+        state.board = data.board;
+        state.turn = data.turn;
+        state.players = data.players;
+        state.scores = data.scores;
+        state.grid = data.grid;
+        renderBoard();
+        updateUI();
+        
+        let win = checkWinnerRaw(state.board);
+        if(win) {
+            state.isActive = false;
+            showWin(win);
+        } else {
+            document.getElementById('win-screen').style.display = "none";
+            state.isActive = true;
+        }
+    });
+    
+    db.ref('chats/' + state.roomId).on('child_added', snap => {
+        addMsg(snap.val().n, snap.val().m);
     });
 }
+
+// --- CHAT & BOT TALK ---
+function botTalk() {
+    const quotes = ["Nice move, but I'm faster.", "Predictable.", "You're playing with fire.", "Calculating your defeat...", "Is that all?"];
+    addMsg("ROBOT", quotes[Math.floor(Math.random()*quotes.length)], true);
+}
+
+function sendChat() {
+    let m = document.getElementById('chat-input').value;
+    if(!m) return;
+    if(state.mode === 'robot') {
+        addMsg(state.players.X, m);
+        setTimeout(botTalk, 1000);
+    } else {
+        db.ref('chats/' + state.roomId).push({ n: state.players.X, m: m });
+    }
+    document.getElementById('chat-input').value = "";
+}
+
+function addMsg(name, txt, isBot = false) {
+    const box = document.getElementById('chat-msgs');
+    const el = document.createElement('div');
+    el.className = 'm-box ' + (name === state.players.X ? 'm-me' : 'm-bot');
+    el.innerHTML = `<b>${name}:</b> ${txt}`;
+    box.appendChild(el);
+    box.scrollTop = box.scrollHeight;
+    audio.chat.play();
+}
+
+// Boot up
+state.board = Array(state.grid*state.grid).fill('');
 </script>
 </body>
 </html>
