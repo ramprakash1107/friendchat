@@ -1,597 +1,356 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>@rp_gupta_07 | Elite Arena Pro 2050</title>
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover">
-<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-<style>
-:root { 
-    --primary: #00f2ff; 
-    --secondary: #7000ff;
-    --bg: #030308; 
-    --card: rgba(255, 255, 255, 0.03);
-    --win: #00ff88; 
-    --me: linear-gradient(135deg, #0084ff, #00c6ff);
-    --other: #1e1e24; 
-    --accent: #ff0055;
-    --glow: 0 0 15px rgba(0, 242, 255, 0.4);
-}
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2D Car Racing Game</title>
 
-.theme-red {
-    --primary: #ff0055;
-    --secondary: #330011;
-    --win: #ffaa00;
-    --glow: 0 0 15px rgba(255, 0, 85, 0.4);
-}
-
-.theme-green {
-    --primary: #00ff88;
-    --secondary: #003311;
-    --win: #00f2ff;
-    --glow: 0 0 15px rgba(0, 255, 136, 0.4);
-}
-
-* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Orbitron', 'Segoe UI', sans-serif; }
-
-body, html { 
-    margin: 0; padding: 0; height: 100%; width: 100%; 
-    background: var(--bg); color: #fff;
-    overflow: hidden; position: fixed;
-}
-
-#bg-canvas {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; pointer-events: none;
-}
-
-.bg-glow {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: radial-gradient(circle at 50% 50%, rgba(26, 26, 46, 0.6) 0%, #030308 100%);
-    z-index: -1;
-}
-
-.container { 
-    display: flex; flex-direction: column; height: 100%; max-width: 450px; 
-    margin: auto; position: relative; backdrop-filter: blur(20px);
-    border-left: 1px solid rgba(255,255,255,0.05); border-right: 1px solid rgba(255,255,255,0.05);
-}
-
-.screen { 
-    flex: 1; display: flex; flex-direction: column; align-items: center; 
-    justify-content: center; padding: 25px; animation: fadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-@keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
-
-.hero-title { 
-    font-size: 46px; font-weight: 900; letter-spacing: -1px; margin: 0; text-align: center;
-    background: linear-gradient(to bottom, #fff 40%, #555); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    text-shadow: 0 0 30px rgba(255,255,255,0.1);
-}
-
-.glitch-text {
-    color: var(--primary); text-shadow: var(--glow); font-weight: 900; animation: pulseGlow 2s infinite alternate;
-}
-
-@keyframes pulseGlow { from { filter: drop-shadow(0 0 2px var(--primary)); } to { filter: drop-shadow(0 0 8px var(--primary)); } }
-
-input { 
-    width: 100%; padding: 16px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.08);
-    background: rgba(0, 0, 0, 0.6); color: #fff; font-size: 16px; transition: 0.3s; outline: none; margin-bottom: 14px;
-    text-align: center; letter-spacing: 1px;
-}
-input:focus { border-color: var(--primary); box-shadow: var(--glow); }
-
-.grid-select { display: flex; gap: 8px; margin: 10px 0; width: 100%; }
-.grid-btn { 
-    flex: 1; padding: 14px; background: var(--card); border: 1px solid rgba(255,255,255,0.08);
-    color: #fff; border-radius: 12px; font-weight: bold; cursor: pointer; transition: 0.2s;
-}
-.grid-btn.active { background: var(--primary); color: #000; font-weight: 900; box-shadow: var(--glow); border-color: transparent; }
-
-.theme-selector { display: flex; gap: 10px; margin-bottom: 15px; width: 100%; justify-content: center; }
-.theme-dot { width: 25px; height: 25px; border-radius: 50%; cursor: pointer; border: 2px solid #fff; }
-
-.btn-main { 
-    width: 100%; padding: 16px; border-radius: 14px; border: none; font-weight: 800;
-    font-size: 14px; cursor: pointer; text-transform: uppercase; margin-bottom: 12px;
-    transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1); letter-spacing: 1px;
-    display: flex; align-items: center; justify-content: center; gap: 10px;
-}
-.btn-main:active { transform: scale(0.98); }
-.btn-primary { background: var(--primary); color: #000; box-shadow: var(--glow); }
-.btn-secondary { background: rgba(112, 0, 255, 0.2); color: #fff; border: 1px solid var(--secondary); }
-.btn-outline { background: rgba(255,255,255,0.02); color: #fff; border: 1px solid rgba(255,255,255,0.1); }
-.btn-outline:hover { background: rgba(255,255,255,0.08); }
-
-#board { display: grid; gap: 10px; margin: 15px auto; padding: 10px; background: rgba(255,255,255,0.01); border-radius: 20px; border: 1px solid rgba(255,255,255,0.03); }
-.cell { 
-    background: rgba(0, 0, 0, 0.4); border-radius: 14px; display: flex; 
-    align-items: center; justify-content: center; font-weight: 900; 
-    cursor: pointer; border: 1px solid rgba(255,255,255,0.05); transition: 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    text-shadow: 0 0 10px currentColor;
-}
-.cell:not(:empty):pushed { transform: scale(0.95); }
-
-.cell.winner-cell {
-    background: var(--win) !important;
-    color: #000 !important;
-    box-shadow: 0 0 40px var(--win);
-    transform: scale(1.05);
-    z-index: 10;
-    animation: winPulse 0.4s infinite alternate;
-}
-
-@keyframes winPulse { from { filter: brightness(1.3); } to { filter: brightness(0.8); } }
-
-#winnerOverlay { 
-    position: fixed; inset: 0; background: rgba(3,3,8,0.95); z-index: 9999; 
-    display: none; flex-direction: column; align-items: center; justify-content: center;
-    backdrop-filter: blur(15px);
-}
-
-.ring-container {
-    position: absolute; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; z-index: -1;
-}
-.ring {
-    position: absolute; border-radius: 50%; border: 2px solid transparent;
-    animation: rotateRing 4s linear infinite;
-}
-.ring:nth-child(1) { width: 320px; height: 320px; border-top-color: var(--primary); border-bottom-color: var(--secondary); }
-.ring:nth-child(2) { width: 380px; height: 380px; border-left-color: var(--win); border-right-color: var(--accent); animation-duration: 6s; direction: reverse; }
-
-@keyframes rotateRing { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-
-.winner-content { text-align: center; z-index: 10; animation: pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-@keyframes pop { from { transform: scale(0.7); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-
-.exit-btn {
-    background: transparent; color: var(--accent); border: 1px solid rgba(255, 0, 85, 0.3);
-    padding: 8px 16px; border-radius: 8px; font-size: 11px; font-weight: 900; cursor: pointer; transition: 0.2s;
-}
-.exit-btn:hover { background: rgba(255, 0, 85, 0.1); }
-
-.scoreboard {
-    display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;
-    background: rgba(255,255,255,0.02); padding: 15px; border-radius: 18px; width: 100%;
-    border: 1px solid rgba(255,255,255,0.05);
-}
-.score-box { text-align: center; flex: 1; }
-.score-val { font-size: 26px; font-weight: 900; color: var(--primary); text-shadow: var(--glow); }
-.score-label { font-size: 10px; text-transform: uppercase; color: #aaa; letter-spacing: 1px; margin-bottom: 4px; }
-.streak-badge { font-size: 9px; background: var(--accent); color: #fff; padding: 2px 6px; border-radius: 20px; display: inline-block; margin-top: 4px; font-weight: bold;}
-
-.chat-section { 
-    height: 160px; background: rgba(5, 5, 10, 0.8); 
-    border-top: 1px solid rgba(255,255,255,0.08); display: flex; flex-direction: column;
-}
-#messages { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 6px; }
-.msg { max-width: 80%; padding: 8px 14px; border-radius: 14px; font-size: 12px; line-height: 1.4; }
-.me { align-self: flex-end; background: var(--me); color: #fff; border-bottom-right-radius: 2px; box-shadow: 0 4px 10px rgba(0,132,255,0.2); }
-.other { align-self: flex-start; background: var(--other); border-bottom-left-radius: 2px; border: 1px solid rgba(255,255,255,0.05); }
-
-.shake { animation: sfx-shake 0.2s ease-in-out 2; }
-@keyframes sfx-shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
-
-.hidden { display: none !important; }
-</style>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
-<canvas id="bg-canvas"></canvas>
-<div class="bg-glow"></div>
+<div id="game">
 
-<div id="winnerOverlay">
-    <div class="ring-container">
-        <div class="ring"></div>
-        <div class="ring"></div>
-    </div>
-    <div class="winner-content">
-        <div style="letter-spacing: 6px; color: #888; font-size: 11px; font-weight: bold;">ARENA DOMINATION</div>
-        <h1 id="winnerName" style="font-size: 48px; margin: 15px 0; text-shadow: 0 0 40px currentColor;">SYSTEM</h1>
-        <button onclick="restartMatch()" class="btn-main btn-primary" style="width: 240px; border-radius: 50px; font-size: 16px;">ENGAGE NEXT ROUND</button>
-    </div>
+<div class="score">
+Score :
+<span id="score">0</span>
 </div>
 
-<div class="container" id="mainContainer">
-    <div id="loginScreen" class="screen">
-        <div style="text-align: center; margin-bottom: 25px;">
-            <h1 class="hero-title">ULTIMATE</h1>
-            <h1 class="hero-title glitch-text" style="margin-top: -5px;">ARENA PRO</h1>
-            <p style="color:#666; font-size:9px; letter-spacing: 2px; margin-top: 5px;">ARCHITECT: @RP_GUPTA_07</p>
-        </div>
+<div id="road">
 
-        <div class="theme-selector">
-            <div class="theme-dot" style="background:#00f2ff;" onclick="changeTheme('cyan')"></div>
-            <div class="theme-dot" style="background:#ff0055;" onclick="changeTheme('red')"></div>
-            <div class="theme-dot" style="background:#00ff88;" onclick="changeTheme('green')"></div>
-        </div>
+<div id="player"></div>
 
-        <input id="userName" placeholder="ENTER INITIALS / PILOT NAME" maxlength="15">
-
-        <div class="grid-select">
-            <button class="grid-btn active" id="g3" onclick="setGrid(3)">3X3 Matrix</button>
-            <button class="grid-btn" id="g5" onclick="setGrid(5)">5X5 Matrix</button>
-            <button class="grid-btn" id="g7" onclick="setGrid(7)">7X7 Matrix</button>
-        </div>
-
-        <button class="btn-main btn-primary" onclick="createRoom()">⚡ CREATE SECURE ARENA</button>
-        <button class="btn-main btn-secondary" onclick="startGlobal()">🌐 NEURAL GLOBAL BATTLE</button>
-        <button class="btn-main btn-outline" onclick="startRobot()">🤖 SOLO VS CYBER BOT</button>
-
-        <div style="margin: 15px 0; width: 100%; height: 1px; background: rgba(255,255,255,0.08);"></div>
-        
-        <input id="joinCode" placeholder="SECURE ARENA KEY">
-        <button class="btn-main btn-outline" onclick="joinRoom()">🔗 LINK TO SQUAD</button>
-
-        <div style="margin-top: 20px; text-align: center;">
-            <span style="font-size: 10px; color:#444; letter-spacing: 1px;">NETWORK INSTAGRAM:</span><br>
-            <a href="https://www.instagram.com/rp_gupta_07" target="_blank" style="text-decoration:none; color:var(--primary); font-size:13px; font-weight:bold; letter-spacing:1px;">@rp_gupta_07</a>
-        </div>
-    </div>
-
-    <div id="gameScreen" class="hidden" style="display:flex; flex-direction:column; height: 100%;">
-        <div style="padding: 14px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); background: rgba(0,0,0,0.2);">
-            <button class="exit-btn" onclick="exitArena()">✕ TERMINATE</button>
-            <div id="status" style="font-weight:900; color:var(--win); font-size:12px; letter-spacing:1.5px;">ESTABLISHING SYNC...</div>
-            <div style="font-size:10px; color:#666;">ROOM: <span id="displayRoomCode" style="color:var(--primary); font-weight:bold;">0000</span></div>
-        </div>
-
-        <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 12px;">
-            
-            <div class="scoreboard">
-                <div class="score-box">
-                    <div id="p1Name" class="score-label">PILOT X</div>
-                    <div id="p1Score" class="score-val">0</div>
-                    <div id="p1Streak" class="streak-badge hidden">0 STREAK</div>
-                </div>
-                <div style="font-size: 16px; color: #444; font-weight: 900; letter-spacing:2px; padding: 0 10px;">VS</div>
-                <div class="score-box">
-                    <div id="p2Name" class="score-label">PILOT O</div>
-                    <div id="p2Score" class="score-val">0</div>
-                    <div id="p2Streak" class="streak-badge hidden">0 STREAK</div>
-                </div>
-            </div>
-
-            <div id="board"></div>
-
-            <div style="display:flex; gap:18px; background:rgba(255,255,255,0.02); padding:10px 24px; border-radius:40px; margin-top:12px; border: 1px solid rgba(255,255,255,0.05);">
-                <span style="cursor:pointer; font-size:24px; transition:0.2s;" onclick="sendEmoji('😂')">😂</span>
-                <span style="cursor:pointer; font-size:24px; transition:0.2s;" onclick="sendEmoji('🔥')">🔥</span>
-                <span style="cursor:pointer; font-size:24px; transition:0.2s;" onclick="sendEmoji('👑')">👑</span>
-                <span style="cursor:pointer; font-size:24px; transition:0.2s;" onclick="sendEmoji('⚡')">⚡</span>
-            </div>
-        </div>
-
-        <div class="chat-section">
-            <div id="messages"></div>
-            <div style="display:flex; padding:8px; gap:8px; background: #020205;">
-                <input id="msgInput" placeholder="Type encrypted message..." style="margin:0; flex:1; padding:12px; font-size:14px; border-radius:10px; text-align: left;">
-                <button onclick="sendMsg()" style="background:var(--primary); border:none; width:50px; border-radius:10px; font-weight:bold; color:#000; cursor:pointer;">➤</button>
-            </div>
-        </div>
-    </div>
 </div>
 
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<div id="startScreen">
+<h1>2D Car Racing</h1>
+<p>Press SPACE to Start</p>
+<p>Move : ⬅ ➡</p>
+</div>
 
-<script>
-// Firebase Config
-const firebaseConfig = {
-  apiKey: "AIzaSyARuO_pN2vdYrVKYkKHHaNys7WI8HqM6I4",
-  authDomain: "friendchat-43941.firebaseapp.com",
-  databaseURL: "https://friendchat-43941-default-rtdb.firebaseio.com",
-  projectId: "friendchat-43941",
-  storageBucket: "friendchat-43941.firebasestorage.app",
-  messagingSenderId: "1026542245723",
-  appId: "1:1026542245723:web:b892bfcc1d2358a018ac7e"
-};
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
+<div id="gameOver" class="hide">
+<h1>Game Over</h1>
+<button onclick="location.reload()">Play Again</button>
+</div>
 
-let myRoomId, myName, mySymbol, gameRef, chatRef, emojiRef, gridSize = 3, isRobot = false;
-let currentStreak = 0;
+</div>
 
-// Synthesizer Sound Engine (2050 Audio System without files)
-const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-function playSynthSound(type) {
-    try {
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.connect(gain); gain.connect(audioCtx.destination);
-        if(type === 'click') {
-            osc.type = 'sine'; osc.frequency.setValueAtTime(600, audioCtx.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(200, audioCtx.currentTime + 0.1);
-            gain.gain.setValueAtTime(0.1, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
-            osc.start(); osc.stop(audioCtx.currentTime + 0.1);
-        } else if(type === 'win') {
-            osc.type = 'sawtooth'; osc.frequency.setValueAtTime(300, audioCtx.currentTime);
-            osc.frequency.linearRampToValueAtTime(900, audioCtx.currentTime + 0.4);
-            gain.gain.setValueAtTime(0.1, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
-            osc.start(); osc.stop(audioCtx.currentTime + 0.4);
-        }
-    } catch(e){}
-}
+<script src="script.js"></script>
 
-// Particle Engine Background
-const canvas = document.getElementById("bg-canvas");
-const ctx = canvas.getContext("2d");
-let particles = [];
-function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-window.addEventListener('resize', resizeCanvas); resizeCanvas();
-
-class Particle {
-    constructor() { this.x = Math.random() * canvas.width; this.y = Math.random() * canvas.height; this.speed = Math.random() * 0.5 + 0.1; this.size = Math.random() * 2; }
-    update() { this.y -= this.speed; if(this.y < 0) { this.y = canvas.height; this.x = Math.random() * canvas.width; } }
-    draw() { ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--primary').trim() || '#00f2ff'; ctx.fillRect(this.x, this.y, this.size, this.size); }
-}
-for(let i=0; i<60; i++) particles.push(new Particle());
-function animateParticles() { ctx.clearRect(0,0,canvas.width,canvas.height); particles.forEach(p => { p.update(); p.draw(); }); requestAnimationFrame(animateParticles); }
-animateParticles();
-
-// Theme Switcher
-function changeTheme(theme) {
-    document.body.className = "";
-    if(theme === 'red') document.body.classList.add('theme-red');
-    if(theme === 'green') document.body.classList.add('theme-green');
-    playSynthSound('click');
-}
-
-function triggerHapticFeedback() {
-    if(navigator.vibrate) navigator.vibrate(50);
-    const container = document.getElementById("mainContainer");
-    container.classList.add("shake");
-    setTimeout(() => container.classList.remove("shake"), 200);
-}
-
-function setGrid(s) {
-    gridSize = s; playSynthSound('click');
-    document.querySelectorAll('.grid-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById('g'+s).classList.add('active');
-}
-
-function startRobot() {
-    myName = document.getElementById("userName").value.trim() || "Cyborg_" + Math.floor(Math.random()*99);
-    isRobot = true; myRoomId = "BOT_" + Math.floor(Math.random()*9999);
-    setupGame("X");
-}
-
-function startGlobal() {
-    myName = document.getElementById("userName").value.trim();
-    if(!myName) return alert("Enter Pilot Name!");
-    playSynthSound('click');
-    db.ref("global_waiting").once("value", snap => {
-        let waiting = snap.val();
-        if(waiting) { myRoomId = waiting.room; db.ref("global_waiting").remove(); setupGame("O"); }
-        else { myRoomId = Math.floor(1000 + Math.random()*8999).toString(); db.ref("global_waiting").set({room: myRoomId}); setupGame("X"); }
-    });
-}
-
-function createRoom() {
-    myName = document.getElementById("userName").value.trim();
-    if(!myName) return alert("Enter Pilot Name!");
-    playSynthSound('click');
-    myRoomId = Math.floor(1000 + Math.random()*8999).toString();
-    setupGame("X");
-}
-
-function joinRoom() {
-    myName = document.getElementById("userName").value.trim();
-    myRoomId = document.getElementById("joinCode").value.trim();
-    if(!myName || !myRoomId) return alert("Fill all coordinates!");
-    playSynthSound('click');
-    setupGame("O");
-}
-
-function setupGame(sym) {
-    mySymbol = sym;
-    gameRef = db.ref("rooms/" + myRoomId + "/game");
-    chatRef = db.ref("rooms/" + myRoomId + "/chat");
-    emojiRef = db.ref("rooms/" + myRoomId + "/emojis");
-
-    if(sym === "X") {
-        gameRef.set({ board: Array(gridSize*gridSize).fill(""), turn: "X", size: gridSize, scores: {X:0, O:0}, players: {X: myName, O: isRobot ? "CYBER_BOT" : "SEARCHING PILOT..."} });
-    } else {
-        gameRef.child("players/O").set(myName);
-    }
-
-    document.getElementById("loginScreen").classList.add("hidden");
-    document.getElementById("gameScreen").classList.remove("hidden");
-    document.getElementById("displayRoomCode").innerText = isRobot ? "MATRIX_BOT" : myRoomId;
-    createBoard(); listenGame(); listenChat(); listenEmojis();
-}
-
-function createBoard() {
-    const board = document.getElementById("board");
-    board.innerHTML = "";
-    let cellSize = gridSize === 3 ? 95 : gridSize === 5 ? 64 : 45;
-    board.style.gridTemplateColumns = `repeat(${gridSize}, ${cellSize}px)`;
-    for(let i=0; i < gridSize * gridSize; i++) {
-        const cell = document.createElement("div");
-        cell.className = "cell";
-        cell.style.width = cellSize + "px"; cell.style.height = cellSize + "px";
-        cell.style.fontSize = (cellSize/1.6) + "px";
-        cell.onclick = () => move(i);
-        board.appendChild(cell);
-    }
-}
-
-function listenGame() {
-    gameRef.on("value", snap => {
-        const g = snap.val(); if(!g) return;
-        
-        document.getElementById("p1Name").innerText = g.players.X;
-        document.getElementById("p2Name").innerText = g.players.O;
-        document.getElementById("p1Score").innerText = g.scores.X;
-        document.getElementById("p2Score").innerText = g.scores.O;
-
-        g.board.forEach((v, i) => { 
-            const c = document.getElementById("board").children[i];
-            if(c && c.innerText !== v) { 
-                c.innerText = v; 
-                c.classList.remove("winner-cell");
-                if(v) {
-                    c.style.color = v === 'X' ? 'var(--primary)' : 'var(--accent)';
-                    playSynthSound('click');
-                }
-            }
-        });
-
-        const winData = checkWinner(g.board, g.size);
-        if(winData) {
-            if(winData !== "draw") {
-                winData.line.forEach(idx => {
-                    if(document.getElementById("board").children[idx]) {
-                        document.getElementById("board").children[idx].classList.add("winner-cell");
-                    }
-                });
-                
-                let winName = (winData.w === "X" ? g.players.X : g.players.O).toUpperCase();
-                if(winData.w === mySymbol) {
-                    currentStreak++;
-                    const stBadge = document.getElementById(mySymbol === "X" ? "p1Streak" : "p2Streak");
-                    stBadge.innerText = `${currentStreak} STREAK`; stBadge.classList.remove("hidden");
-                } else {
-                    currentStreak = 0;
-                    document.getElementById(mySymbol === "X" ? "p1Streak" : "p2Streak").classList.add("hidden");
-                }
-
-                setTimeout(() => {
-                    document.getElementById("winnerName").style.color = winData.w === "X" ? "var(--primary)" : "var(--accent)";
-                    document.getElementById("winnerName").innerText = winName;
-                    document.getElementById("winnerOverlay").style.display = "flex";
-                    playSynthSound('win');
-                    triggerHapticFeedback();
-                    if(winData.w === mySymbol) confetti({ particleCount: 200, spread: 80, origin: { y: 0.6 } });
-                }, 800);
-            } else {
-                document.getElementById("winnerName").innerText = "MATRIX DRAW";
-                document.getElementById("winnerName").style.color = "#888";
-                document.getElementById("winnerOverlay").style.display = "flex";
-            }
-        } else {
-            document.getElementById("winnerOverlay").style.display = "none";
-            document.getElementById("status").innerText = g.turn === mySymbol ? "YOUR TURN TO STRIKE" : (isRobot && g.turn === "O" ? "BOT CALCULATING..." : "WAITING FOR PILOT...");
-            if(isRobot && g.turn === "O") setTimeout(neuralBotLogic, 600);
-        }
-    });
-}
-
-function move(i) {
-    gameRef.once("value", snap => {
-        const g = snap.val();
-        if(!g || g.turn !== mySymbol || g.board[i] !== "" || checkWinner(g.board, g.size)) return;
-        g.board[i] = mySymbol;
-        triggerHapticFeedback();
-        
-        let updateData = { board: g.board, turn: mySymbol === "X" ? "O" : "X" };
-        const winCheck = checkWinner(g.board, g.size);
-        if(winCheck && winCheck !== "draw") {
-            g.scores[winCheck.w]++;
-            updateData.scores = g.scores;
-        }
-        gameRef.update(updateData);
-    });
-}
-
-// 2050 Upgraded Mini-Max Smart Block Strategy
-function neuralBotLogic() {
-    gameRef.once("value", snap => {
-        const g = snap.val(); if(!g || g.turn !== "O") return;
-        let b = [...g.board], s = g.size, moveIdx = -1;
-
-        // Priority 1: Smart Attack (Can Bot Win?)
-        for(let i=0; i<b.length; i++) { if(b[i]===""){ b[i]="O"; if(checkWinner(b,s)){ moveIdx=i; break; } b[i]=""; } }
-        // Priority 2: Precise Block (Is Player Win close?)
-        if(moveIdx===-1){ for(let i=0; i<b.length; i++){ if(b[i]===""){ b[i]="X"; if(checkWinner(b,s)){ moveIdx=i; break; } b[i]=""; } } }
-        // Priority 3: Capture Matrix Center
-        if(moveIdx===-1 && b[Math.floor(b.length/2)] === "") { moveIdx = Math.floor(b.length/2); }
-        // Priority 4: Random Scan
-        if(moveIdx===-1){ let e = b.map((v,i)=>v===""?i:null).filter(v=>v!==null); moveIdx=e[Math.floor(Math.random()*e.length)]; }
-        
-        if(moveIdx!==-1 && moveIdx !== undefined){ 
-            g.board[moveIdx]="O";
-            let updateData = {board:g.board, turn:"X"};
-            const winCheck = checkWinner(g.board, g.size);
-            if(winCheck && winCheck !== "draw") {
-                g.scores.O++; updateData.scores = g.scores;
-            }
-            gameRef.update(updateData);
-        }
-    });
-}
-
-function checkWinner(b, size) {
-    const lines = [];
-    let winLen = size === 3 ? 3 : size === 5 ? 4 : 5; // Matrix rules scaled
-    
-    // Rows & Columns mapping
-    for(let i=0; i<size; i++) {
-        for(let j=0; j<=size-winLen; j++) {
-            let row = []; for(let k=0; k<winLen; k++) row.push(i*size + j + k);
-            lines.push(row);
-            let col = []; for(let k=0; k<winLen; k++) col.push((j+k)*size + i);
-            lines.push(col);
-        }
-    }
-    // Diagonals mapping
-    for(let r=0; r<=size-winLen; r++) {
-        for(let c=0; c<=size-winLen; c++) {
-            let d1 = []; for(let k=0; k<winLen; k++) d1.push((r+k)*size + (c+k));
-            lines.push(d1);
-            let d2 = []; for(let k=0; k<winLen; k++) d2.push((r+k)*size + (c+winLen-1-k));
-            lines.push(d2);
-        }
-    }
-    
-    // Check match lines dynamically
-    for(let l of lines) { 
-        if(b[l[0]] && l.every(idx => b[idx] === b[l[0]])) { return {w: b[l[0]], line: l}; }
-    }
-    return b.includes("") ? null : "draw";
-}
-
-function exitArena() {
-    if(confirm("Disconnect Neural Network Link?")) {
-        if(mySymbol === "X" && !isRobot) db.ref("rooms/" + myRoomId).remove();
-        location.reload();
-    }
-}
-
-function restartMatch() {
-    gameRef.update({ board: Array(gridSize*gridSize).fill(""), turn: "X" });
-}
-
-function sendMsg() {
-    const i = document.getElementById("msgInput");
-    if(!i.value.trim()) return;
-    chatRef.push({ n: myName, m: i.value }); i.value = "";
-}
-
-function listenChat() {
-    chatRef.on("child_added", snap => {
-        const d = snap.val();
-        const m = document.createElement("div");
-        m.className = "msg " + (d.n === myName ? "me" : "other");
-        m.innerHTML = `<b style="font-size:8px; opacity:0.6; display:block; margin-bottom:2px; letter-spacing:1px;">${d.n.toUpperCase()}</b>${d.m}`;
-        document.getElementById("messages").appendChild(m);
-        document.getElementById("messages").scrollTop = 10000;
-    });
-}
-
-function sendEmoji(e) { emojiRef.set({ emoji: e, t: Date.now() }); }
-function listenEmojis() {
-    emojiRef.on("value", snap => {
-        const d = snap.val(); if(!d) return;
-        const el = document.createElement("div");
-        el.style.position = "fixed"; el.style.bottom = "180px"; el.style.fontSize = "65px"; el.style.zIndex="10000";
-        el.innerText = d.emoji; el.style.left = Math.random() * 50 + 25 + "%"; el.style.pointerEvents = "none";
-        el.animate([{transform:'translateY(0) scale(0.6)', opacity:1},{transform:'translateY(-450px) scale(1.6) rotate('+ (Math.random()*40-20) +'deg)', opacity:0}], 1400);
-        document.body.appendChild(el); setTimeout(()=>el.remove(), 1400);
-    });
-}
-</script>
 </body>
-</html>
+</html>*{margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial,Helvetica,sans-serif;
+}
+
+body{
+    background:#111;
+    overflow:hidden;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+}
+
+#game{
+    position:relative;
+}
+
+#road{
+    width:400px;
+    height:700px;
+    background:#444;
+    overflow:hidden;
+    position:relative;
+    border:6px solid #fff;
+    margin:auto;
+}
+
+/* Road side grass */
+#road::before,
+#road::after{
+    content:"";
+    position:absolute;
+    top:0;
+    width:50px;
+    height:100%;
+    background:#2e8b57;
+    z-index:1;
+}
+
+#road::before{
+    left:0;
+}
+
+#road::after{
+    right:0;
+}
+
+/* Road center */
+#road{
+    background:
+    repeating-linear-gradient(
+        to bottom,
+        #444 0px,
+        #444 35px,
+        #fff 35px,
+        #fff 70px
+    );
+    background-size:100% 80px;
+}
+
+#player{
+    position:absolute;
+    width:50px;
+    height:90px;
+    background:#ff2d2d;
+    border-radius:10px;
+    left:175px;
+    bottom:25px;
+    z-index:5;
+    box-shadow:
+    0 0 10px rgba(255,0,0,.7);
+}
+
+.enemy{
+    position:absolute;
+    width:50px;
+    height:90px;
+    background:#1e90ff;
+    border-radius:10px;
+    z-index:5;
+}
+
+.score{
+    position:absolute;
+    top:10px;
+    left:10px;
+    color:#fff;
+    font-size:22px;
+    font-weight:bold;
+    z-index:20;
+    background:rgba(0,0,0,.5);
+    padding:8px 15px;
+    border-radius:8px;
+}
+
+#startScreen,
+#gameOver{
+    position:absolute;
+    inset:0;
+    background:rgba(0,0,0,.85);
+    color:#fff;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    z-index:30;
+    text-align:center;
+}
+
+#startScreen h1,
+#gameOver h1{
+    font-size:42px;
+    margin-bottom:20px;
+}
+
+#startScreen p{
+    margin:8px;
+    font-size:20px;
+}
+
+button{
+    padding:12px 30px;
+    border:none;
+    border-radius:8px;
+    font-size:18px;
+    cursor:pointer;
+}
+
+.hide{
+    display:none;
+}const road = document.getElementById("road");
+const player = document.getElementById("player");
+const scoreEl = document.getElementById("score");
+const startScreen = document.getElementById("startScreen");
+const gameOver = document.getElementById("gameOver");
+
+let keys = {
+  ArrowLeft: false,
+  ArrowRight: false
+};
+
+let playerX = 175;
+let speed = 6;
+let score = 0;
+let running = false;
+let enemyCars = [];
+let roadOffset = 0;
+
+document.addEventListener("keydown", (e) => {
+  if (e.code === "Space" && !running) {
+    startGame();
+  }
+
+  if (e.key in keys) {
+    keys[e.key] = true;
+  }
+});
+
+document.addEventListener("keyup", (e) => {
+  if (e.key in keys) {
+    keys[e.key] = false;
+  }
+});
+
+function startGame() {
+  running = true;
+  score = 0;
+  speed = 6;
+  playerX = 175;
+
+  scoreEl.innerText = 0;
+  startScreen.classList.add("hide");
+  gameOver.classList.add("hide");
+
+  enemyCars.forEach(c => c.remove());
+  enemyCars = [];
+
+  player.style.left = playerX + "px";
+
+  for (let i = 0; i < 4; i++) {
+    createEnemy(-i * 180);
+  }
+
+  requestAnimationFrame(gameLoop);
+}
+
+function createEnemy(y) {
+
+  const car = document.createElement("div");
+
+  car.className = "enemy";
+
+  const lanes = [70, 130, 190, 250];
+
+  car.x = lanes[Math.floor(Math.random() * lanes.length)];
+
+  car.y = y;
+
+  car.style.left = car.x + "px";
+
+  car.style.top = car.y + "px";
+
+  road.appendChild(car);
+
+  enemyCars.push(car);
+
+}
+
+function moveEnemies() {
+
+  enemyCars.forEach(car => {
+
+    car.y += speed;
+
+    if (car.y > 720) {
+
+      car.y = -150;
+
+      const lanes = [70,130,190,250];
+
+      car.x = lanes[Math.floor(Math.random()*lanes.length)];
+
+      car.style.left = car.x + "px";
+
+      score++;
+
+      scoreEl.innerText = score;
+
+      if(score%10===0){
+
+        speed+=0.5;
+
+      }
+
+    }
+
+    car.style.top = car.y + "px";
+
+    if(checkCollision(player,car)){
+
+      running=false;
+
+      gameOver.classList.remove("hide");
+
+    }
+
+  });
+
+}
+
+function checkCollision(a,b){
+
+const r1=a.getBoundingClientRect();
+
+const r2=b.getBoundingClientRect();
+
+return !(
+
+r1.bottom<r2.top ||
+
+r1.top>r2.bottom ||
+
+r1.right<r2.left ||
+
+r1.left>r2.right
+
+);
+
+}
+
+function movePlayer(){
+
+if(keys.ArrowLeft){
+
+playerX-=speed;
+
+}
+
+if(keys.ArrowRight){
+
+playerX+=speed;
+
+}
+
+if(playerX<60) playerX=60;
+
+if(playerX>290) playerX=290;
+
+player.style.left=playerX+"px";
+
+}
+
+function moveRoad(){
+
+roadOffset+=speed;
+
+road.style.backgroundPositionY=roadOffset+"px";
+
+}
+
+function gameLoop(){
+
+if(!running) return;
+
+moveRoad();
+
+movePlayer();
+
+moveEnemies();
+
+requestAnimationFrame(gameLoop);
+
+}
