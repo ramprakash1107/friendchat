@@ -117,7 +117,7 @@ body, html {
 
 .input-label {
     font-size: 10px; font-weight: 700; letter-spacing: 1.4px; color: var(--primary);
-    text-transform: uppercase; margin-bottom: 4px; display: flex; justify-content: space-between;
+    text-transform: uppercase; margin-bottom: 5px; display: flex; justify-content: space-between;
 }
 
 input {
@@ -128,16 +128,6 @@ input {
     transition: 0.3s; outline: none; margin-bottom: 10px; user-select: text;
 }
 input:focus { border-color: var(--primary); box-shadow: 0 0 15px var(--primary-glow); }
-
-.emblem-row { display: flex; gap: 6px; margin-bottom: 10px; }
-.emblem-btn {
-    flex: 1; padding: 7px; font-size: 17px; background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.1); border-radius: 9px; cursor: pointer; transition: 0.2s;
-}
-.emblem-btn.active {
-    background: rgba(255,255,255,0.12); border-color: var(--primary);
-    box-shadow: 0 0 12px var(--primary-glow); transform: translateY(-2px);
-}
 
 .selector-row { display: flex; gap: 6px; margin-bottom: 10px; width: 100%; }
 .chip-btn {
@@ -176,6 +166,23 @@ input:focus { border-color: var(--primary); box-shadow: 0 0 15px var(--primary-g
 }
 .btn-outline:hover { border-color: var(--primary); background: rgba(255,255,255,0.09); }
 
+/* Instagram Link Banner */
+.insta-link {
+    display: inline-flex; align-items: center; gap: 6px;
+    margin-top: 12px; padding: 7px 16px; border-radius: 20px;
+    background: linear-gradient(90deg, rgba(255,0,85,0.14), rgba(138,43,226,0.18));
+    border: 1px solid rgba(255, 0, 85, 0.4);
+    color: #fff; text-decoration: none; font-family: 'Orbitron', sans-serif;
+    font-size: 11px; font-weight: 700; letter-spacing: 1.2px;
+    box-shadow: 0 0 15px rgba(255, 0, 85, 0.2);
+    transition: 0.25s;
+}
+.insta-link:hover {
+    border-color: var(--primary);
+    box-shadow: 0 0 20px var(--primary-glow);
+    transform: translateY(-1px);
+}
+
 /* Top HUD Bar */
 .top-hud {
     padding: 8px 12px; display: flex; justify-content: space-between; align-items: center;
@@ -194,7 +201,7 @@ input:focus { border-color: var(--primary); box-shadow: 0 0 15px var(--primary-g
     font-size: 10px; color: var(--primary); cursor: pointer; display: flex; align-items: center; gap: 4px;
 }
 
-/* Series Pips & Threat Banner */
+/* Series Pips */
 .series-bar {
     display: flex; align-items: center; justify-content: space-between;
     width: 100%; padding: 4px 8px; margin-bottom: 6px;
@@ -286,7 +293,7 @@ input:focus { border-color: var(--primary); box-shadow: 0 0 15px var(--primary-g
     cursor: not-allowed;
 }
 .cell.emp-locked::after {
-    content: "🔒"; font-size: 16px;
+    content: "LOCK"; font-size: 9px; color: var(--gold); letter-spacing: 0.5px;
 }
 
 .cell.radar-hint {
@@ -318,31 +325,23 @@ input:focus { border-color: var(--primary); box-shadow: 0 0 15px var(--primary-g
 }
 @keyframes drawLaser { to { stroke-dashoffset: 0; } }
 
-/* Tactical Powerups & Reactions */
+/* Tactical Powerups */
 .tactical-dock {
     display: flex; align-items: center; justify-content: space-between;
-    width: 100%; gap: 6px; margin-top: 7px;
+    width: 100%; gap: 8px; margin-top: 8px;
 }
 .power-btn {
     flex: 1; background: rgba(255,215,0,0.08); border: 1px solid rgba(255,215,0,0.35);
-    color: var(--gold); padding: 5px 8px; border-radius: 9px;
-    font-family: 'Orbitron', sans-serif; font-size: 9px; font-weight: 800;
+    color: var(--gold); padding: 7px 10px; border-radius: 9px;
+    font-family: 'Orbitron', sans-serif; font-size: 10px; font-weight: 800;
     cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 4px;
 }
 .power-btn:disabled { opacity: 0.35; cursor: not-allowed; filter: grayscale(1); }
 .power-btn.armed { background: var(--gold); color: #000; box-shadow: 0 0 15px rgba(255,215,0,0.6); }
 
-.reaction-bar {
-    display: flex; align-items: center; gap: 5px;
-    background: rgba(255,255,255,0.04); padding: 4px 10px; border-radius: 20px;
-    border: 1px solid rgba(255,255,255,0.08);
-}
-.react-emoji { cursor: pointer; font-size: 16px; transition: transform 0.15s; }
-.react-emoji:hover { transform: scale(1.25); }
-
 /* Chat Section */
 .chat-section {
-    height: 112px; background: rgba(6, 8, 14, 0.96);
+    height: 115px; background: rgba(6, 8, 14, 0.96);
     border-top: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column;
 }
 #messages { flex: 1; overflow-y: auto; padding: 6px 10px; display: flex; flex-direction: column; gap: 4px; }
@@ -387,8 +386,8 @@ input:focus { border-color: var(--primary); box-shadow: 0 0 15px var(--primary-g
         <div id="winSubLabel" style="font-family:'Orbitron'; letter-spacing: 3px; color: var(--gold); font-size: 11px; font-weight: 700;">ROUND VICTORY</div>
         <h1 id="winnerName" style="font-family:'Orbitron'; font-size: 34px; margin: 10px 0; color: var(--win); text-shadow: 0 0 30px var(--win);">PLAYER WINS</h1>
         <p id="seriesScoreSummary" style="font-family:'Orbitron'; color:#fff; font-size:13px; margin-bottom:6px;">SERIES: 1 - 0</p>
-        <p id="winStreakText" style="color:#aaa; font-size:12px; margin-bottom:20px; letter-spacing:1px;">🔥 STREAK: 1 | MOVES: 5</p>
-        <button id="nextRoundBtn" onclick="restartMatch()" class="btn-main btn-primary" style="width: 240px;">⚡ NEXT ROUND</button>
+        <p id="winStreakText" style="color:#aaa; font-size:12px; margin-bottom:20px; letter-spacing:1px;">STREAK: 1 | MOVES: 5</p>
+        <button id="nextRoundBtn" onclick="restartMatch()" class="btn-main btn-primary" style="width: 240px;">NEXT ROUND</button>
         <button onclick="exitArena(true)" class="btn-main btn-outline" style="width: 240px;">LEAVE ARENA</button>
     </div>
 </div>
@@ -415,7 +414,7 @@ input:focus { border-color: var(--primary); box-shadow: 0 0 15px var(--primary-g
                 <span class="live-dot"></span>
                 <span style="font-family:'Orbitron'; font-size:9px; font-weight:700; letter-spacing:1px;">ARENA ENGINE v3.0</span>
             </div>
-            <button class="hud-btn" onclick="toggleStats(true)">📊 STATS</button>
+            <button class="hud-btn" onclick="toggleStats(true)">STATS</button>
         </div>
 
         <div style="text-align: center; margin-bottom: 10px;">
@@ -424,17 +423,8 @@ input:focus { border-color: var(--primary); box-shadow: 0 0 15px var(--primary-g
         </div>
 
         <div class="glass-panel">
-            <label class="input-label"><span>CALLSIGN & EMBLEM</span> <span id="rankPreview" style="color:var(--gold);">RANK: ROOKIE</span></label>
-            <input id="userName" value="CYBER STRIKER" placeholder="ENTER CALLSIGN" maxlength="16">
-
-            <div class="emblem-row" id="emblemPicker">
-                <button class="emblem-btn active" onclick="setEmblem('⚡', this)">⚡</button>
-                <button class="emblem-btn" onclick="setEmblem('🐉', this)">🐉</button>
-                <button class="emblem-btn" onclick="setEmblem('🦅', this)">🦅</button>
-                <button class="emblem-btn" onclick="setEmblem('💀', this)">💀</button>
-                <button class="emblem-btn" onclick="setEmblem('🤖', this)">🤖</button>
-                <button class="emblem-btn" onclick="setEmblem('👑', this)">👑</button>
-            </div>
+            <label class="input-label"><span>PLAYER CALLSIGN</span> <span id="rankPreview" style="color:var(--gold);">RANK: ROOKIE</span></label>
+            <input id="userName" value="" placeholder="ENTER CALLSIGN" maxlength="16">
 
             <label class="input-label">GRID & SERIES FORMAT</label>
             <div class="selector-row">
@@ -451,7 +441,7 @@ input:focus { border-color: var(--primary); box-shadow: 0 0 15px var(--primary-g
 
             <label class="input-label">TACTICAL SKILLS & AI LEVEL</label>
             <div class="selector-row">
-                <button class="chip-btn active" id="tacOn" onclick="setTactical(true)">SKILLS: ON ⚡</button>
+                <button class="chip-btn active" id="tacOn" onclick="setTactical(true)">SKILLS: ON</button>
                 <button class="chip-btn" id="tacOff" onclick="setTactical(false)">CLASSIC: OFF</button>
                 <button class="chip-btn ai-active" id="aiCycle" onclick="cycleAi()">AI: GOD</button>
             </div>
@@ -463,26 +453,33 @@ input:focus { border-color: var(--primary); box-shadow: 0 0 15px var(--primary-g
                 <button class="chip-btn" id="thMatrix" onclick="setTheme('matrix')">MATRIX</button>
             </div>
 
-            <button class="btn-main btn-primary" onclick="createRoom()">⚔️ CREATE PRIVATE ROOM</button>
-            <button class="btn-main btn-global" onclick="startGlobal()">🌐 GLOBAL RANKED MATCH</button>
-            <button class="btn-main btn-outline" onclick="startRobot()">🤖 SOLO VS TACTICAL AI</button>
+            <button class="btn-main btn-primary" onclick="createRoom()">CREATE PRIVATE ROOM</button>
+            <button class="btn-main btn-global" onclick="startGlobal()">GLOBAL RANKED MATCH</button>
+            <button class="btn-main btn-outline" onclick="startRobot()">SOLO VS TACTICAL AI</button>
 
             <div style="display:flex; gap:8px; margin-top:4px;">
                 <input id="joinCode" placeholder="4-DIGIT ROOM CODE" style="margin:0; text-align:center; font-family:'Orbitron'; font-size:13px;">
                 <button class="btn-main btn-outline" onclick="joinRoom()" style="margin:0; width:130px;">JOIN</button>
             </div>
         </div>
+
+        <!-- Clickable Instagram Profile Link -->
+        <a href="https://www.instagram.com/rp_gupta_07" target="_blank" class="insta-link" onclick="SFX.click()">
+            <span>INSTAGRAM :</span>
+            <span style="color:var(--primary);">@RP_GUPTA_07</span>
+            <span>↗</span>
+        </a>
     </div>
 
     <!-- ACTIVE GAME SCREEN -->
     <div id="gameScreen" class="hidden" style="display:flex; flex-direction:column; height: 100%;">
         <div class="top-hud">
-            <button class="hud-btn danger" onclick="exitArena(false)">✕ EXIT</button>
+            <button class="hud-btn danger" onclick="exitArena(false)">EXIT</button>
             <div id="status" style="font-family:'Orbitron'; font-weight:800; color:var(--primary); font-size:10px; letter-spacing:1px;">INITIALIZING...</div>
             <div style="display:flex; gap:5px; align-items:center;">
-                <button class="hud-btn" id="soundBtn" onclick="toggleSound()">🔊</button>
+                <button class="hud-btn" id="soundBtn" onclick="toggleSound()">SOUND: ON</button>
                 <div class="room-badge" onclick="copyRoomCode()" title="Copy Room Code">
-                    <span id="displayRoomCode">0000</span> 📋
+                    <span id="displayRoomCode">0000</span>
                 </div>
             </div>
         </div>
@@ -528,16 +525,10 @@ input:focus { border-color: var(--primary); box-shadow: 0 0 15px var(--primary-g
                 <div id="board"></div>
             </div>
 
-            <!-- Tactical Skills & Reactions -->
+            <!-- Tactical Skills Only (Emojis Removed) -->
             <div class="tactical-dock">
-                <button class="power-btn" id="empBtn" onclick="armEmp()">🔒 EMP LOCK (1)</button>
-                <button class="power-btn" id="radarBtn" onclick="useRadar()">📡 RADAR (1)</button>
-                <div class="reaction-bar">
-                    <span class="react-emoji" onclick="sendEmoji('🔥')">🔥</span>
-                    <span class="react-emoji" onclick="sendEmoji('👑')">👑</span>
-                    <span class="react-emoji" onclick="sendEmoji('⚡')">⚡</span>
-                    <span class="react-emoji" onclick="sendEmoji('GG')">GG</span>
-                </div>
+                <button class="power-btn" id="empBtn" onclick="armEmp()">EMP LOCK (1)</button>
+                <button class="power-btn" id="radarBtn" onclick="useRadar()">RADAR SCAN (1)</button>
             </div>
         </div>
 
@@ -546,7 +537,7 @@ input:focus { border-color: var(--primary); box-shadow: 0 0 15px var(--primary-g
             <div id="messages"></div>
             <div style="display:flex; padding:5px 10px; gap:6px; background: #04050a;">
                 <input id="msgInput" placeholder="Send tactical comms..." onkeypress="if(event.key==='Enter') sendMsg()" style="margin:0; flex:1; padding:8px 11px; font-size:12px; border-radius:8px;">
-                <button onclick="sendMsg()" style="background:var(--primary); border:none; width:42px; border-radius:8px; font-weight:900; color:#000; cursor:pointer;">➤</button>
+                <button onclick="sendMsg()" style="background:var(--primary); border:none; width:48px; border-radius:8px; font-family:'Orbitron'; font-size:10px; font-weight:900; color:#000; cursor:pointer;">SEND</button>
             </div>
         </div>
     </div>
@@ -575,11 +566,11 @@ function toggleStats(show) {
     document.getElementById('statsModal').style.display = show ? 'flex' : 'none';
 }
 
-// --- PROCEDURAL AUDIO ENGINE ---
+// --- PROCEDURAL AUDIO ENGINE (Click & Game Sounds) ---
 const AudioCtx = window.AudioContext || window.webkitAudioContext;
 let audioCtx = null, soundEnabled = true;
 
-function playTone(freq, type, duration, vol = 0.12) {
+function playTone(freq, type, duration, vol = 0.14) {
     if (!soundEnabled) return;
     if (!audioCtx) audioCtx = new AudioCtx();
     if (audioCtx.state === 'suspended') audioCtx.resume();
@@ -596,19 +587,26 @@ function playTone(freq, type, duration, vol = 0.12) {
 }
 
 const SFX = {
-    click: () => playTone(540, 'sine', 0.08, 0.08),
-    moveX: () => { playTone(440, 'triangle', 0.11, 0.14); setTimeout(() => playTone(660, 'sine', 0.11, 0.11), 35); },
-    moveO: () => { playTone(320, 'sawtooth', 0.11, 0.1); setTimeout(() => playTone(250, 'sine', 0.13, 0.11), 35); },
-    emp: () => { playTone(180, 'sawtooth', 0.25, 0.16); playTone(90, 'square', 0.28, 0.14); },
-    radar: () => { playTone(900, 'sine', 0.15, 0.12); setTimeout(() => playTone(1200, 'sine', 0.2, 0.12), 90); },
-    chat: () => playTone(860, 'sine', 0.08, 0.05),
-    win: () => [523.25, 659.25, 783.99, 1046.50].forEach((f, i) => setTimeout(() => playTone(f, 'triangle', 0.26, 0.15), i * 100)),
-    lose: () => [320, 260, 190].forEach((f, i) => setTimeout(() => playTone(f, 'sawtooth', 0.24, 0.12), i * 130))
+    click: () => { playTone(620, 'sine', 0.06, 0.1); setTimeout(() => playTone(920, 'triangle', 0.05, 0.07), 20); },
+    moveX: () => { playTone(440, 'triangle', 0.12, 0.16); setTimeout(() => playTone(660, 'sine', 0.12, 0.13), 35); },
+    moveO: () => { playTone(320, 'sawtooth', 0.12, 0.12); setTimeout(() => playTone(250, 'sine', 0.14, 0.13), 35); },
+    emp: () => { playTone(180, 'sawtooth', 0.25, 0.18); playTone(90, 'square', 0.28, 0.15); },
+    radar: () => { playTone(900, 'sine', 0.15, 0.14); setTimeout(() => playTone(1200, 'sine', 0.2, 0.14), 90); },
+    chat: () => playTone(860, 'sine', 0.08, 0.06),
+    win: () => [523.25, 659.25, 783.99, 1046.50].forEach((f, i) => setTimeout(() => playTone(f, 'triangle', 0.26, 0.16), i * 100)),
+    lose: () => [320, 260, 190].forEach((f, i) => setTimeout(() => playTone(f, 'sawtooth', 0.24, 0.14), i * 130))
 };
+
+// Global click sound listener for every button, input, link, or cell tap
+document.addEventListener('pointerdown', (e) => {
+    if (e.target.closest('button, a, .room-badge')) {
+        SFX.click();
+    }
+});
 
 function toggleSound() {
     soundEnabled = !soundEnabled;
-    document.getElementById("soundBtn").innerText = soundEnabled ? "🔊" : "🔇";
+    document.getElementById("soundBtn").innerText = soundEnabled ? "SOUND: ON" : "SOUND: OFF";
     if (soundEnabled) SFX.click();
 }
 
@@ -625,59 +623,46 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-let myRoomId, myName, myEmblem = "⚡", mySymbol, gameRef, chatRef, emojiRef;
+let myRoomId, myName, mySymbol, gameRef, chatRef;
 let gridSize = 3, bestOf = 1, tacticalMode = true, aiLevels = ['rookie', 'pro', 'god'], aiIdx = 2;
 let isRobot = false, turnTimerInterval = null, timeLeft = 15, lastMoveSig = "";
 let winStreak = 0, roundEnded = false, empUsed = false, radarUsed = false, empArmed = false;
 
-function setEmblem(em, btn) {
-    SFX.click();
-    myEmblem = em;
-    document.querySelectorAll('.emblem-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-}
-
 function setGrid(s) {
-    SFX.click();
     gridSize = s;
     ['g3', 'g5', 'g7'].forEach(id => document.getElementById(id).classList.remove('active'));
     document.getElementById('g' + s).classList.add('active');
 }
 
 function setBestOf(n) {
-    SFX.click();
     bestOf = n;
     ['bo1', 'bo3', 'bo5'].forEach(id => document.getElementById(id).classList.remove('active'));
     document.getElementById('bo' + n).classList.add('active');
 }
 
 function setTactical(on) {
-    SFX.click();
     tacticalMode = on;
     document.getElementById('tacOn').classList.toggle('active', on);
     document.getElementById('tacOff').classList.toggle('active', !on);
 }
 
 function cycleAi() {
-    SFX.click();
     aiIdx = (aiIdx + 1) % aiLevels.length;
     document.getElementById('aiCycle').innerText = "AI: " + aiLevels[aiIdx].toUpperCase();
 }
 
 function setTheme(t) {
-    SFX.click();
     document.body.className = t === 'cyan' ? '' : 'theme-' + t;
     ['thCyan', 'thCrimson', 'thMatrix'].forEach(id => document.getElementById(id).classList.remove('active'));
     document.getElementById('th' + t.charAt(0).toUpperCase() + t.slice(1)).classList.add('active');
 }
 
 function getCallsign() {
-    let raw = document.getElementById("userName").value.trim() || "STRIKER";
-    return `${myEmblem} ${raw.toUpperCase()}`;
+    let raw = document.getElementById("userName").value.trim() || "PLAYER 1";
+    return raw.toUpperCase();
 }
 
 function startRobot() {
-    SFX.click();
     myName = getCallsign();
     isRobot = true;
     myRoomId = "BOT_" + Math.floor(1000 + Math.random() * 8999);
@@ -685,7 +670,6 @@ function startRobot() {
 }
 
 function startGlobal() {
-    SFX.click();
     myName = getCallsign();
     isRobot = false;
     db.ref("global_waiting_v3").once("value", snap => {
@@ -706,7 +690,6 @@ function startGlobal() {
 }
 
 function createRoom() {
-    SFX.click();
     myName = getCallsign();
     isRobot = false;
     myRoomId = Math.floor(1000 + Math.random() * 8999).toString();
@@ -714,7 +697,6 @@ function createRoom() {
 }
 
 function joinRoom() {
-    SFX.click();
     myName = getCallsign();
     myRoomId = document.getElementById("joinCode").value.trim();
     if (!myRoomId) return showToast("ENTER 4-DIGIT ROOM CODE");
@@ -734,7 +716,6 @@ function setupGame(sym) {
     empUsed = false; radarUsed = false; empArmed = false;
     gameRef = db.ref("rooms/" + myRoomId + "/game");
     chatRef = db.ref("rooms/" + myRoomId + "/chat");
-    emojiRef = db.ref("rooms/" + myRoomId + "/emojis");
 
     if (sym === "X") {
         gameRef.set({
@@ -746,7 +727,7 @@ function setupGame(sym) {
             empTile: -1,
             empOwner: "",
             scores: { X: 0, O: 0 },
-            players: { X: myName, O: isRobot ? `🤖 AI (${aiLevels[aiIdx].toUpperCase()})` : "WAITING..." }
+            players: { X: myName, O: isRobot ? `AI (${aiLevels[aiIdx].toUpperCase()})` : "WAITING..." }
         });
     } else {
         gameRef.child("players/O").set(myName);
@@ -754,13 +735,12 @@ function setupGame(sym) {
 
     document.getElementById("loginScreen").classList.add("hidden");
     document.getElementById("gameScreen").classList.remove("hidden");
-    document.getElementById("displayRoomCode").innerText = isRobot ? "SOLO-AI" : myRoomId;
+    document.getElementById("displayRoomCode").innerText = isRobot ? "SOLO-AI" : "CODE: " + myRoomId;
     document.querySelector(".tactical-dock").style.display = tacticalMode ? "flex" : "none";
 
     createBoard(gridSize);
     listenGame();
     listenChat();
-    listenEmojis();
 }
 
 function createBoard(size) {
@@ -804,7 +784,6 @@ function renderSeriesPips(scores, bo) {
 function armEmp() {
     if (empUsed) return;
     empArmed = !empArmed;
-    SFX.click();
     document.getElementById("empBtn").classList.toggle("armed", empArmed);
     showToast(empArmed ? "SELECT EMPTY TILE TO LOCK" : "EMP DISARMED");
 }
@@ -869,14 +848,14 @@ function detectThreat(board, size, mySym) {
     for (let i = 0; i < board.length; i++) {
         if (board[i] === "") {
             board[i] = opp;
-            if (checkWinner(board, size)) { board[i] = ""; return "⚠️ THREAT DETECTED: BLOCK OPPONENT!"; }
+            if (checkWinner(board, size)) { board[i] = ""; return "THREAT DETECTED: BLOCK OPPONENT!"; }
             board[i] = "";
         }
     }
     for (let i = 0; i < board.length; i++) {
         if (board[i] === "") {
             board[i] = mySym;
-            if (checkWinner(board, size)) { board[i] = ""; return "⚡ MATCH POINT AVAILABLE!"; }
+            if (checkWinner(board, size)) { board[i] = ""; return "MATCH POINT AVAILABLE!"; }
             board[i] = "";
         }
     }
@@ -955,12 +934,12 @@ function listenGame() {
                     let winName = (winData.w === "X" ? g.players.X : g.players.O).toUpperCase();
 
                     setTimeout(() => {
-                        document.getElementById("winSubLabel").innerText = seriesOver ? "🏆 CHAMPIONSHIP SERIES WON" : (iWon ? "ROUND VICTORY" : "ROUND LOST");
+                        document.getElementById("winSubLabel").innerText = seriesOver ? "CHAMPIONSHIP SERIES WON" : (iWon ? "ROUND VICTORY" : "ROUND LOST");
                         document.getElementById("winnerName").innerText = winName;
                         document.getElementById("winnerName").style.color = iWon ? "var(--win)" : "var(--accent)";
                         document.getElementById("seriesScoreSummary").innerText = `SERIES SCORE: ${g.scores.X} - ${g.scores.O}`;
-                        document.getElementById("winStreakText").innerText = `🔥 STREAK: ${winStreak} • MOVES: ${movesCount}`;
-                        document.getElementById("nextRoundBtn").innerText = seriesOver ? "🔄 NEW SERIES" : "⚡ NEXT ROUND";
+                        document.getElementById("winStreakText").innerText = `STREAK: ${winStreak} • MOVES: ${movesCount}`;
+                        document.getElementById("nextRoundBtn").innerText = seriesOver ? "NEW SERIES" : "NEXT ROUND";
                         document.getElementById("winnerOverlay").style.display = "flex";
                         if (iWon) confetti({ particleCount: seriesOver ? 220 : 120, spread: 85, origin: { y: 0.6 } });
                     }, 900);
@@ -970,8 +949,8 @@ function listenGame() {
                         document.getElementById("winnerName").innerText = "ROUND DRAW";
                         document.getElementById("winnerName").style.color = "var(--primary)";
                         document.getElementById("seriesScoreSummary").innerText = `SERIES SCORE: ${g.scores.X} - ${g.scores.O}`;
-                        document.getElementById("winStreakText").innerText = `🔥 STREAK HELD: ${winStreak} • MOVES: ${movesCount}`;
-                        document.getElementById("nextRoundBtn").innerText = "⚡ REPLAY ROUND";
+                        document.getElementById("winStreakText").innerText = `STREAK HELD: ${winStreak} • MOVES: ${movesCount}`;
+                        document.getElementById("nextRoundBtn").innerText = "REPLAY ROUND";
                         document.getElementById("winnerOverlay").style.display = "flex";
                     }, 500);
                 }
@@ -987,12 +966,12 @@ function listenGame() {
                 statusEl.style.color = "var(--gold)";
                 document.getElementById("threatAlert").innerText = "";
             } else if (g.turn === mySymbol) {
-                statusEl.innerText = "⚡ YOUR TURN";
+                statusEl.innerText = "YOUR TURN";
                 statusEl.style.color = "var(--win)";
                 document.getElementById("threatAlert").innerText = detectThreat([...g.board], g.size, mySymbol);
                 startTurnTimer(g.turn);
             } else {
-                statusEl.innerText = isRobot ? "🤖 AI ANALYZING..." : "⏳ OPPONENT TURN";
+                statusEl.innerText = isRobot ? "AI ANALYZING..." : "OPPONENT TURN";
                 statusEl.style.color = "var(--accent)";
                 document.getElementById("threatAlert").innerText = "";
                 startTurnTimer(g.turn);
@@ -1022,6 +1001,7 @@ function handleCellClick(i) {
         }
 
         if (g.empTile === i && g.empOwner !== mySymbol) {
+            SFX.click();
             return showToast("TILE LOCKED BY OPPONENT EMP!");
         }
 
@@ -1078,25 +1058,21 @@ function findBestMove(b, s, sym, lvl, blockedTile = -1) {
     if (lvl === 'rookie') return empty[Math.floor(Math.random() * empty.length)];
     if (lvl === 'god' && s === 3 && blockedTile === -1) return getBestMinimaxMove(b, sym);
 
-    // 1. Immediate win
     for (let i of empty) {
         b[i] = sym;
         if (checkWinner(b, s)) { b[i] = ""; return i; }
         b[i] = "";
     }
-    // 2. Immediate block
     for (let i of empty) {
         b[i] = opp;
         if (checkWinner(b, s)) { b[i] = ""; return i; }
         b[i] = "";
     }
-    // 3. Heuristic scoring for 5x5 / 7x7 / Pro
     let bestScore = -Infinity, bestIdx = empty[0];
     const center = Math.floor(s / 2);
     for (let i of empty) {
         let r = Math.floor(i / s), c = i % s;
         let score = (s - (Math.abs(r - center) + Math.abs(c - center))) * 2;
-        // Check adjacent friendly/enemy density
         for (let dr = -1; dr <= 1; dr++) {
             for (let dc = -1; dc <= 1; dc++) {
                 if (dr === 0 && dc === 0) continue;
@@ -1189,7 +1165,6 @@ function checkWinner(b, size) {
 function copyRoomCode() {
     if (isRobot) return showToast("SOLO AI ARENA");
     navigator.clipboard.writeText(myRoomId);
-    SFX.click();
     showToast("ROOM CODE " + myRoomId + " COPIED");
 }
 
@@ -1209,7 +1184,6 @@ function exitArena(skipConfirm) {
 }
 
 function restartMatch() {
-    SFX.click();
     gameRef.once("value", snap => {
         const g = snap.val();
         if (!g) return;
@@ -1247,34 +1221,7 @@ function listenChat() {
         box.scrollTop = box.scrollHeight;
     });
 }
-
-let sessionStart = Date.now();
-function sendEmoji(e) {
-    emojiRef.set({ emoji: e, t: Date.now() });
-}
-function listenEmojis() {
-    emojiRef.on("value", snap => {
-        const d = snap.val();
-        if (!d || d.t < sessionStart) return;
-        const el = document.createElement("div");
-        el.style.position = "fixed";
-        el.style.bottom = "130px";
-        el.style.fontSize = "48px";
-        el.style.fontFamily = "'Orbitron', sans-serif";
-        el.style.fontWeight = "900";
-        el.style.color = "var(--gold)";
-        el.style.zIndex = "10000";
-        el.style.pointerEvents = "none";
-        el.innerText = d.emoji;
-        el.style.left = (Math.random() * 55 + 20) + "%";
-        el.animate([
-            { transform: 'translateY(0) scale(0.7)', opacity: 1 },
-            { transform: 'translateY(-340px) scale(1.35)', opacity: 0 }
-        ], { duration: 1250, easing: 'ease-out' });
-        document.body.appendChild(el);
-        setTimeout(() => el.remove(), 1250);
-    });
-}
 </script>
 </body>
 </html>
+
