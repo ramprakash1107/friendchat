@@ -1,305 +1,375 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>@rp_gupta_07 | Elite Arena Pro</title>
+<title>ELITE ARENA PRO | Tactical Grid Esports v3.0</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 <style>
-:root { 
-    --bg: #08090c;
-    --surface: #111319;
-    --surface-elevated: #181b24;
-    --border: rgba(255, 255, 255, 0.08);
-    --border-strong: rgba(255, 255, 255, 0.16);
-    --text-main: #f4f6f9;
-    --text-muted: #7c8496;
-    --x-color: #38bdf8;
-    --x-glow: rgba(56, 189, 248, 0.25);
-    --o-color: #f43f5e;
-    --o-glow: rgba(244, 63, 94, 0.25);
-    --win: #10b981;
-    --turn-accent: #38bdf8;
+:root {
+    --primary: #00f2ff;
+    --primary-glow: rgba(0, 242, 255, 0.45);
+    --secondary: #8a2be2;
+    --accent: #ff0055;
+    --accent-glow: rgba(255, 0, 85, 0.45);
+    --win: #00ff88;
+    --gold: #ffd700;
+    --bg: #04050a;
+    --glass: rgba(14, 18, 30, 0.78);
+    --glass-border: rgba(255, 255, 255, 0.12);
+    --turn-color: #00f2ff;
+    --turn-glow: rgba(0, 242, 255, 0.25);
+}
+
+body.theme-crimson {
+    --primary: #ff2a5f;
+    --primary-glow: rgba(255, 42, 95, 0.45);
+    --secondary: #ff8c00;
+    --accent: #00e5ff;
+    --accent-glow: rgba(0, 229, 255, 0.45);
+}
+
+body.theme-matrix {
+    --primary: #00ff66;
+    --primary-glow: rgba(0, 255, 102, 0.45);
+    --secondary: #008f39;
+    --accent: #ffaa00;
+    --accent-glow: rgba(255, 170, 0, 0.45);
 }
 
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
 
-body, html { 
-    margin: 0; padding: 0; height: 100%; width: 100%; 
-    background: var(--bg); color: var(--text-main); 
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+body, html {
+    margin: 0; padding: 0; height: 100%; width: 100%;
+    background: var(--bg); color: #fff; font-family: 'Rajdhani', sans-serif;
     overflow: hidden; position: fixed;
 }
 
-/* Realistic Studio Lighting & Micro-Noise Texture */
-.studio-bg {
+.cyber-bg {
     position: fixed; inset: 0; z-index: -2;
-    background: 
-        radial-gradient(circle at 50% -10%, #1e2433 0%, #08090c 60%),
-        linear-gradient(180deg, #0b0d12 0%, #060709 100%);
+    background: radial-gradient(circle at 50% 20%, #12172d 0%, #04050a 80%);
+    overflow: hidden;
 }
-.ambient-spotlight {
+.cyber-grid {
+    position: absolute; width: 200%; height: 200%; top: -50%; left: -50%;
+    background-image:
+        linear-gradient(to right, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+    transform: perspective(500px) rotateX(60deg);
+    animation: gridMove 12s linear infinite;
+}
+@keyframes gridMove {
+    0% { transform: perspective(500px) rotateX(60deg) translateY(0); }
+    100% { transform: perspective(500px) rotateX(60deg) translateY(40px); }
+}
+
+.ambient-aura {
     position: fixed; inset: 0; z-index: -1; pointer-events: none;
-    background: radial-gradient(circle at 50% 42%, var(--x-glow), transparent 65%);
-    opacity: 0.45; transition: all 0.5s ease;
+    background: radial-gradient(circle at 50% 45%, var(--turn-glow), transparent 65%);
+    transition: background 0.6s ease;
 }
 
-.container { 
-    display: flex; flex-direction: column; height: 100%; max-width: 440px; 
+.container {
+    display: flex; flex-direction: column; height: 100%; max-width: 470px;
     margin: auto; position: relative;
-    background: rgba(12, 14, 19, 0.65);
-    border-left: 1px solid var(--border);
-    border-right: 1px solid var(--border);
-    box-shadow: 0 0 60px rgba(0, 0, 0, 0.9);
+    border-left: 1px solid rgba(255,255,255,0.05);
+    border-right: 1px solid rgba(255,255,255,0.05);
 }
 
-/* Screens */
-.screen { 
-    flex: 1; display: flex; flex-direction: column; align-items: center; 
-    justify-content: center; padding: 20px; overflow-y: auto;
-    animation: fadeScale 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+.status-pill {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--glass-border);
+    border-radius: 30px; padding: 5px 14px; margin-bottom: 10px;
+    display: inline-flex; align-items: center; gap: 8px;
 }
-@keyframes fadeScale { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
+.live-dot {
+    width: 8px; height: 8px; border-radius: 50%; background: var(--win);
+    box-shadow: 0 0 10px var(--win); animation: pulseDot 1.5s infinite;
+}
+@keyframes pulseDot { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(1.3); } }
 
-/* Clean Brand Header */
-.brand-header { text-align: center; margin-bottom: 20px; }
-.brand-tag {
-    display: inline-flex; align-items: center; gap: 6px;
-    font-size: 11px; font-weight: 600; letter-spacing: 1.5px;
-    color: var(--text-muted); background: rgba(255,255,255,0.03);
-    border: 1px solid var(--border); padding: 4px 12px; border-radius: 20px;
-    margin-bottom: 10px;
+.screen {
+    flex: 1; display: flex; flex-direction: column; align-items: center;
+    justify-content: flex-start; padding: 14px 16px; overflow-y: auto;
+    animation: slideUp 0.45s cubic-bezier(0.16, 1, 0.3, 1);
 }
-.brand-tag span { color: var(--text-main); font-weight: 700; }
-.hero-title { 
-    font-family: 'Space Grotesk', sans-serif; font-size: 32px; font-weight: 700; 
-    letter-spacing: -0.5px; margin: 0; color: #fff;
-}
-.hero-sub { font-size: 12px; color: var(--text-muted); letter-spacing: 2px; text-transform: uppercase; margin-top: 2px; }
+@keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-/* Realistic Matte Carbon Card */
-.panel {
-    width: 100%; background: var(--surface);
-    border: 1px solid var(--border); border-radius: 18px; padding: 18px;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.06);
+.hero-title {
+    font-family: 'Orbitron', sans-serif; font-size: 32px; font-weight: 900;
+    letter-spacing: 2px; margin: 0; text-align: center; line-height: 1.05;
+    text-shadow: 0 0 25px var(--primary-glow);
 }
-
-.field-label {
-    font-size: 10px; font-weight: 700; letter-spacing: 1.2px; color: var(--text-muted);
-    text-transform: uppercase; margin-bottom: 6px; display: block;
+.hero-sub {
+    font-family: 'Orbitron', sans-serif; font-size: 16px; font-weight: 800;
+    background: linear-gradient(90deg, var(--primary), #fff, var(--accent));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    letter-spacing: 3px; margin-bottom: 10px;
 }
 
-input { 
-    width: 100%; padding: 12px 14px; border-radius: 10px; 
-    border: 1px solid var(--border-strong);
-    background: #090a0e; color: #fff; font-family: 'Inter', sans-serif;
-    font-size: 14px; font-weight: 600;
-    transition: 0.2s; outline: none; margin-bottom: 14px; user-select: text;
-    box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);
-}
-input::placeholder { color: #474d5d; font-weight: 500; }
-input:focus { border-color: var(--x-color); box-shadow: inset 0 2px 5px rgba(0,0,0,0.5), 0 0 0 3px rgba(56, 189, 248, 0.12); }
-
-/* Segmented Controls (Apple / PS5 style) */
-.seg-group { 
-    display: flex; background: #090a0e; padding: 4px; border-radius: 10px; 
-    border: 1px solid var(--border); margin-bottom: 14px; gap: 4px;
-}
-.seg-btn { 
-    flex: 1; padding: 8px 4px; background: transparent; border: none;
-    color: var(--text-muted); border-radius: 7px; font-family: 'Inter', sans-serif;
-    font-size: 11px; font-weight: 700; cursor: pointer; transition: 0.2s;
-}
-.seg-btn.active { 
-    background: var(--surface-elevated); color: #fff;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.08);
+.glass-panel {
+    width: 100%; background: var(--glass); backdrop-filter: blur(16px);
+    border: 1px solid var(--glass-border); border-radius: 18px; padding: 14px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.08);
 }
 
-/* Tactile Pro Buttons */
-.btn { 
-    width: 100%; padding: 13px; border-radius: 10px; border: none; 
-    font-family: 'Inter', sans-serif; font-weight: 700; letter-spacing: 0.5px;
-    font-size: 13px; cursor: pointer; margin-bottom: 9px;
-    transition: all 0.15s ease; display: flex; align-items: center; justify-content: center; gap: 8px;
+.input-label {
+    font-size: 10px; font-weight: 700; letter-spacing: 1.4px; color: var(--primary);
+    text-transform: uppercase; margin-bottom: 4px; display: flex; justify-content: space-between;
 }
-.btn:active { transform: scale(0.985); }
 
-.btn-primary { 
-    background: #f4f6f9; color: #08090c; 
-    box-shadow: 0 4px 15px rgba(255, 255, 255, 0.12);
-}
-.btn-primary:hover { background: #ffffff; }
-
-.btn-accent {
-    background: linear-gradient(180deg, #2563eb, #1d4ed8); color: #fff;
+input {
+    width: 100%; padding: 11px 14px; border-radius: 10px;
     border: 1px solid rgba(255,255,255,0.15);
-    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+    background: rgba(0, 0, 0, 0.55); color: #fff; font-family: 'Rajdhani', sans-serif;
+    font-size: 15px; font-weight: 700; letter-spacing: 1px;
+    transition: 0.3s; outline: none; margin-bottom: 10px; user-select: text;
+}
+input:focus { border-color: var(--primary); box-shadow: 0 0 15px var(--primary-glow); }
+
+.emblem-row { display: flex; gap: 6px; margin-bottom: 10px; }
+.emblem-btn {
+    flex: 1; padding: 7px; font-size: 17px; background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1); border-radius: 9px; cursor: pointer; transition: 0.2s;
+}
+.emblem-btn.active {
+    background: rgba(255,255,255,0.12); border-color: var(--primary);
+    box-shadow: 0 0 12px var(--primary-glow); transform: translateY(-2px);
 }
 
-.btn-secondary {
-    background: var(--surface-elevated); color: var(--text-main);
-    border: 1px solid var(--border-strong);
+.selector-row { display: flex; gap: 6px; margin-bottom: 10px; width: 100%; }
+.chip-btn {
+    flex: 1; padding: 8px 4px; background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1); color: #aaa; border-radius: 9px;
+    font-family: 'Orbitron', sans-serif; font-size: 10px; font-weight: 700;
+    cursor: pointer; transition: 0.2s;
 }
-.btn-secondary:hover { background: #1f232f; }
+.chip-btn.active {
+    background: rgba(0, 242, 255, 0.14); border-color: var(--primary);
+    color: #fff; box-shadow: 0 0 12px var(--primary-glow);
+}
+.chip-btn.ai-active {
+    background: rgba(255, 0, 85, 0.16); border-color: var(--accent);
+    color: #fff; box-shadow: 0 0 12px var(--accent-glow);
+}
 
-/* Instagram Footer Link */
-.ig-footer {
-    margin-top: 16px; display: inline-flex; align-items: center; gap: 6px;
-    text-decoration: none; color: var(--text-muted); font-size: 12px; font-weight: 600;
-    padding: 6px 14px; border-radius: 20px; border: 1px solid transparent; transition: 0.2s;
+.btn-main {
+    width: 100%; padding: 12px; border-radius: 11px; border: none;
+    font-family: 'Orbitron', sans-serif; font-weight: 800; letter-spacing: 1.3px;
+    font-size: 12px; cursor: pointer; text-transform: uppercase; margin-bottom: 8px;
+    transition: all 0.2s ease;
 }
-.ig-footer:hover { color: #fff; border-color: var(--border); background: rgba(255,255,255,0.03); }
-.ig-icon {
-    width: 14px; height: 14px; border-radius: 4px;
-    background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
-    display: inline-block;
+.btn-main:active { transform: scale(0.97); }
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary), #0077ff); color: #000;
+    box-shadow: 0 4px 18px var(--primary-glow);
 }
+.btn-global {
+    background: linear-gradient(135deg, var(--secondary), var(--accent)); color: #fff;
+    box-shadow: 0 4px 18px var(--accent-glow);
+}
+.btn-outline {
+    background: rgba(255,255,255,0.05); color: #fff;
+    border: 1px solid rgba(255,255,255,0.2);
+}
+.btn-outline:hover { border-color: var(--primary); background: rgba(255,255,255,0.09); }
 
 /* Top HUD Bar */
 .top-hud {
-    padding: 12px 16px; display: flex; justify-content: space-between; align-items: center;
-    background: rgba(11, 13, 18, 0.9); border-bottom: 1px solid var(--border);
+    padding: 8px 12px; display: flex; justify-content: space-between; align-items: center;
+    background: rgba(8, 10, 18, 0.92); border-bottom: 1px solid rgba(255,255,255,0.08);
 }
-.hud-pill {
-    background: var(--surface-elevated); color: var(--text-main); border: 1px solid var(--border);
-    padding: 6px 11px; border-radius: 8px; font-size: 11px; font-weight: 700;
-    cursor: pointer; transition: 0.15s; display: inline-flex; align-items: center; gap: 5px;
+.hud-btn {
+    background: rgba(255,255,255,0.06); color: #fff; border: 1px solid rgba(255,255,255,0.15);
+    padding: 5px 9px; border-radius: 7px; font-family: 'Orbitron', sans-serif;
+    font-size: 10px; font-weight: 700; cursor: pointer; transition: 0.2s;
 }
-.hud-pill:active { transform: scale(0.95); }
-.hud-pill.exit { color: #f43f5e; }
+.hud-btn.danger { color: var(--accent); border-color: rgba(255,0,85,0.4); }
 
-/* Realistic Match Scorecards */
-.match-header {
+.room-badge {
+    background: rgba(255,255,255,0.06); border: 1px solid var(--primary);
+    padding: 4px 9px; border-radius: 7px; font-family: 'Orbitron', sans-serif;
+    font-size: 10px; color: var(--primary); cursor: pointer; display: flex; align-items: center; gap: 4px;
+}
+
+/* Series Pips & Threat Banner */
+.series-bar {
     display: flex; align-items: center; justify-content: space-between;
-    width: 100%; gap: 10px; margin-bottom: 10px;
+    width: 100%; padding: 4px 8px; margin-bottom: 6px;
+    background: rgba(255,255,255,0.03); border-radius: 8px;
+    font-family: 'Orbitron', sans-serif; font-size: 9px; color: #aaa;
 }
-.p-card {
-    flex: 1; background: var(--surface); border: 1px solid var(--border);
-    border-radius: 12px; padding: 10px 12px; transition: 0.3s ease;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-}
-.p-card.active-x {
-    border-color: rgba(56, 189, 248, 0.5);
-    background: linear-gradient(180deg, rgba(56, 189, 248, 0.08), var(--surface));
-}
-.p-card.active-o {
-    border-color: rgba(244, 63, 94, 0.5);
-    background: linear-gradient(180deg, rgba(244, 63, 94, 0.08), var(--surface));
-}
-.p-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
-.p-badge { font-size: 10px; font-weight: 800; padding: 2px 6px; border-radius: 4px; background: rgba(255,255,255,0.06); }
-.p-tier { font-size: 9px; font-weight: 700; color: var(--text-muted); letter-spacing: 0.5px; }
-.p-title { font-size: 13px; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.p-points { font-family: 'Space Grotesk', sans-serif; font-size: 22px; font-weight: 700; margin-top: 2px; }
+.pips { display: flex; gap: 4px; }
+.pip { width: 10px; height: 5px; border-radius: 3px; background: rgba(255,255,255,0.12); transition: 0.3s; }
+.pip.won-x { background: var(--primary); box-shadow: 0 0 8px var(--primary); }
+.pip.won-o { background: var(--accent); box-shadow: 0 0 8px var(--accent); }
 
-/* Sleek Progress Timer */
-.timer-track {
-    width: 100%; height: 3px; background: rgba(255,255,255,0.06);
-    border-radius: 3px; overflow: hidden; margin-bottom: 12px;
+/* Player Cards */
+.esports-hud {
+    display: flex; align-items: center; justify-content: space-between;
+    width: 100%; gap: 8px; margin-bottom: 6px;
 }
-.timer-fill {
-    height: 100%; width: 100%; background: var(--turn-accent);
-    transition: width 0.25s linear, background 0.3s;
+.player-card {
+    flex: 1; background: var(--glass); border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px; padding: 7px 10px; transition: 0.3s;
+}
+.player-card.active-turn-x {
+    border-color: var(--primary); box-shadow: 0 0 18px var(--primary-glow);
+    background: linear-gradient(135deg, rgba(0,242,255,0.12), rgba(14,18,30,0.85));
+}
+.player-card.active-turn-o {
+    border-color: var(--accent); box-shadow: 0 0 18px var(--accent-glow);
+    background: linear-gradient(135deg, rgba(255,0,85,0.12), rgba(14,18,30,0.85));
+}
+.p-header { display: flex; justify-content: space-between; align-items: center; }
+.p-sym { font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: 12px; }
+.p-rank { font-size: 8px; padding: 2px 5px; border-radius: 4px; background: rgba(255,215,0,0.15); color: var(--gold); font-weight: 700; }
+.p-name { font-size: 13px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin: 2px 0; }
+.p-score { font-family: 'Orbitron', sans-serif; font-size: 20px; font-weight: 900; line-height: 1; }
+
+.vs-badge {
+    font-family: 'Orbitron', sans-serif; font-size: 10px; font-weight: 900;
+    color: #888; background: rgba(255,255,255,0.05); padding: 5px 7px; border-radius: 50%;
 }
 
-/* Tactile Physical Board */
-.board-frame {
-    position: relative; padding: 12px; border-radius: 18px;
-    background: #0d0f14;
-    border: 1px solid var(--border-strong);
-    box-shadow: 
-        0 25px 50px -12px rgba(0, 0, 0, 0.85),
-        inset 0 1px 1px rgba(255, 255, 255, 0.07);
+/* Timer & Threat */
+.timer-wrap {
+    width: 100%; height: 4px; background: rgba(255,255,255,0.08);
+    border-radius: 4px; overflow: hidden; margin-bottom: 6px;
 }
-#board { display: grid; gap: 8px; position: relative; z-index: 2; }
+.timer-bar {
+    height: 100%; width: 100%; background: var(--turn-color);
+    box-shadow: 0 0 10px var(--turn-color); transition: width 0.25s linear;
+}
+#threatAlert {
+    font-family: 'Orbitron', sans-serif; font-size: 9px; font-weight: 800;
+    color: var(--gold); letter-spacing: 1px; height: 14px; margin-bottom: 4px;
+    text-align: center;
+}
 
-.cell { 
-    background: linear-gradient(180deg, #171a23 0%, #12141c 100%);
-    border-radius: 11px; display: flex; align-items: center; justify-content: center; 
-    font-family: 'Space Grotesk', sans-serif; font-weight: 700; 
-    cursor: pointer; border: 1px solid rgba(255,255,255,0.06);
-    box-shadow: 0 3px 6px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05);
-    transition: transform 0.12s ease, background 0.2s, border-color 0.2s;
+/* Board */
+.board-wrapper {
+    position: relative; padding: 9px; border-radius: 16px;
+    background: rgba(10, 14, 24, 0.88);
+    border: 1px solid rgba(255,255,255,0.12);
+    box-shadow: 0 18px 45px rgba(0,0,0,0.85), inset 0 0 20px rgba(255,255,255,0.03);
 }
-.cell:hover:empty {
-    background: #1c202b;
-    border-color: rgba(255,255,255,0.18);
-}
-.cell:active:empty { transform: scale(0.95); }
+#board { display: grid; gap: 6px; position: relative; z-index: 2; }
 
-.cell.placed { animation: pieceDrop 0.22s cubic-bezier(0.2, 0.9, 0.3, 1.1); }
-@keyframes pieceDrop {
-    0% { transform: scale(1.25); opacity: 0; }
+.cell {
+    background: linear-gradient(145deg, rgba(255,255,255,0.06), rgba(255,255,255,0.015));
+    border-radius: 10px; display: flex; align-items: center; justify-content: center;
+    font-family: 'Orbitron', sans-serif; font-weight: 900;
+    cursor: pointer; border: 1px solid rgba(255,255,255,0.08);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 4px 8px rgba(0,0,0,0.4);
+    transition: transform 0.15s ease, border-color 0.2s, background 0.2s;
+    position: relative;
+}
+.cell:hover:empty:not(.emp-locked) {
+    border-color: var(--turn-color);
+    background: rgba(255,255,255,0.09);
+    transform: translateY(-2px);
+}
+.cell.placed { animation: slamIn 0.26s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+@keyframes slamIn {
+    0% { transform: scale(1.55); opacity: 0; }
     100% { transform: scale(1); opacity: 1; }
 }
-.cell.x-mark { color: var(--x-color); text-shadow: 0 2px 12px var(--x-glow); }
-.cell.o-mark { color: var(--o-color); text-shadow: 0 2px 12px var(--o-glow); }
+.cell.x-mark { color: var(--primary); text-shadow: 0 0 16px var(--primary-glow); }
+.cell.o-mark { color: var(--accent); text-shadow: 0 0 16px var(--accent-glow); }
 
-.cell.winner-cell {
-    background: rgba(16, 185, 129, 0.16) !important;
-    border-color: var(--win) !important;
-    color: #fff !important;
-    box-shadow: 0 0 20px rgba(16, 185, 129, 0.3) !important;
+.cell.emp-locked {
+    background: repeating-linear-gradient(45deg, rgba(255,215,0,0.12), rgba(255,215,0,0.12) 6px, rgba(0,0,0,0.4) 6px, rgba(0,0,0,0.4) 12px) !important;
+    border-color: var(--gold) !important;
+    cursor: not-allowed;
+}
+.cell.emp-locked::after {
+    content: "🔒"; font-size: 16px;
 }
 
-/* Precision Win Line */
+.cell.radar-hint {
+    border-color: var(--win) !important;
+    box-shadow: 0 0 18px rgba(0, 255, 136, 0.6) !important;
+    animation: pulseRadar 0.8s infinite alternate;
+}
+@keyframes pulseRadar { from { transform: scale(0.96); } to { transform: scale(1.04); } }
+
+.cell.winner-cell {
+    background: rgba(0, 255, 136, 0.22) !important;
+    border-color: var(--win) !important;
+    color: #fff !important;
+    text-shadow: 0 0 20px var(--win) !important;
+    box-shadow: 0 0 24px rgba(0, 255, 136, 0.5) !important;
+    transform: scale(1.05);
+    z-index: 5;
+}
+
 #winLaserSvg {
-    position: absolute; inset: 12px; width: calc(100% - 24px); height: calc(100% - 24px);
+    position: absolute; inset: 9px; width: calc(100% - 18px); height: calc(100% - 18px);
     pointer-events: none; z-index: 10;
 }
 .laser-line {
-    stroke: var(--win); stroke-width: 4.5; stroke-linecap: round;
-    filter: drop-shadow(0 0 8px rgba(16, 185, 129, 0.8));
+    stroke: var(--win); stroke-width: 6; stroke-linecap: round;
+    filter: drop-shadow(0 0 10px var(--win)) drop-shadow(0 0 20px #fff);
     stroke-dasharray: 1000; stroke-dashoffset: 1000;
-    animation: drawLine 0.4s ease-out forwards;
+    animation: drawLaser 0.45s ease-out forwards;
 }
-@keyframes drawLine { to { stroke-dashoffset: 0; } }
+@keyframes drawLaser { to { stroke-dashoffset: 0; } }
 
-/* Subtle Reaction Bar */
-.reaction-strip {
-    display: flex; align-items: center; gap: 8px; margin-top: 10px;
-    background: var(--surface); padding: 5px 12px; border-radius: 20px;
-    border: 1px solid var(--border);
+/* Tactical Powerups & Reactions */
+.tactical-dock {
+    display: flex; align-items: center; justify-content: space-between;
+    width: 100%; gap: 6px; margin-top: 7px;
 }
-.react-btn { cursor: pointer; font-size: 16px; transition: transform 0.15s; opacity: 0.85; }
-.react-btn:hover { transform: scale(1.2); opacity: 1; }
-.q-chip {
-    font-size: 10px; font-weight: 600; background: rgba(255,255,255,0.05);
-    color: var(--text-main); border: 1px solid var(--border);
-    padding: 3px 9px; border-radius: 10px; cursor: pointer;
+.power-btn {
+    flex: 1; background: rgba(255,215,0,0.08); border: 1px solid rgba(255,215,0,0.35);
+    color: var(--gold); padding: 5px 8px; border-radius: 9px;
+    font-family: 'Orbitron', sans-serif; font-size: 9px; font-weight: 800;
+    cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 4px;
 }
-.q-chip:hover { background: rgba(255,255,255,0.1); }
+.power-btn:disabled { opacity: 0.35; cursor: not-allowed; filter: grayscale(1); }
+.power-btn.armed { background: var(--gold); color: #000; box-shadow: 0 0 15px rgba(255,215,0,0.6); }
 
-/* Clean Comms / Chat */
-.chat-box { 
-    height: 120px; background: #0a0b0f; 
-    border-top: 1px solid var(--border); display: flex; flex-direction: column;
+.reaction-bar {
+    display: flex; align-items: center; gap: 5px;
+    background: rgba(255,255,255,0.04); padding: 4px 10px; border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.08);
 }
-#messages { flex: 1; overflow-y: auto; padding: 8px 14px; display: flex; flex-direction: column; gap: 6px; }
-.msg { max-width: 80%; padding: 6px 11px; border-radius: 10px; font-size: 12px; line-height: 1.35; }
-.me { align-self: flex-end; background: #2563eb; color: #fff; border-bottom-right-radius: 2px; }
-.other { align-self: flex-start; background: var(--surface-elevated); color: var(--text-main); border: 1px solid var(--border); border-bottom-left-radius: 2px; }
+.react-emoji { cursor: pointer; font-size: 16px; transition: transform 0.15s; }
+.react-emoji:hover { transform: scale(1.25); }
 
-/* Minimalist Result Modal */
-#winnerOverlay { 
-    position: fixed; inset: 0; background: rgba(6, 7, 10, 0.88); backdrop-filter: blur(14px);
-    z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center;
+/* Chat Section */
+.chat-section {
+    height: 112px; background: rgba(6, 8, 14, 0.96);
+    border-top: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column;
 }
-.result-card {
-    background: var(--surface); border: 1px solid var(--border-strong);
-    border-radius: 20px; padding: 28px 24px; width: 88%; max-width: 340px;
-    text-align: center; box-shadow: 0 25px 60px rgba(0,0,0,0.9);
-    animation: modalPop 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+#messages { flex: 1; overflow-y: auto; padding: 6px 10px; display: flex; flex-direction: column; gap: 4px; }
+.msg { max-width: 82%; padding: 5px 10px; border-radius: 10px; font-size: 12px; line-height: 1.25; word-wrap: break-word; }
+.me { align-self: flex-end; background: linear-gradient(135deg, #0072ff, #00c6ff); color: #fff; }
+.other { align-self: flex-start; background: #1e2230; color: #eee; border: 1px solid rgba(255,255,255,0.08); }
+
+/* Modals */
+.modal-overlay {
+    position: fixed; inset: 0; background: rgba(4, 5, 10, 0.94); backdrop-filter: blur(12px);
+    z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 20px;
 }
-@keyframes modalPop { from { transform: scale(0.92); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.telemetry-card {
+    background: var(--glass); border: 1px solid var(--primary); border-radius: 18px;
+    padding: 20px; width: 100%; max-width: 360px; text-align: center;
+}
+.stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 15px 0; }
+.stat-box { background: rgba(0,0,0,0.45); padding: 10px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.08); }
+.stat-val { font-family: 'Orbitron'; font-size: 20px; font-weight: 900; color: var(--primary); }
+.stat-lbl { font-size: 10px; color: #999; letter-spacing: 1px; }
 
 #toast {
-    position: fixed; top: 62px; left: 50%; transform: translateX(-50%);
-    background: #f4f6f9; color: #08090c; font-size: 11px; font-weight: 700;
-    padding: 7px 16px; border-radius: 20px; z-index: 10001;
-    opacity: 0; pointer-events: none; transition: 0.25s;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+    position: fixed; top: 55px; left: 50%; transform: translateX(-50%);
+    background: var(--primary); color: #000; font-family: 'Orbitron', sans-serif;
+    font-size: 10px; font-weight: 800; padding: 7px 16px; border-radius: 20px;
+    z-index: 10001; opacity: 0; pointer-events: none; transition: 0.3s;
+    box-shadow: 0 0 20px var(--primary-glow);
 }
 
 .hidden { display: none !important; }
@@ -307,131 +377,176 @@ input:focus { border-color: var(--x-color); box-shadow: inset 0 2px 5px rgba(0,0
 </head>
 <body>
 
-<div class="studio-bg"></div>
-<div class="ambient-spotlight" id="ambientSpotlight"></div>
-<div id="toast">COPIED</div>
+<div class="cyber-bg"><div class="cyber-grid"></div></div>
+<div class="ambient-aura"></div>
+<div id="toast">READY</div>
 
-<!-- Match Result Modal -->
-<div id="winnerOverlay">
-    <div class="result-card">
-        <div id="winSubLabel" style="font-size: 11px; font-weight: 700; letter-spacing: 2px; color: var(--text-muted); text-transform: uppercase;">MATCH COMPLETE</div>
-        <h2 id="winnerName" style="font-family:'Space Grotesk', sans-serif; font-size: 28px; margin: 10px 0 6px; color: #fff;">VICTORY</h2>
-        <p id="winStreakText" style="color: var(--text-muted); font-size: 12px; margin: 0 0 22px;">Current Win Streak: 1</p>
-        <button onclick="restartMatch()" class="btn btn-primary" style="margin-bottom: 8px;">Rematch</button>
-        <button onclick="exitArena(true)" class="btn btn-secondary" style="margin-bottom: 0;">Exit to Lobby</button>
+<!-- Victory / Series Modal -->
+<div id="winnerOverlay" class="modal-overlay">
+    <div style="text-align: center; max-width: 360px; width: 100%;">
+        <div id="winSubLabel" style="font-family:'Orbitron'; letter-spacing: 3px; color: var(--gold); font-size: 11px; font-weight: 700;">ROUND VICTORY</div>
+        <h1 id="winnerName" style="font-family:'Orbitron'; font-size: 34px; margin: 10px 0; color: var(--win); text-shadow: 0 0 30px var(--win);">PLAYER WINS</h1>
+        <p id="seriesScoreSummary" style="font-family:'Orbitron'; color:#fff; font-size:13px; margin-bottom:6px;">SERIES: 1 - 0</p>
+        <p id="winStreakText" style="color:#aaa; font-size:12px; margin-bottom:20px; letter-spacing:1px;">🔥 STREAK: 1 | MOVES: 5</p>
+        <button id="nextRoundBtn" onclick="restartMatch()" class="btn-main btn-primary" style="width: 240px;">⚡ NEXT ROUND</button>
+        <button onclick="exitArena(true)" class="btn-main btn-outline" style="width: 240px;">LEAVE ARENA</button>
+    </div>
+</div>
+
+<!-- Telemetry / Stats Modal -->
+<div id="statsModal" class="modal-overlay">
+    <div class="telemetry-card">
+        <div style="font-family:'Orbitron'; font-size:14px; font-weight:900; color:var(--primary); letter-spacing:2px;">MATCH TELEMETRY</div>
+        <div class="stat-grid">
+            <div class="stat-box"><div class="stat-val" id="stPlayed">0</div><div class="stat-lbl">MATCHES PLAYED</div></div>
+            <div class="stat-box"><div class="stat-val" id="stWins" style="color:var(--win);">0</div><div class="stat-lbl">TOTAL WINS</div></div>
+            <div class="stat-box"><div class="stat-val" id="stWinRate" style="color:var(--gold);">0%</div><div class="stat-lbl">WIN RATE</div></div>
+            <div class="stat-box"><div class="stat-val" id="stBestStreak" style="color:var(--accent);">0</div><div class="stat-lbl">BEST STREAK</div></div>
+        </div>
+        <button onclick="toggleStats(false)" class="btn-main btn-primary" style="margin:0;">CLOSE</button>
     </div>
 </div>
 
 <div class="container">
     <!-- LOBBY SCREEN -->
     <div id="loginScreen" class="screen">
-        <div class="brand-header">
-            <div class="brand-tag">INSTAGRAM • <span>@rp_gupta_07</span></div>
-            <h1 class="hero-title">Elite Arena Pro</h1>
-            <div class="hero-sub">Competitive Tactical Grid</div>
+        <div style="width:100%; display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <div class="status-pill" style="margin:0;">
+                <span class="live-dot"></span>
+                <span style="font-family:'Orbitron'; font-size:9px; font-weight:700; letter-spacing:1px;">ARENA ENGINE v3.0</span>
+            </div>
+            <button class="hud-btn" onclick="toggleStats(true)">📊 STATS</button>
         </div>
 
-        <div class="panel">
-            <label class="field-label">Player Name</label>
-            <input id="userName" placeholder="Enter player name" autocomplete="off">
-
-            <label class="field-label">Board Dimensions</label>
-            <div class="seg-group">
-                <button class="seg-btn active" id="g3" onclick="setGrid(3)">3 × 3</button>
-                <button class="seg-btn" id="g5" onclick="setGrid(5)">5 × 5</button>
-                <button class="seg-btn" id="g7" onclick="setGrid(7)">7 × 7</button>
-            </div>
-
-            <label class="field-label">AI Engine Level</label>
-            <div class="seg-group">
-                <button class="seg-btn" id="aiEasy" onclick="setAiLevel('easy')">Standard</button>
-                <button class="seg-btn active" id="aiPro" onclick="setAiLevel('pro')">Tactical</button>
-                <button class="seg-btn" id="aiGod" onclick="setAiLevel('god')">Master</button>
-            </div>
-
-            <button class="btn btn-primary" onclick="createRoom()">Create Private Match</button>
-            <button class="btn btn-accent" onclick="startGlobal()">Global Matchmaking</button>
-            <button class="btn btn-secondary" onclick="startRobot()">Practice vs AI</button>
-
-            <div style="margin: 12px 0; width: 100%; height: 1px; background: var(--border);"></div>
-            
-            <div style="display:flex; gap:8px;">
-                <input id="joinCode" placeholder="Arena Code" style="margin:0; text-align:center; letter-spacing: 2px;">
-                <button class="btn btn-secondary" onclick="joinRoom()" style="margin:0; width:120px;">Join</button>
-            </div>
+        <div style="text-align: center; margin-bottom: 10px;">
+            <h1 class="hero-title">ELITE ARENA</h1>
+            <div class="hero-sub">TACTICAL GRID ESPORTS</div>
         </div>
 
-        <a href="https://www.instagram.com/rp_gupta_07" target="_blank" class="ig-footer">
-            <span class="ig-icon"></span>
-            <span>Instagram: @rp_gupta_07</span>
-        </a>
+        <div class="glass-panel">
+            <label class="input-label"><span>CALLSIGN & EMBLEM</span> <span id="rankPreview" style="color:var(--gold);">RANK: ROOKIE</span></label>
+            <input id="userName" value="CYBER STRIKER" placeholder="ENTER CALLSIGN" maxlength="16">
+
+            <div class="emblem-row" id="emblemPicker">
+                <button class="emblem-btn active" onclick="setEmblem('⚡', this)">⚡</button>
+                <button class="emblem-btn" onclick="setEmblem('🐉', this)">🐉</button>
+                <button class="emblem-btn" onclick="setEmblem('🦅', this)">🦅</button>
+                <button class="emblem-btn" onclick="setEmblem('💀', this)">💀</button>
+                <button class="emblem-btn" onclick="setEmblem('🤖', this)">🤖</button>
+                <button class="emblem-btn" onclick="setEmblem('👑', this)">👑</button>
+            </div>
+
+            <label class="input-label">GRID & SERIES FORMAT</label>
+            <div class="selector-row">
+                <button class="chip-btn active" id="g3" onclick="setGrid(3)">3×3 (3-ROW)</button>
+                <button class="chip-btn" id="g5" onclick="setGrid(5)">5×5 (4-ROW)</button>
+                <button class="chip-btn" id="g7" onclick="setGrid(7)">7×7 (4-ROW)</button>
+            </div>
+
+            <div class="selector-row">
+                <button class="chip-btn active" id="bo1" onclick="setBestOf(1)">SINGLE</button>
+                <button class="chip-btn" id="bo3" onclick="setBestOf(3)">BEST OF 3</button>
+                <button class="chip-btn" id="bo5" onclick="setBestOf(5)">BEST OF 5</button>
+            </div>
+
+            <label class="input-label">TACTICAL SKILLS & AI LEVEL</label>
+            <div class="selector-row">
+                <button class="chip-btn active" id="tacOn" onclick="setTactical(true)">SKILLS: ON ⚡</button>
+                <button class="chip-btn" id="tacOff" onclick="setTactical(false)">CLASSIC: OFF</button>
+                <button class="chip-btn ai-active" id="aiCycle" onclick="cycleAi()">AI: GOD</button>
+            </div>
+
+            <label class="input-label">ARENA VISUAL THEME</label>
+            <div class="selector-row">
+                <button class="chip-btn active" id="thCyan" onclick="setTheme('cyan')">NEON CYAN</button>
+                <button class="chip-btn" id="thCrimson" onclick="setTheme('crimson')">CRIMSON</button>
+                <button class="chip-btn" id="thMatrix" onclick="setTheme('matrix')">MATRIX</button>
+            </div>
+
+            <button class="btn-main btn-primary" onclick="createRoom()">⚔️ CREATE PRIVATE ROOM</button>
+            <button class="btn-main btn-global" onclick="startGlobal()">🌐 GLOBAL RANKED MATCH</button>
+            <button class="btn-main btn-outline" onclick="startRobot()">🤖 SOLO VS TACTICAL AI</button>
+
+            <div style="display:flex; gap:8px; margin-top:4px;">
+                <input id="joinCode" placeholder="4-DIGIT ROOM CODE" style="margin:0; text-align:center; font-family:'Orbitron'; font-size:13px;">
+                <button class="btn-main btn-outline" onclick="joinRoom()" style="margin:0; width:130px;">JOIN</button>
+            </div>
+        </div>
     </div>
 
-    <!-- GAME SCREEN -->
+    <!-- ACTIVE GAME SCREEN -->
     <div id="gameScreen" class="hidden" style="display:flex; flex-direction:column; height: 100%;">
         <div class="top-hud">
-            <button class="hud-pill exit" onclick="exitArena(false)">Leave</button>
-            <div id="status" style="font-weight: 700; color: var(--text-main); font-size: 12px; letter-spacing: 0.5px;">CONNECTING...</div>
-            <div style="display:flex; gap:6px; align-items:center;">
-                <button class="hud-pill" id="soundBtn" onclick="toggleSound()">🔊</button>
-                <button class="hud-pill" onclick="copyRoomCode()" title="Copy Arena Code">
-                    <span id="displayRoomCode">0000</span>
-                </button>
+            <button class="hud-btn danger" onclick="exitArena(false)">✕ EXIT</button>
+            <div id="status" style="font-family:'Orbitron'; font-weight:800; color:var(--primary); font-size:10px; letter-spacing:1px;">INITIALIZING...</div>
+            <div style="display:flex; gap:5px; align-items:center;">
+                <button class="hud-btn" id="soundBtn" onclick="toggleSound()">🔊</button>
+                <div class="room-badge" onclick="copyRoomCode()" title="Copy Room Code">
+                    <span id="displayRoomCode">0000</span> 📋
+                </div>
             </div>
         </div>
 
-        <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10px 16px;">
-            
-            <!-- Scorecards -->
-            <div class="match-header">
-                <div class="p-card" id="cardX">
-                    <div class="p-top">
-                        <span class="p-badge" style="color:var(--x-color);">X</span>
-                        <span class="p-tier" id="rankX">TIER I</span>
+        <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 6px 14px;">
+            <!-- Series Tracker -->
+            <div class="series-bar">
+                <div class="pips" id="pipsX"></div>
+                <span id="seriesLabel">BEST OF 1 • FIRST TO 1</span>
+                <div class="pips" id="pipsO"></div>
+            </div>
+
+            <!-- Player Cards -->
+            <div class="esports-hud">
+                <div class="player-card" id="cardX">
+                    <div class="p-header">
+                        <span class="p-sym" style="color:var(--primary);">[X]</span>
+                        <span class="p-rank" id="rankX">ROOKIE</span>
                     </div>
-                    <div class="p-title" id="p1Name">Player 1</div>
-                    <div class="p-points" id="p1Score" style="color:var(--x-color);">0</div>
+                    <div class="p-name" id="p1Name">PLAYER 1</div>
+                    <div class="p-score" id="p1Score" style="color:var(--primary);">0</div>
                 </div>
 
-                <div class="p-card" id="cardO" style="text-align:right;">
-                    <div class="p-top" style="flex-direction:row-reverse;">
-                        <span class="p-badge" style="color:var(--o-color);">O</span>
-                        <span class="p-tier" id="rankO">TIER I</span>
+                <div class="vs-badge">VS</div>
+
+                <div class="player-card" id="cardO" style="text-align:right;">
+                    <div class="p-header" style="flex-direction:row-reverse;">
+                        <span class="p-sym" style="color:var(--accent);">[O]</span>
+                        <span class="p-rank" id="rankO">ROOKIE</span>
                     </div>
-                    <div class="p-title" id="p2Name">Waiting...</div>
-                    <div class="p-points" id="p2Score" style="color:var(--o-color);">0</div>
+                    <div class="p-name" id="p2Name">WAITING...</div>
+                    <div class="p-score" id="p2Score" style="color:var(--accent);">0</div>
                 </div>
             </div>
 
-            <!-- Turn Timer -->
-            <div class="timer-track">
-                <div class="timer-fill" id="timerBar"></div>
-            </div>
+            <!-- Timer & Threat Indicator -->
+            <div class="timer-wrap"><div class="timer-bar" id="timerBar"></div></div>
+            <div id="threatAlert"></div>
 
-            <!-- Tactile Board -->
-            <div class="board-frame">
+            <!-- Cyber Board -->
+            <div class="board-wrapper">
                 <svg id="winLaserSvg"></svg>
                 <div id="board"></div>
             </div>
 
-            <!-- Quick Reactions -->
-            <div class="reaction-strip">
-                <span class="react-btn" onclick="sendEmoji('🔥')">🔥</span>
-                <span class="react-btn" onclick="sendEmoji('👏')">👏</span>
-                <span class="react-btn" onclick="sendEmoji('😂')">😂</span>
-                <span class="react-btn" onclick="sendEmoji('⚡')">⚡</span>
-                <span class="q-chip" onclick="sendQuickChat('Well played')">GG</span>
-                <span class="q-chip" onclick="sendQuickChat('Good move')">Nice</span>
-                <span class="q-chip" onclick="sendQuickChat('Your turn')">Hurry</span>
+            <!-- Tactical Skills & Reactions -->
+            <div class="tactical-dock">
+                <button class="power-btn" id="empBtn" onclick="armEmp()">🔒 EMP LOCK (1)</button>
+                <button class="power-btn" id="radarBtn" onclick="useRadar()">📡 RADAR (1)</button>
+                <div class="reaction-bar">
+                    <span class="react-emoji" onclick="sendEmoji('🔥')">🔥</span>
+                    <span class="react-emoji" onclick="sendEmoji('👑')">👑</span>
+                    <span class="react-emoji" onclick="sendEmoji('⚡')">⚡</span>
+                    <span class="react-emoji" onclick="sendEmoji('GG')">GG</span>
+                </div>
             </div>
         </div>
 
-        <!-- Chat -->
-        <div class="chat-box">
+        <!-- Live Chat -->
+        <div class="chat-section">
             <div id="messages"></div>
-            <div style="display:flex; padding:6px 12px; gap:8px; background: #08090c;">
-                <input id="msgInput" placeholder="Message..." onkeypress="if(event.key==='Enter') sendMsg()" style="margin:0; flex:1; padding:8px 12px; font-size:13px; border-radius:8px;">
-                <button onclick="sendMsg()" style="background:var(--surface-elevated); border:1px solid var(--border-strong); width:42px; border-radius:8px; font-weight:700; color:#fff; cursor:pointer;">➤</button>
+            <div style="display:flex; padding:5px 10px; gap:6px; background: #04050a;">
+                <input id="msgInput" placeholder="Send tactical comms..." onkeypress="if(event.key==='Enter') sendMsg()" style="margin:0; flex:1; padding:8px 11px; font-size:12px; border-radius:8px;">
+                <button onclick="sendMsg()" style="background:var(--primary); border:none; width:42px; border-radius:8px; font-weight:900; color:#000; cursor:pointer;">➤</button>
             </div>
         </div>
     </div>
@@ -441,81 +556,60 @@ input:focus { border-color: var(--x-color); box-shadow: inset 0 2px 5px rgba(0,0
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
 <script>
-// --- REALISTIC TACTILE AUDIO ENGINE (Web Audio API) ---
-const AudioCtx = window.AudioContext || window.webkitAudioContext;
-let audioCtx = null;
-let soundEnabled = true;
+// --- PERSISTENT TELEMETRY ---
+let stats = JSON.parse(localStorage.getItem('elite_arena_stats') || '{"played":0,"wins":0,"bestStreak":0}');
+function saveStats() {
+    localStorage.setItem('elite_arena_stats', JSON.stringify(stats));
+    document.getElementById('rankPreview').innerText = "RANK: " + getRankTitle(stats.wins);
+}
+saveStats();
 
-function initAudio() {
+function toggleStats(show) {
+    SFX.click();
+    if (show) {
+        document.getElementById('stPlayed').innerText = stats.played;
+        document.getElementById('stWins').innerText = stats.wins;
+        document.getElementById('stWinRate').innerText = stats.played ? Math.round((stats.wins / stats.played) * 100) + "%" : "0%";
+        document.getElementById('stBestStreak').innerText = stats.bestStreak;
+    }
+    document.getElementById('statsModal').style.display = show ? 'flex' : 'none';
+}
+
+// --- PROCEDURAL AUDIO ENGINE ---
+const AudioCtx = window.AudioContext || window.webkitAudioContext;
+let audioCtx = null, soundEnabled = true;
+
+function playTone(freq, type, duration, vol = 0.12) {
+    if (!soundEnabled) return;
     if (!audioCtx) audioCtx = new AudioCtx();
     if (audioCtx.state === 'suspended') audioCtx.resume();
-}
-
-// Realistic mechanical switch / tactile thud sound
-function playTactileClick(pitch = 180, sharp = 900) {
-    if (!soundEnabled) return;
-    initAudio();
-    const now = audioCtx.currentTime;
-
-    // Low body thud
     const osc = audioCtx.createOscillator();
     const gain = audioCtx.createGain();
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(pitch, now);
-    osc.frequency.exponentialRampToValueAtTime(42, now + 0.09);
-    gain.gain.setValueAtTime(0.28, now);
-    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.09);
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+    gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
     osc.connect(gain);
     gain.connect(audioCtx.destination);
-    osc.start(now);
-    osc.stop(now + 0.09);
-
-    // Crisp mechanical transient
-    const clickOsc = audioCtx.createOscillator();
-    const clickGain = audioCtx.createGain();
-    clickOsc.type = 'triangle';
-    clickOsc.frequency.setValueAtTime(sharp, now);
-    clickOsc.frequency.exponentialRampToValueAtTime(120, now + 0.03);
-    clickGain.gain.setValueAtTime(0.12, now);
-    clickGain.gain.exponentialRampToValueAtTime(0.001, now + 0.03);
-    clickOsc.connect(clickGain);
-    clickGain.connect(audioCtx.destination);
-    clickOsc.start(now);
-    clickOsc.stop(now + 0.03);
-}
-
-function playChord(freqs, duration = 0.45, vol = 0.1) {
-    if (!soundEnabled) return;
-    initAudio();
-    const now = audioCtx.currentTime;
-    freqs.forEach((f, idx) => {
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(f, now + idx * 0.06);
-        gain.gain.setValueAtTime(0.001, now + idx * 0.06);
-        gain.gain.linearRampToValueAtTime(vol, now + idx * 0.06 + 0.03);
-        gain.gain.exponentialRampToValueAtTime(0.0008, now + idx * 0.06 + duration);
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        osc.start(now + idx * 0.06);
-        osc.stop(now + idx * 0.06 + duration);
-    });
+    osc.start();
+    osc.stop(audioCtx.currentTime + duration);
 }
 
 const SFX = {
-    ui: () => playTactileClick(240, 1200),
-    moveX: () => playTactileClick(210, 1100),
-    moveO: () => playTactileClick(155, 820),
-    chat: () => playChord([660, 880], 0.18, 0.06),
-    win: () => playChord([261.63, 329.63, 392.00, 523.25], 0.65, 0.12),
-    lose: () => playChord([311.13, 277.18, 233.08], 0.5, 0.1)
+    click: () => playTone(540, 'sine', 0.08, 0.08),
+    moveX: () => { playTone(440, 'triangle', 0.11, 0.14); setTimeout(() => playTone(660, 'sine', 0.11, 0.11), 35); },
+    moveO: () => { playTone(320, 'sawtooth', 0.11, 0.1); setTimeout(() => playTone(250, 'sine', 0.13, 0.11), 35); },
+    emp: () => { playTone(180, 'sawtooth', 0.25, 0.16); playTone(90, 'square', 0.28, 0.14); },
+    radar: () => { playTone(900, 'sine', 0.15, 0.12); setTimeout(() => playTone(1200, 'sine', 0.2, 0.12), 90); },
+    chat: () => playTone(860, 'sine', 0.08, 0.05),
+    win: () => [523.25, 659.25, 783.99, 1046.50].forEach((f, i) => setTimeout(() => playTone(f, 'triangle', 0.26, 0.15), i * 100)),
+    lose: () => [320, 260, 190].forEach((f, i) => setTimeout(() => playTone(f, 'sawtooth', 0.24, 0.12), i * 130))
 };
 
 function toggleSound() {
     soundEnabled = !soundEnabled;
     document.getElementById("soundBtn").innerText = soundEnabled ? "🔊" : "🔇";
-    if (soundEnabled) SFX.ui();
+    if (soundEnabled) SFX.click();
 }
 
 // --- FIREBASE SETUP ---
@@ -531,97 +625,128 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
-let myRoomId, myName, mySymbol, gameRef, chatRef, emojiRef;
-let gridSize = 3, aiLevel = 'pro', isRobot = false;
-let turnTimerInterval = null, timeLeft = 15, lastMoveSig = "";
-let winStreak = 0, roundEnded = false;
+let myRoomId, myName, myEmblem = "⚡", mySymbol, gameRef, chatRef, emojiRef;
+let gridSize = 3, bestOf = 1, tacticalMode = true, aiLevels = ['rookie', 'pro', 'god'], aiIdx = 2;
+let isRobot = false, turnTimerInterval = null, timeLeft = 15, lastMoveSig = "";
+let winStreak = 0, roundEnded = false, empUsed = false, radarUsed = false, empArmed = false;
+
+function setEmblem(em, btn) {
+    SFX.click();
+    myEmblem = em;
+    document.querySelectorAll('.emblem-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+}
 
 function setGrid(s) {
-    SFX.ui();
+    SFX.click();
     gridSize = s;
     ['g3', 'g5', 'g7'].forEach(id => document.getElementById(id).classList.remove('active'));
     document.getElementById('g' + s).classList.add('active');
 }
 
-function setAiLevel(lvl) {
-    SFX.ui();
-    aiLevel = lvl;
-    ['aiEasy', 'aiPro', 'aiGod'].forEach(id => document.getElementById(id).classList.remove('active'));
-    if (lvl === 'easy') document.getElementById('aiEasy').classList.add('active');
-    if (lvl === 'pro') document.getElementById('aiPro').classList.add('active');
-    if (lvl === 'god') document.getElementById('aiGod').classList.add('active');
+function setBestOf(n) {
+    SFX.click();
+    bestOf = n;
+    ['bo1', 'bo3', 'bo5'].forEach(id => document.getElementById(id).classList.remove('active'));
+    document.getElementById('bo' + n).classList.add('active');
 }
 
-function getPlayerName() {
-    return document.getElementById("userName").value.trim() || "Player";
+function setTactical(on) {
+    SFX.click();
+    tacticalMode = on;
+    document.getElementById('tacOn').classList.toggle('active', on);
+    document.getElementById('tacOff').classList.toggle('active', !on);
+}
+
+function cycleAi() {
+    SFX.click();
+    aiIdx = (aiIdx + 1) % aiLevels.length;
+    document.getElementById('aiCycle').innerText = "AI: " + aiLevels[aiIdx].toUpperCase();
+}
+
+function setTheme(t) {
+    SFX.click();
+    document.body.className = t === 'cyan' ? '' : 'theme-' + t;
+    ['thCyan', 'thCrimson', 'thMatrix'].forEach(id => document.getElementById(id).classList.remove('active'));
+    document.getElementById('th' + t.charAt(0).toUpperCase() + t.slice(1)).classList.add('active');
+}
+
+function getCallsign() {
+    let raw = document.getElementById("userName").value.trim() || "STRIKER";
+    return `${myEmblem} ${raw.toUpperCase()}`;
 }
 
 function startRobot() {
-    SFX.ui();
-    myName = getPlayerName();
+    SFX.click();
+    myName = getCallsign();
     isRobot = true;
-    myRoomId = "AI_" + Math.floor(1000 + Math.random() * 8999);
+    myRoomId = "BOT_" + Math.floor(1000 + Math.random() * 8999);
     setupGame("X");
 }
 
 function startGlobal() {
-    SFX.ui();
-    myName = document.getElementById("userName").value.trim();
-    if (!myName) return showToast("Please enter your name");
+    SFX.click();
+    myName = getCallsign();
     isRobot = false;
-    db.ref("global_waiting").once("value", snap => {
-        let waiting = snap.val();
-        if (waiting && waiting.room) {
-            myRoomId = waiting.room;
-            gridSize = waiting.size || 3;
-            db.ref("global_waiting").remove();
+    db.ref("global_waiting_v3").once("value", snap => {
+        let w = snap.val();
+        if (w && w.room && (Date.now() - w.t < 45000)) {
+            myRoomId = w.room;
+            gridSize = w.size || 3;
+            bestOf = w.bestOf || 1;
+            tacticalMode = w.tactical !== undefined ? w.tactical : true;
+            db.ref("global_waiting_v3").remove();
             setupGame("O");
         } else {
             myRoomId = Math.floor(1000 + Math.random() * 8999).toString();
-            db.ref("global_waiting").set({ room: myRoomId, size: gridSize });
+            db.ref("global_waiting_v3").set({ room: myRoomId, size: gridSize, bestOf, tactical: tacticalMode, t: Date.now() });
             setupGame("X");
         }
     });
 }
 
 function createRoom() {
-    SFX.ui();
-    myName = document.getElementById("userName").value.trim();
-    if (!myName) return showToast("Please enter your name");
+    SFX.click();
+    myName = getCallsign();
     isRobot = false;
     myRoomId = Math.floor(1000 + Math.random() * 8999).toString();
     setupGame("X");
 }
 
 function joinRoom() {
-    SFX.ui();
-    myName = document.getElementById("userName").value.trim();
+    SFX.click();
+    myName = getCallsign();
     myRoomId = document.getElementById("joinCode").value.trim();
-    if (!myName || !myRoomId) return showToast("Enter name and arena code");
+    if (!myRoomId) return showToast("ENTER 4-DIGIT ROOM CODE");
     isRobot = false;
     db.ref("rooms/" + myRoomId + "/game").once("value", snap => {
         const g = snap.val();
-        if (!g) return showToast("Arena not found");
+        if (!g) return showToast("ARENA NOT FOUND");
         gridSize = g.size || 3;
+        bestOf = g.bestOf || 1;
+        tacticalMode = g.tactical !== undefined ? g.tactical : true;
         setupGame("O");
     });
 }
 
 function setupGame(sym) {
     mySymbol = sym;
+    empUsed = false; radarUsed = false; empArmed = false;
     gameRef = db.ref("rooms/" + myRoomId + "/game");
     chatRef = db.ref("rooms/" + myRoomId + "/chat");
     emojiRef = db.ref("rooms/" + myRoomId + "/emojis");
-
-    const aiLabel = aiLevel === 'easy' ? 'AI (Standard)' : aiLevel === 'pro' ? 'AI (Tactical)' : 'AI (Master)';
 
     if (sym === "X") {
         gameRef.set({
             board: Array(gridSize * gridSize).fill(""),
             turn: "X",
             size: gridSize,
+            bestOf: bestOf,
+            tactical: tacticalMode,
+            empTile: -1,
+            empOwner: "",
             scores: { X: 0, O: 0 },
-            players: { X: myName, O: isRobot ? aiLabel : "Waiting..." }
+            players: { X: myName, O: isRobot ? `🤖 AI (${aiLevels[aiIdx].toUpperCase()})` : "WAITING..." }
         });
     } else {
         gameRef.child("players/O").set(myName);
@@ -629,8 +754,9 @@ function setupGame(sym) {
 
     document.getElementById("loginScreen").classList.add("hidden");
     document.getElementById("gameScreen").classList.remove("hidden");
-    document.getElementById("displayRoomCode").innerText = isRobot ? "SOLO" : "ID: " + myRoomId;
-    
+    document.getElementById("displayRoomCode").innerText = isRobot ? "SOLO-AI" : myRoomId;
+    document.querySelector(".tactical-dock").style.display = tacticalMode ? "flex" : "none";
+
     createBoard(gridSize);
     listenGame();
     listenChat();
@@ -642,7 +768,7 @@ function createBoard(size) {
     const board = document.getElementById("board");
     board.innerHTML = "";
     document.getElementById("winLaserSvg").innerHTML = "";
-    let cellSize = size === 3 ? 92 : size === 5 ? 58 : 41;
+    let cellSize = size === 3 ? 90 : size === 5 ? 56 : 40;
     board.style.gridTemplateColumns = `repeat(${size}, ${cellSize}px)`;
     for (let i = 0; i < size * size; i++) {
         const cell = document.createElement("div");
@@ -650,17 +776,54 @@ function createBoard(size) {
         cell.style.width = cellSize + "px";
         cell.style.height = cellSize + "px";
         cell.style.fontSize = (cellSize / 1.9) + "px";
-        cell.onclick = () => move(i);
+        cell.onclick = () => handleCellClick(i);
         board.appendChild(cell);
     }
 }
 
-function getTierLabel(wins) {
-    if (wins >= 10) return "TIER V";
-    if (wins >= 6) return "TIER IV";
-    if (wins >= 3) return "TIER III";
-    if (wins >= 1) return "TIER II";
-    return "TIER I";
+function getRankTitle(wins) {
+    if (wins >= 15) return "MYTHIC";
+    if (wins >= 8) return "DIAMOND";
+    if (wins >= 4) return "PRO ELITE";
+    if (wins >= 1) return "WARRIOR";
+    return "ROOKIE";
+}
+
+function renderSeriesPips(scores, bo) {
+    const target = Math.ceil(bo / 2);
+    document.getElementById("seriesLabel").innerText = `BEST OF ${bo} • FIRST TO ${target}`;
+    let htmlX = "", htmlO = "";
+    for (let i = 0; i < target; i++) {
+        htmlX += `<span class="pip ${i < scores.X ? 'won-x' : ''}"></span>`;
+        htmlO += `<span class="pip ${i < scores.O ? 'won-o' : ''}"></span>`;
+    }
+    document.getElementById("pipsX").innerHTML = htmlX;
+    document.getElementById("pipsO").innerHTML = htmlO;
+}
+
+function armEmp() {
+    if (empUsed) return;
+    empArmed = !empArmed;
+    SFX.click();
+    document.getElementById("empBtn").classList.toggle("armed", empArmed);
+    showToast(empArmed ? "SELECT EMPTY TILE TO LOCK" : "EMP DISARMED");
+}
+
+function useRadar() {
+    if (radarUsed) return;
+    gameRef.once("value", snap => {
+        const g = snap.val();
+        if (!g || g.turn !== mySymbol) return showToast("WAIT FOR YOUR TURN");
+        const best = findBestMove(g.board, g.size, mySymbol, 'god');
+        if (best !== -1) {
+            radarUsed = true;
+            SFX.radar();
+            document.getElementById("radarBtn").disabled = true;
+            const cell = document.getElementById("board").children[best];
+            if (cell) cell.classList.add("radar-hint");
+            showToast("OPTIMAL TILE HIGHLIGHTED");
+        }
+    });
 }
 
 function startTurnTimer(currentTurn) {
@@ -682,8 +845,8 @@ function autoRandomMove() {
     gameRef.once("value", snap => {
         const g = snap.val();
         if (!g || g.turn !== mySymbol || checkWinner(g.board, g.size)) return;
-        let empty = g.board.map((v, i) => v === "" ? i : null).filter(v => v !== null);
-        if (empty.length > 0) move(empty[Math.floor(Math.random() * empty.length)]);
+        let empty = g.board.map((v, i) => (v === "" && i !== g.empTile) ? i : null).filter(v => v !== null);
+        if (empty.length > 0) executeMove(empty[Math.floor(Math.random() * empty.length)]);
     });
 }
 
@@ -691,18 +854,33 @@ function drawWinningLaser(lineIndices) {
     const svg = document.getElementById("winLaserSvg");
     const board = document.getElementById("board");
     if (!board.children.length) return;
-    const firstCell = board.children[lineIndices[0]];
-    const lastCell = board.children[lineIndices[lineIndices.length - 1]];
+    const fRect = board.children[lineIndices[0]].getBoundingClientRect();
+    const lRect = board.children[lineIndices[lineIndices.length - 1]].getBoundingClientRect();
     const bRect = board.getBoundingClientRect();
-    const fRect = firstCell.getBoundingClientRect();
-    const lRect = lastCell.getBoundingClientRect();
-
     const x1 = (fRect.left - bRect.left) + fRect.width / 2;
     const y1 = (fRect.top - bRect.top) + fRect.height / 2;
     const x2 = (lRect.left - bRect.left) + lRect.width / 2;
     const y2 = (lRect.top - bRect.top) + lRect.height / 2;
-
     svg.innerHTML = `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" class="laser-line" />`;
+}
+
+function detectThreat(board, size, mySym) {
+    const opp = mySym === "X" ? "O" : "X";
+    for (let i = 0; i < board.length; i++) {
+        if (board[i] === "") {
+            board[i] = opp;
+            if (checkWinner(board, size)) { board[i] = ""; return "⚠️ THREAT DETECTED: BLOCK OPPONENT!"; }
+            board[i] = "";
+        }
+    }
+    for (let i = 0; i < board.length; i++) {
+        if (board[i] === "") {
+            board[i] = mySym;
+            if (checkWinner(board, size)) { board[i] = ""; return "⚡ MATCH POINT AVAILABLE!"; }
+            board[i] = "";
+        }
+    }
+    return "";
 }
 
 function listenGame() {
@@ -714,20 +892,21 @@ function listenGame() {
             createBoard(g.size);
         }
 
+        bestOf = g.bestOf || 1;
+        renderSeriesPips(g.scores, bestOf);
+
         document.getElementById("p1Name").innerText = g.players.X;
         document.getElementById("p2Name").innerText = g.players.O;
         document.getElementById("p1Score").innerText = g.scores.X;
         document.getElementById("p2Score").innerText = g.scores.O;
-        document.getElementById("rankX").innerText = getTierLabel(g.scores.X);
-        document.getElementById("rankO").innerText = getTierLabel(g.scores.O);
+        document.getElementById("rankX").innerText = getRankTitle(g.scores.X);
+        document.getElementById("rankO").innerText = getRankTitle(g.scores.O);
 
         const isXTurn = g.turn === "X";
-        document.documentElement.style.setProperty('--turn-accent', isXTurn ? '#38bdf8' : '#f43f5e');
-        document.getElementById("ambientSpotlight").style.background = 
-            `radial-gradient(circle at 50% 42%, ${isXTurn ? 'rgba(56,189,248,0.22)' : 'rgba(244,63,94,0.22)'}, transparent 65%)`;
-        
-        document.getElementById("cardX").classList.toggle("active-x", isXTurn);
-        document.getElementById("cardO").classList.toggle("active-o", !isXTurn);
+        document.documentElement.style.setProperty('--turn-color', isXTurn ? 'var(--primary)' : 'var(--accent)');
+        document.documentElement.style.setProperty('--turn-glow', isXTurn ? 'var(--primary-glow)' : 'var(--accent-glow)');
+        document.getElementById("cardX").classList.toggle("active-turn-x", isXTurn);
+        document.getElementById("cardO").classList.toggle("active-turn-o", !isXTurn);
 
         const moveSig = g.board.join(",");
         if (moveSig !== lastMoveSig) {
@@ -742,59 +921,80 @@ function listenGame() {
             if (c) {
                 if (c.innerText !== v && v !== "") c.classList.add("placed");
                 c.innerText = v;
-                c.classList.remove("winner-cell", "x-mark", "o-mark");
+                c.classList.remove("winner-cell", "x-mark", "o-mark", "emp-locked", "radar-hint");
                 if (v === "X") c.classList.add("x-mark");
                 if (v === "O") c.classList.add("o-mark");
+                if (g.empTile === i && g.empOwner !== g.turn && v === "") c.classList.add("emp-locked");
             }
         });
 
         const winData = checkWinner(g.board, g.size);
         if (winData) {
             clearInterval(turnTimerInterval);
+            document.getElementById("threatAlert").innerText = "";
             if (!roundEnded) {
                 roundEnded = true;
+                const targetWins = Math.ceil(bestOf / 2);
+                const movesCount = g.board.filter(x => x !== "").length;
+
                 if (winData !== "draw") {
                     winData.line.forEach(idx => document.getElementById("board").children[idx].classList.add("winner-cell"));
                     drawWinningLaser(winData.line);
 
                     const iWon = winData.w === mySymbol;
-                    if (iWon) { winStreak++; SFX.win(); } else { winStreak = 0; SFX.lose(); }
+                    const seriesOver = g.scores[winData.w] >= targetWins;
 
-                    let winName = (winData.w === "X" ? g.players.X : g.players.O);
+                    if (seriesOver) {
+                        stats.played++;
+                        if (iWon) { stats.wins++; winStreak++; stats.bestStreak = Math.max(stats.bestStreak, winStreak); }
+                        else { winStreak = 0; }
+                        saveStats();
+                    }
+
+                    iWon ? SFX.win() : SFX.lose();
+                    let winName = (winData.w === "X" ? g.players.X : g.players.O).toUpperCase();
+
                     setTimeout(() => {
-                        document.getElementById("winSubLabel").innerText = iWon ? "MATCH VICTORY" : "MATCH DEFEAT";
-                        document.getElementById("winnerName").innerText = winName + " Wins";
-                        document.getElementById("winnerName").style.color = iWon ? "var(--win)" : "#fff";
-                        document.getElementById("winStreakText").innerText = `Win Streak: ${winStreak}`;
+                        document.getElementById("winSubLabel").innerText = seriesOver ? "🏆 CHAMPIONSHIP SERIES WON" : (iWon ? "ROUND VICTORY" : "ROUND LOST");
+                        document.getElementById("winnerName").innerText = winName;
+                        document.getElementById("winnerName").style.color = iWon ? "var(--win)" : "var(--accent)";
+                        document.getElementById("seriesScoreSummary").innerText = `SERIES SCORE: ${g.scores.X} - ${g.scores.O}`;
+                        document.getElementById("winStreakText").innerText = `🔥 STREAK: ${winStreak} • MOVES: ${movesCount}`;
+                        document.getElementById("nextRoundBtn").innerText = seriesOver ? "🔄 NEW SERIES" : "⚡ NEXT ROUND";
                         document.getElementById("winnerOverlay").style.display = "flex";
-                        if (iWon) confetti({ particleCount: 90, spread: 65, origin: { y: 0.6 } });
-                    }, 850);
+                        if (iWon) confetti({ particleCount: seriesOver ? 220 : 120, spread: 85, origin: { y: 0.6 } });
+                    }, 900);
                 } else {
                     setTimeout(() => {
                         document.getElementById("winSubLabel").innerText = "STALEMATE";
-                        document.getElementById("winnerName").innerText = "Draw Match";
-                        document.getElementById("winnerName").style.color = "#fff";
-                        document.getElementById("winStreakText").innerText = `Win Streak: ${winStreak}`;
+                        document.getElementById("winnerName").innerText = "ROUND DRAW";
+                        document.getElementById("winnerName").style.color = "var(--primary)";
+                        document.getElementById("seriesScoreSummary").innerText = `SERIES SCORE: ${g.scores.X} - ${g.scores.O}`;
+                        document.getElementById("winStreakText").innerText = `🔥 STREAK HELD: ${winStreak} • MOVES: ${movesCount}`;
+                        document.getElementById("nextRoundBtn").innerText = "⚡ REPLAY ROUND";
                         document.getElementById("winnerOverlay").style.display = "flex";
-                    }, 450);
+                    }, 500);
                 }
             }
         } else {
             roundEnded = false;
             document.getElementById("winLaserSvg").innerHTML = "";
             document.getElementById("winnerOverlay").style.display = "none";
-            
+
             const statusEl = document.getElementById("status");
-            if (g.players.O === "Waiting...") {
-                statusEl.innerText = "WAITING FOR OPPONENT";
-                statusEl.style.color = "var(--text-muted)";
+            if (g.players.O === "WAITING...") {
+                statusEl.innerText = "WAITING FOR OPPONENT...";
+                statusEl.style.color = "var(--gold)";
+                document.getElementById("threatAlert").innerText = "";
             } else if (g.turn === mySymbol) {
-                statusEl.innerText = "YOUR TURN";
-                statusEl.style.color = "var(--x-color)";
+                statusEl.innerText = "⚡ YOUR TURN";
+                statusEl.style.color = "var(--win)";
+                document.getElementById("threatAlert").innerText = detectThreat([...g.board], g.size, mySymbol);
                 startTurnTimer(g.turn);
             } else {
-                statusEl.innerText = isRobot ? "AI THINKING..." : "OPPONENT'S TURN";
-                statusEl.style.color = "var(--text-muted)";
+                statusEl.innerText = isRobot ? "🤖 AI ANALYZING..." : "⏳ OPPONENT TURN";
+                statusEl.style.color = "var(--accent)";
+                document.getElementById("threatAlert").innerText = "";
                 startTurnTimer(g.turn);
             }
 
@@ -805,13 +1005,41 @@ function listenGame() {
     });
 }
 
-function move(i) {
+function handleCellClick(i) {
     gameRef.once("value", snap => {
         const g = snap.val();
-        if (!g || g.players.O === "Waiting..." || g.turn !== mySymbol || g.board[i] !== "" || checkWinner(g.board, g.size)) return;
+        if (!g || g.players.O === "WAITING..." || g.turn !== mySymbol || g.board[i] !== "" || checkWinner(g.board, g.size)) return;
+
+        if (empArmed && !empUsed) {
+            empArmed = false;
+            empUsed = true;
+            SFX.emp();
+            document.getElementById("empBtn").classList.remove("armed");
+            document.getElementById("empBtn").disabled = true;
+            gameRef.update({ empTile: i, empOwner: mySymbol });
+            showToast("EMP LOCK DEPLOYED FOR 1 TURN");
+            return;
+        }
+
+        if (g.empTile === i && g.empOwner !== mySymbol) {
+            return showToast("TILE LOCKED BY OPPONENT EMP!");
+        }
+
+        executeMove(i);
+    });
+}
+
+function executeMove(i) {
+    gameRef.once("value", snap => {
+        const g = snap.val();
+        if (!g || g.turn !== mySymbol || g.board[i] !== "") return;
         g.board[i] = mySymbol;
 
-        let updateData = { board: g.board, turn: mySymbol === "X" ? "O" : "X" };
+        let updateData = {
+            board: g.board,
+            turn: mySymbol === "X" ? "O" : "X",
+            empTile: g.empOwner !== mySymbol ? -1 : g.empTile
+        };
         const winCheck = checkWinner(g.board, g.size);
         if (winCheck && winCheck !== "draw") {
             g.scores[winCheck.w]++;
@@ -821,37 +1049,17 @@ function move(i) {
     });
 }
 
-// --- AI ENGINE ---
+// --- MULTI-GRID SMART AI ENGINE ---
 function smartBot() {
     gameRef.once("value", snap => {
         const g = snap.val();
         if (!g || g.turn !== "O" || checkWinner(g.board, g.size)) return;
-        let b = [...g.board], s = g.size, moveIdx = -1;
+        const lvl = aiLevels[aiIdx];
+        const moveIdx = findBestMove([...g.board], g.size, "O", lvl, g.empOwner === "X" ? g.empTile : -1);
 
-        if (aiLevel === 'god' && s === 3) {
-            moveIdx = getBestMinimaxMove(b);
-        } else {
-            if (aiLevel !== 'easy') {
-                for (let i = 0; i < b.length; i++) {
-                    if (b[i] === "") { b[i] = "O"; if (checkWinner(b, s)) { moveIdx = i; break; } b[i] = ""; }
-                }
-                if (moveIdx === -1) {
-                    for (let i = 0; i < b.length; i++) {
-                        if (b[i] === "") { b[i] = "X"; if (checkWinner(b, s)) { moveIdx = i; break; } b[i] = ""; }
-                    }
-                }
-                const center = Math.floor(b.length / 2);
-                if (moveIdx === -1 && b[center] === "") moveIdx = center;
-            }
-            if (moveIdx === -1) {
-                let empty = b.map((v, i) => v === "" ? i : null).filter(v => v !== null);
-                moveIdx = empty[Math.floor(Math.random() * empty.length)];
-            }
-        }
-
-        if (moveIdx !== -1 && moveIdx !== undefined) {
+        if (moveIdx !== -1) {
             g.board[moveIdx] = "O";
-            let updateData = { board: g.board, turn: "X" };
+            let updateData = { board: g.board, turn: "X", empTile: -1 };
             const winCheck = checkWinner(g.board, g.size);
             if (winCheck && winCheck !== "draw") {
                 g.scores.O++;
@@ -862,12 +1070,56 @@ function smartBot() {
     });
 }
 
-function getBestMinimaxMove(board) {
+function findBestMove(b, s, sym, lvl, blockedTile = -1) {
+    const opp = sym === "X" ? "O" : "X";
+    let empty = b.map((v, i) => (v === "" && i !== blockedTile) ? i : null).filter(v => v !== null);
+    if (!empty.length) return -1;
+
+    if (lvl === 'rookie') return empty[Math.floor(Math.random() * empty.length)];
+    if (lvl === 'god' && s === 3 && blockedTile === -1) return getBestMinimaxMove(b, sym);
+
+    // 1. Immediate win
+    for (let i of empty) {
+        b[i] = sym;
+        if (checkWinner(b, s)) { b[i] = ""; return i; }
+        b[i] = "";
+    }
+    // 2. Immediate block
+    for (let i of empty) {
+        b[i] = opp;
+        if (checkWinner(b, s)) { b[i] = ""; return i; }
+        b[i] = "";
+    }
+    // 3. Heuristic scoring for 5x5 / 7x7 / Pro
+    let bestScore = -Infinity, bestIdx = empty[0];
+    const center = Math.floor(s / 2);
+    for (let i of empty) {
+        let r = Math.floor(i / s), c = i % s;
+        let score = (s - (Math.abs(r - center) + Math.abs(c - center))) * 2;
+        // Check adjacent friendly/enemy density
+        for (let dr = -1; dr <= 1; dr++) {
+            for (let dc = -1; dc <= 1; dc++) {
+                if (dr === 0 && dc === 0) continue;
+                let nr = r + dr, nc = c + dc;
+                if (nr >= 0 && nr < s && nc >= 0 && nc < s) {
+                    let neighbor = b[nr * s + nc];
+                    if (neighbor === sym) score += 5;
+                    if (neighbor === opp) score += 3;
+                }
+            }
+        }
+        if (score > bestScore) { bestScore = score; bestIdx = i; }
+    }
+    return bestIdx;
+}
+
+function getBestMinimaxMove(board, sym) {
+    const opp = sym === "X" ? "O" : "X";
     let bestScore = -Infinity, bestMove = -1;
     for (let i = 0; i < 9; i++) {
         if (board[i] === "") {
-            board[i] = "O";
-            let score = minimax(board, 0, false);
+            board[i] = sym;
+            let score = minimax(board, 0, false, sym, opp);
             board[i] = "";
             if (score > bestScore) { bestScore = score; bestMove = i; }
         }
@@ -875,18 +1127,18 @@ function getBestMinimaxMove(board) {
     return bestMove;
 }
 
-function minimax(board, depth, isMaximizing) {
+function minimax(board, depth, isMax, sym, opp) {
     const res = checkWinner(board, 3);
     if (res) {
         if (res === "draw") return 0;
-        return res.w === "O" ? 10 - depth : depth - 10;
+        return res.w === sym ? 10 - depth : depth - 10;
     }
-    if (isMaximizing) {
+    if (isMax) {
         let best = -Infinity;
         for (let i = 0; i < 9; i++) {
             if (board[i] === "") {
-                board[i] = "O";
-                best = Math.max(best, minimax(board, depth + 1, false));
+                board[i] = sym;
+                best = Math.max(best, minimax(board, depth + 1, false, sym, opp));
                 board[i] = "";
             }
         }
@@ -895,8 +1147,8 @@ function minimax(board, depth, isMaximizing) {
         let best = Infinity;
         for (let i = 0; i < 9; i++) {
             if (board[i] === "") {
-                board[i] = "X";
-                best = Math.min(best, minimax(board, depth + 1, true));
+                board[i] = opp;
+                best = Math.min(best, minimax(board, depth + 1, true, sym, opp));
                 board[i] = "";
             }
         }
@@ -935,21 +1187,21 @@ function checkWinner(b, size) {
 }
 
 function copyRoomCode() {
-    if (isRobot) return showToast("Solo Practice Mode");
+    if (isRobot) return showToast("SOLO AI ARENA");
     navigator.clipboard.writeText(myRoomId);
-    SFX.ui();
-    showToast("Arena Code " + myRoomId + " Copied");
+    SFX.click();
+    showToast("ROOM CODE " + myRoomId + " COPIED");
 }
 
 function showToast(msg) {
     const t = document.getElementById("toast");
     t.innerText = msg;
     t.style.opacity = "1";
-    setTimeout(() => t.style.opacity = "0", 1800);
+    setTimeout(() => t.style.opacity = "0", 2000);
 }
 
 function exitArena(skipConfirm) {
-    if (skipConfirm || confirm("Leave current match?")) {
+    if (skipConfirm || confirm("Leave current arena match?")) {
         clearInterval(turnTimerInterval);
         if (mySymbol === "X") db.ref("rooms/" + myRoomId).remove();
         location.reload();
@@ -957,9 +1209,23 @@ function exitArena(skipConfirm) {
 }
 
 function restartMatch() {
-    SFX.ui();
-    roundEnded = false;
-    gameRef.update({ board: Array(gridSize * gridSize).fill(""), turn: "X" });
+    SFX.click();
+    gameRef.once("value", snap => {
+        const g = snap.val();
+        if (!g) return;
+        const targetWins = Math.ceil((g.bestOf || 1) / 2);
+        const resetScores = (g.scores.X >= targetWins || g.scores.O >= targetWins);
+        roundEnded = false;
+        empUsed = false; radarUsed = false; empArmed = false;
+        document.getElementById("empBtn").disabled = false;
+        document.getElementById("radarBtn").disabled = false;
+        gameRef.update({
+            board: Array(gridSize * gridSize).fill(""),
+            turn: "X",
+            empTile: -1,
+            scores: resetScores ? { X: 0, O: 0 } : g.scores
+        });
+    });
 }
 
 function sendMsg() {
@@ -969,17 +1235,13 @@ function sendMsg() {
     i.value = "";
 }
 
-function sendQuickChat(text) {
-    chatRef.push({ n: myName, m: text });
-}
-
 function listenChat() {
     chatRef.on("child_added", snap => {
         const d = snap.val();
         SFX.chat();
         const m = document.createElement("div");
         m.className = "msg " + (d.n === myName ? "me" : "other");
-        m.innerHTML = `<b style="font-size:9px; opacity:0.65; display:block; margin-bottom:2px;">${d.n}</b>${d.m}`;
+        m.innerHTML = `<b style="font-size:8px; opacity:0.65; display:block; margin-bottom:1px;">${d.n}</b>${d.m}`;
         const box = document.getElementById("messages");
         box.appendChild(m);
         box.scrollTop = box.scrollHeight;
@@ -996,21 +1258,23 @@ function listenEmojis() {
         if (!d || d.t < sessionStart) return;
         const el = document.createElement("div");
         el.style.position = "fixed";
-        el.style.bottom = "140px";
-        el.style.fontSize = "44px";
+        el.style.bottom = "130px";
+        el.style.fontSize = "48px";
+        el.style.fontFamily = "'Orbitron', sans-serif";
+        el.style.fontWeight = "900";
+        el.style.color = "var(--gold)";
         el.style.zIndex = "10000";
         el.style.pointerEvents = "none";
         el.innerText = d.emoji;
         el.style.left = (Math.random() * 55 + 20) + "%";
         el.animate([
-            { transform: 'translateY(0) scale(0.8)', opacity: 1 },
-            { transform: 'translateY(-300px) scale(1.2)', opacity: 0 }
-        ], { duration: 1100, easing: 'ease-out' });
+            { transform: 'translateY(0) scale(0.7)', opacity: 1 },
+            { transform: 'translateY(-340px) scale(1.35)', opacity: 0 }
+        ], { duration: 1250, easing: 'ease-out' });
         document.body.appendChild(el);
-        setTimeout(() => el.remove(), 1100);
+        setTimeout(() => el.remove(), 1250);
     });
 }
 </script>
 </body>
 </html>
-
