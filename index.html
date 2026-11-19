@@ -22,22 +22,6 @@
     --turn-glow: rgba(0, 242, 255, 0.25);
 }
 
-body.theme-crimson {
-    --primary: #ff2a5f;
-    --primary-glow: rgba(255, 42, 95, 0.45);
-    --secondary: #ff8c00;
-    --accent: #00e5ff;
-    --accent-glow: rgba(0, 229, 255, 0.45);
-}
-
-body.theme-matrix {
-    --primary: #00ff66;
-    --primary-glow: rgba(0, 255, 102, 0.45);
-    --secondary: #008f39;
-    --accent: #ffaa00;
-    --accent-glow: rgba(255, 170, 0, 0.45);
-}
-
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
 
 body, html {
@@ -92,7 +76,7 @@ body, html {
 
 .screen {
     flex: 1; display: flex; flex-direction: column; align-items: center;
-    justify-content: flex-start; padding: 14px 16px; overflow-y: auto;
+    justify-content: center; padding: 14px 16px; overflow-y: auto;
     animation: slideUp 0.45s cubic-bezier(0.16, 1, 0.3, 1);
 }
 @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
@@ -106,12 +90,12 @@ body, html {
     font-family: 'Orbitron', sans-serif; font-size: 16px; font-weight: 800;
     background: linear-gradient(90deg, var(--primary), #fff, var(--accent));
     -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    letter-spacing: 3px; margin-bottom: 10px;
+    letter-spacing: 3px; margin-bottom: 12px;
 }
 
 .glass-panel {
     width: 100%; background: var(--glass); backdrop-filter: blur(16px);
-    border: 1px solid var(--glass-border); border-radius: 18px; padding: 14px;
+    border: 1px solid var(--glass-border); border-radius: 18px; padding: 16px;
     box-shadow: 0 15px 35px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.08);
 }
 
@@ -125,13 +109,13 @@ input {
     border: 1px solid rgba(255,255,255,0.15);
     background: rgba(0, 0, 0, 0.55); color: #fff; font-family: 'Rajdhani', sans-serif;
     font-size: 15px; font-weight: 700; letter-spacing: 1px;
-    transition: 0.3s; outline: none; margin-bottom: 10px; user-select: text;
+    transition: 0.3s; outline: none; margin-bottom: 12px; user-select: text;
 }
 input:focus { border-color: var(--primary); box-shadow: 0 0 15px var(--primary-glow); }
 
-.selector-row { display: flex; gap: 6px; margin-bottom: 10px; width: 100%; }
+.selector-row { display: flex; gap: 8px; margin-bottom: 12px; width: 100%; }
 .chip-btn {
-    flex: 1; padding: 8px 4px; background: rgba(255,255,255,0.04);
+    flex: 1; padding: 9px 6px; background: rgba(255,255,255,0.04);
     border: 1px solid rgba(255,255,255,0.1); color: #aaa; border-radius: 9px;
     font-family: 'Orbitron', sans-serif; font-size: 10px; font-weight: 700;
     cursor: pointer; transition: 0.2s;
@@ -146,9 +130,9 @@ input:focus { border-color: var(--primary); box-shadow: 0 0 15px var(--primary-g
 }
 
 .btn-main {
-    width: 100%; padding: 12px; border-radius: 11px; border: none;
+    width: 100%; padding: 13px; border-radius: 11px; border: none;
     font-family: 'Orbitron', sans-serif; font-weight: 800; letter-spacing: 1.3px;
-    font-size: 12px; cursor: pointer; text-transform: uppercase; margin-bottom: 8px;
+    font-size: 12px; cursor: pointer; text-transform: uppercase; margin-bottom: 9px;
     transition: all 0.2s ease;
 }
 .btn-main:active { transform: scale(0.97); }
@@ -169,7 +153,7 @@ input:focus { border-color: var(--primary); box-shadow: 0 0 15px var(--primary-g
 /* Instagram Link Banner */
 .insta-link {
     display: inline-flex; align-items: center; gap: 6px;
-    margin-top: 12px; padding: 7px 16px; border-radius: 20px;
+    margin-top: 14px; padding: 7px 16px; border-radius: 20px;
     background: linear-gradient(90deg, rgba(255,0,85,0.14), rgba(138,43,226,0.18));
     border: 1px solid rgba(255, 0, 85, 0.4);
     color: #fff; text-decoration: none; font-family: 'Orbitron', sans-serif;
@@ -200,18 +184,6 @@ input:focus { border-color: var(--primary); box-shadow: 0 0 15px var(--primary-g
     padding: 4px 9px; border-radius: 7px; font-family: 'Orbitron', sans-serif;
     font-size: 10px; color: var(--primary); cursor: pointer; display: flex; align-items: center; gap: 4px;
 }
-
-/* Series Pips */
-.series-bar {
-    display: flex; align-items: center; justify-content: space-between;
-    width: 100%; padding: 4px 8px; margin-bottom: 6px;
-    background: rgba(255,255,255,0.03); border-radius: 8px;
-    font-family: 'Orbitron', sans-serif; font-size: 9px; color: #aaa;
-}
-.pips { display: flex; gap: 4px; }
-.pip { width: 10px; height: 5px; border-radius: 3px; background: rgba(255,255,255,0.12); transition: 0.3s; }
-.pip.won-x { background: var(--primary); box-shadow: 0 0 8px var(--primary); }
-.pip.won-o { background: var(--accent); box-shadow: 0 0 8px var(--accent); }
 
 /* Player Cards */
 .esports-hud {
@@ -380,12 +352,12 @@ input:focus { border-color: var(--primary); box-shadow: 0 0 15px var(--primary-g
 <div class="ambient-aura"></div>
 <div id="toast">READY</div>
 
-<!-- Victory / Series Modal -->
+<!-- Victory Modal -->
 <div id="winnerOverlay" class="modal-overlay">
     <div style="text-align: center; max-width: 360px; width: 100%;">
         <div id="winSubLabel" style="font-family:'Orbitron'; letter-spacing: 3px; color: var(--gold); font-size: 11px; font-weight: 700;">ROUND VICTORY</div>
         <h1 id="winnerName" style="font-family:'Orbitron'; font-size: 34px; margin: 10px 0; color: var(--win); text-shadow: 0 0 30px var(--win);">PLAYER WINS</h1>
-        <p id="seriesScoreSummary" style="font-family:'Orbitron'; color:#fff; font-size:13px; margin-bottom:6px;">SERIES: 1 - 0</p>
+        <p id="seriesScoreSummary" style="font-family:'Orbitron'; color:#fff; font-size:13px; margin-bottom:6px;">SCORE: 1 - 0</p>
         <p id="winStreakText" style="color:#aaa; font-size:12px; margin-bottom:20px; letter-spacing:1px;">STREAK: 1 | MOVES: 5</p>
         <button id="nextRoundBtn" onclick="restartMatch()" class="btn-main btn-primary" style="width: 240px;">NEXT ROUND</button>
         <button onclick="exitArena(true)" class="btn-main btn-outline" style="width: 240px;">LEAVE ARENA</button>
@@ -409,7 +381,7 @@ input:focus { border-color: var(--primary); box-shadow: 0 0 15px var(--primary-g
 <div class="container">
     <!-- LOBBY SCREEN -->
     <div id="loginScreen" class="screen">
-        <div style="width:100%; display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+        <div style="width:100%; display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
             <div class="status-pill" style="margin:0;">
                 <span class="live-dot"></span>
                 <span style="font-family:'Orbitron'; font-size:9px; font-weight:700; letter-spacing:1px;">ARENA ENGINE v3.0</span>
@@ -417,7 +389,7 @@ input:focus { border-color: var(--primary); box-shadow: 0 0 15px var(--primary-g
             <button class="hud-btn" onclick="toggleStats(true)">STATS</button>
         </div>
 
-        <div style="text-align: center; margin-bottom: 10px;">
+        <div style="text-align: center; margin-bottom: 12px;">
             <h1 class="hero-title">ELITE ARENA</h1>
             <div class="hero-sub">TACTICAL GRID ESPORTS</div>
         </div>
@@ -426,17 +398,10 @@ input:focus { border-color: var(--primary); box-shadow: 0 0 15px var(--primary-g
             <label class="input-label"><span>PLAYER CALLSIGN</span> <span id="rankPreview" style="color:var(--gold);">RANK: ROOKIE</span></label>
             <input id="userName" value="" placeholder="ENTER CALLSIGN" maxlength="16">
 
-            <label class="input-label">GRID & SERIES FORMAT</label>
+            <label class="input-label">GRID FORMAT</label>
             <div class="selector-row">
                 <button class="chip-btn active" id="g3" onclick="setGrid(3)">3×3 (3-ROW)</button>
                 <button class="chip-btn" id="g5" onclick="setGrid(5)">5×5 (4-ROW)</button>
-                <button class="chip-btn" id="g7" onclick="setGrid(7)">7×7 (4-ROW)</button>
-            </div>
-
-            <div class="selector-row">
-                <button class="chip-btn active" id="bo1" onclick="setBestOf(1)">SINGLE</button>
-                <button class="chip-btn" id="bo3" onclick="setBestOf(3)">BEST OF 3</button>
-                <button class="chip-btn" id="bo5" onclick="setBestOf(5)">BEST OF 5</button>
             </div>
 
             <label class="input-label">TACTICAL SKILLS & AI LEVEL</label>
@@ -444,13 +409,6 @@ input:focus { border-color: var(--primary); box-shadow: 0 0 15px var(--primary-g
                 <button class="chip-btn active" id="tacOn" onclick="setTactical(true)">SKILLS: ON</button>
                 <button class="chip-btn" id="tacOff" onclick="setTactical(false)">CLASSIC: OFF</button>
                 <button class="chip-btn ai-active" id="aiCycle" onclick="cycleAi()">AI: GOD</button>
-            </div>
-
-            <label class="input-label">ARENA VISUAL THEME</label>
-            <div class="selector-row">
-                <button class="chip-btn active" id="thCyan" onclick="setTheme('cyan')">NEON CYAN</button>
-                <button class="chip-btn" id="thCrimson" onclick="setTheme('crimson')">CRIMSON</button>
-                <button class="chip-btn" id="thMatrix" onclick="setTheme('matrix')">MATRIX</button>
             </div>
 
             <button class="btn-main btn-primary" onclick="createRoom()">CREATE PRIVATE ROOM</button>
@@ -464,7 +422,7 @@ input:focus { border-color: var(--primary); box-shadow: 0 0 15px var(--primary-g
         </div>
 
         <!-- Clickable Instagram Profile Link -->
-        <a href="https://www.instagram.com/rp_gupta_07" target="_blank" class="insta-link" onclick="SFX.click()">
+        <a href="https://www.instagram.com/rp_gupta_07" target="_blank" class="insta-link">
             <span>INSTAGRAM :</span>
             <span style="color:var(--primary);">@RP_GUPTA_07</span>
             <span>↗</span>
@@ -485,13 +443,6 @@ input:focus { border-color: var(--primary); box-shadow: 0 0 15px var(--primary-g
         </div>
 
         <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 6px 14px;">
-            <!-- Series Tracker -->
-            <div class="series-bar">
-                <div class="pips" id="pipsX"></div>
-                <span id="seriesLabel">BEST OF 1 • FIRST TO 1</span>
-                <div class="pips" id="pipsO"></div>
-            </div>
-
             <!-- Player Cards -->
             <div class="esports-hud">
                 <div class="player-card" id="cardX">
@@ -525,7 +476,7 @@ input:focus { border-color: var(--primary); box-shadow: 0 0 15px var(--primary-g
                 <div id="board"></div>
             </div>
 
-            <!-- Tactical Skills Only (Emojis Removed) -->
+            <!-- Tactical Skills -->
             <div class="tactical-dock">
                 <button class="power-btn" id="empBtn" onclick="armEmp()">EMP LOCK (1)</button>
                 <button class="power-btn" id="radarBtn" onclick="useRadar()">RADAR SCAN (1)</button>
@@ -556,7 +507,6 @@ function saveStats() {
 saveStats();
 
 function toggleStats(show) {
-    SFX.click();
     if (show) {
         document.getElementById('stPlayed').innerText = stats.played;
         document.getElementById('stWins').innerText = stats.wins;
@@ -597,7 +547,7 @@ const SFX = {
     lose: () => [320, 260, 190].forEach((f, i) => setTimeout(() => playTone(f, 'sawtooth', 0.24, 0.14), i * 130))
 };
 
-// Global click sound listener for every button, input, link, or cell tap
+// Global click sound listener
 document.addEventListener('pointerdown', (e) => {
     if (e.target.closest('button, a, .room-badge')) {
         SFX.click();
@@ -624,20 +574,14 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
 let myRoomId, myName, mySymbol, gameRef, chatRef;
-let gridSize = 3, bestOf = 1, tacticalMode = true, aiLevels = ['rookie', 'pro', 'god'], aiIdx = 2;
+let gridSize = 3, tacticalMode = true, aiLevels = ['rookie', 'pro', 'god'], aiIdx = 2;
 let isRobot = false, turnTimerInterval = null, timeLeft = 15, lastMoveSig = "";
 let winStreak = 0, roundEnded = false, empUsed = false, radarUsed = false, empArmed = false;
 
 function setGrid(s) {
     gridSize = s;
-    ['g3', 'g5', 'g7'].forEach(id => document.getElementById(id).classList.remove('active'));
+    ['g3', 'g5'].forEach(id => document.getElementById(id).classList.remove('active'));
     document.getElementById('g' + s).classList.add('active');
-}
-
-function setBestOf(n) {
-    bestOf = n;
-    ['bo1', 'bo3', 'bo5'].forEach(id => document.getElementById(id).classList.remove('active'));
-    document.getElementById('bo' + n).classList.add('active');
 }
 
 function setTactical(on) {
@@ -649,12 +593,6 @@ function setTactical(on) {
 function cycleAi() {
     aiIdx = (aiIdx + 1) % aiLevels.length;
     document.getElementById('aiCycle').innerText = "AI: " + aiLevels[aiIdx].toUpperCase();
-}
-
-function setTheme(t) {
-    document.body.className = t === 'cyan' ? '' : 'theme-' + t;
-    ['thCyan', 'thCrimson', 'thMatrix'].forEach(id => document.getElementById(id).classList.remove('active'));
-    document.getElementById('th' + t.charAt(0).toUpperCase() + t.slice(1)).classList.add('active');
 }
 
 function getCallsign() {
@@ -677,13 +615,12 @@ function startGlobal() {
         if (w && w.room && (Date.now() - w.t < 45000)) {
             myRoomId = w.room;
             gridSize = w.size || 3;
-            bestOf = w.bestOf || 1;
             tacticalMode = w.tactical !== undefined ? w.tactical : true;
             db.ref("global_waiting_v3").remove();
             setupGame("O");
         } else {
             myRoomId = Math.floor(1000 + Math.random() * 8999).toString();
-            db.ref("global_waiting_v3").set({ room: myRoomId, size: gridSize, bestOf, tactical: tacticalMode, t: Date.now() });
+            db.ref("global_waiting_v3").set({ room: myRoomId, size: gridSize, tactical: tacticalMode, t: Date.now() });
             setupGame("X");
         }
     });
@@ -705,7 +642,6 @@ function joinRoom() {
         const g = snap.val();
         if (!g) return showToast("ARENA NOT FOUND");
         gridSize = g.size || 3;
-        bestOf = g.bestOf || 1;
         tacticalMode = g.tactical !== undefined ? g.tactical : true;
         setupGame("O");
     });
@@ -722,7 +658,6 @@ function setupGame(sym) {
             board: Array(gridSize * gridSize).fill(""),
             turn: "X",
             size: gridSize,
-            bestOf: bestOf,
             tactical: tacticalMode,
             empTile: -1,
             empOwner: "",
@@ -748,7 +683,7 @@ function createBoard(size) {
     const board = document.getElementById("board");
     board.innerHTML = "";
     document.getElementById("winLaserSvg").innerHTML = "";
-    let cellSize = size === 3 ? 90 : size === 5 ? 56 : 40;
+    let cellSize = size === 3 ? 92 : 58;
     board.style.gridTemplateColumns = `repeat(${size}, ${cellSize}px)`;
     for (let i = 0; i < size * size; i++) {
         const cell = document.createElement("div");
@@ -767,18 +702,6 @@ function getRankTitle(wins) {
     if (wins >= 4) return "PRO ELITE";
     if (wins >= 1) return "WARRIOR";
     return "ROOKIE";
-}
-
-function renderSeriesPips(scores, bo) {
-    const target = Math.ceil(bo / 2);
-    document.getElementById("seriesLabel").innerText = `BEST OF ${bo} • FIRST TO ${target}`;
-    let htmlX = "", htmlO = "";
-    for (let i = 0; i < target; i++) {
-        htmlX += `<span class="pip ${i < scores.X ? 'won-x' : ''}"></span>`;
-        htmlO += `<span class="pip ${i < scores.O ? 'won-o' : ''}"></span>`;
-    }
-    document.getElementById("pipsX").innerHTML = htmlX;
-    document.getElementById("pipsO").innerHTML = htmlO;
 }
 
 function armEmp() {
@@ -871,9 +794,6 @@ function listenGame() {
             createBoard(g.size);
         }
 
-        bestOf = g.bestOf || 1;
-        renderSeriesPips(g.scores, bestOf);
-
         document.getElementById("p1Name").innerText = g.players.X;
         document.getElementById("p2Name").innerText = g.players.O;
         document.getElementById("p1Score").innerText = g.scores.X;
@@ -913,7 +833,6 @@ function listenGame() {
             document.getElementById("threatAlert").innerText = "";
             if (!roundEnded) {
                 roundEnded = true;
-                const targetWins = Math.ceil(bestOf / 2);
                 const movesCount = g.board.filter(x => x !== "").length;
 
                 if (winData !== "draw") {
@@ -921,36 +840,32 @@ function listenGame() {
                     drawWinningLaser(winData.line);
 
                     const iWon = winData.w === mySymbol;
-                    const seriesOver = g.scores[winData.w] >= targetWins;
-
-                    if (seriesOver) {
-                        stats.played++;
-                        if (iWon) { stats.wins++; winStreak++; stats.bestStreak = Math.max(stats.bestStreak, winStreak); }
-                        else { winStreak = 0; }
-                        saveStats();
-                    }
+                    stats.played++;
+                    if (iWon) { stats.wins++; winStreak++; stats.bestStreak = Math.max(stats.bestStreak, winStreak); }
+                    else { winStreak = 0; }
+                    saveStats();
 
                     iWon ? SFX.win() : SFX.lose();
                     let winName = (winData.w === "X" ? g.players.X : g.players.O).toUpperCase();
 
                     setTimeout(() => {
-                        document.getElementById("winSubLabel").innerText = seriesOver ? "CHAMPIONSHIP SERIES WON" : (iWon ? "ROUND VICTORY" : "ROUND LOST");
-                        document.getElementById("winnerName").innerText = winName;
+                        document.getElementById("winSubLabel").innerText = iWon ? "VICTORY DECLARED" : "MATCH DEFEAT";
+                        document.getElementById("winnerName").innerText = winName + " WINS";
                         document.getElementById("winnerName").style.color = iWon ? "var(--win)" : "var(--accent)";
-                        document.getElementById("seriesScoreSummary").innerText = `SERIES SCORE: ${g.scores.X} - ${g.scores.O}`;
+                        document.getElementById("seriesScoreSummary").innerText = `SCORE: ${g.scores.X} - ${g.scores.O}`;
                         document.getElementById("winStreakText").innerText = `STREAK: ${winStreak} • MOVES: ${movesCount}`;
-                        document.getElementById("nextRoundBtn").innerText = seriesOver ? "NEW SERIES" : "NEXT ROUND";
+                        document.getElementById("nextRoundBtn").innerText = "NEXT ROUND";
                         document.getElementById("winnerOverlay").style.display = "flex";
-                        if (iWon) confetti({ particleCount: seriesOver ? 220 : 120, spread: 85, origin: { y: 0.6 } });
+                        if (iWon) confetti({ particleCount: 150, spread: 85, origin: { y: 0.6 } });
                     }, 900);
                 } else {
                     setTimeout(() => {
                         document.getElementById("winSubLabel").innerText = "STALEMATE";
-                        document.getElementById("winnerName").innerText = "ROUND DRAW";
+                        document.getElementById("winnerName").innerText = "MATCH DRAW";
                         document.getElementById("winnerName").style.color = "var(--primary)";
-                        document.getElementById("seriesScoreSummary").innerText = `SERIES SCORE: ${g.scores.X} - ${g.scores.O}`;
+                        document.getElementById("seriesScoreSummary").innerText = `SCORE: ${g.scores.X} - ${g.scores.O}`;
                         document.getElementById("winStreakText").innerText = `STREAK HELD: ${winStreak} • MOVES: ${movesCount}`;
-                        document.getElementById("nextRoundBtn").innerText = "REPLAY ROUND";
+                        document.getElementById("nextRoundBtn").innerText = "PLAY AGAIN";
                         document.getElementById("winnerOverlay").style.display = "flex";
                     }, 500);
                 }
@@ -1184,21 +1099,14 @@ function exitArena(skipConfirm) {
 }
 
 function restartMatch() {
-    gameRef.once("value", snap => {
-        const g = snap.val();
-        if (!g) return;
-        const targetWins = Math.ceil((g.bestOf || 1) / 2);
-        const resetScores = (g.scores.X >= targetWins || g.scores.O >= targetWins);
-        roundEnded = false;
-        empUsed = false; radarUsed = false; empArmed = false;
-        document.getElementById("empBtn").disabled = false;
-        document.getElementById("radarBtn").disabled = false;
-        gameRef.update({
-            board: Array(gridSize * gridSize).fill(""),
-            turn: "X",
-            empTile: -1,
-            scores: resetScores ? { X: 0, O: 0 } : g.scores
-        });
+    roundEnded = false;
+    empUsed = false; radarUsed = false; empArmed = false;
+    document.getElementById("empBtn").disabled = false;
+    document.getElementById("radarBtn").disabled = false;
+    gameRef.update({
+        board: Array(gridSize * gridSize).fill(""),
+        turn: "X",
+        empTile: -1
     });
 }
 
@@ -1224,4 +1132,3 @@ function listenChat() {
 </script>
 </body>
 </html>
-
